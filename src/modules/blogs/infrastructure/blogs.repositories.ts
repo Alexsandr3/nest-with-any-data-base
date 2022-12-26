@@ -17,12 +17,16 @@ export class BlogsRepositories {
   }
 
   async createBlog(newBlog: PreparationBlogForDB): Promise<string> {
+   // const query = await this.dataSource.query()
     const smartBlog = new this.blogsModel(newBlog);
     const blog = await smartBlog.save();
     return blog.id;
   }
 
+
+
   async deleteBlog(id: string, userId: string): Promise<boolean> {
+
     const result = await this.blogsModel
       .deleteOne({ id, userId: userId })
       .exec();

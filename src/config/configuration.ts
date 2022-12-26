@@ -6,6 +6,7 @@ export const getConfiguration = () => ({
   },
   database: {
     MONGO_URL: process.env.MONGO_URL,
+    PGSQL_URI: process.env.PGSQL_URI,
   },
   email: {
     CLIENT_URL: process.env.CLIENT_URL,

@@ -18,7 +18,7 @@ import { createBlogsForTest } from "./helpers/create-blog-for-test";
 jest.setTimeout(120000);
 
 
-describe(`checking 15 homework`, () => {
+describe.skip(`checking 15 homework`, () => {
 
   let app: INestApplication;
 
@@ -217,7 +217,7 @@ describe(`checking 15 homework`, () => {
         })
         .expect(204);
 
-      const ae = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post(`/auth/login`)
         .set(`User-Agent`, `for test`)
         .send({ loginOrEmail: `${user2.login}`, password: "asirius-121" })

@@ -28,10 +28,15 @@ import { TypeOrmModule } from "@nestjs/typeorm";
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      port: 5402,
+     // host: 'db.thin.dev',
+      port: 5432,
+      //username: 'wjAwVIGcCYqsGKcanuhfSWRmvFKeXUmK',
+      //password: 'dltVsYUJmQJxMcYwmTzLoWMmOvfZNqhj',
+      //database: '3efec63b-8094-4fa8-8583-2adf1954a134',
       url: 'postgresql://wjAwVIGcCYqsGKcanuhfSWRmvFKeXUmK:dltVsYUJmQJxMcYwmTzLoWMmOvfZNqhj@db.thin.dev/3efec63b-8094-4fa8-8583-2adf1954a134',
       //entities: [],
-      //synchronize: true,
+      synchronize: false,
+      autoLoadEntities: false
     }),
     BlogModule,
     PostModule,
