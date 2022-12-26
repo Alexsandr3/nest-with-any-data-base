@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId } from "mongodb";
 
 export interface BlogsDBType {
   _id: ObjectId;
@@ -11,3 +11,5 @@ export interface BlogsDBType {
   isBanned: boolean;
   banDate: string;
 }
+
+

@@ -14,6 +14,7 @@ import { DeviceModule } from "./modules/security/device.module";
 import { BloggerModule } from "./modules/blogger/blogger.module";
 import { SaModule } from "./modules/sa/sa.module";
 import { ConfigType, getConfiguration } from "./config/configuration";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({
   imports: [
@@ -24,6 +25,13 @@ import { ConfigType, getConfiguration } from "./config/configuration";
         const database = configService.get("database", { infer: true });
         return { uri: database.MONGO_URL };
       }
+    }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      port: 5402,
+      url: 'postgresql://wjAwVIGcCYqsGKcanuhfSWRmvFKeXUmK:dltVsYUJmQJxMcYwmTzLoWMmOvfZNqhj@db.thin.dev/3efec63b-8094-4fa8-8583-2adf1954a134',
+      //entities: [],
+      //synchronize: true,
     }),
     BlogModule,
     PostModule,

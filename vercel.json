@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "nest13",
+  "name": "nest-with-any-data-base",
   "builds": [
     {
       "src": "src/main.ts",

@@ -13,7 +13,7 @@ import { JwtForGetGuard } from "../../../guards/jwt-auth-bearer-for-get.guard";
 export class BlogsController {
   constructor(
     private readonly blogsQueryRepositories: BlogsQueryRepositories,
-    private readonly postsQueryRepositories: PostsQueryRepositories
+    private readonly postsQueryRepositories: PostsQueryRepositories,
   ) {
   }
 
