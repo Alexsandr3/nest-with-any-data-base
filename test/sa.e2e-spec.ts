@@ -55,15 +55,13 @@ describe(`Ban blog by super admin`, () => {
         .auth("admin", "qwerty", { type: "basic" })
         .query({ pageSize: 50, sorBy: "login", sortDirection: "desc" })
         .expect(200);
-      console.log(responseStatusInfoUser.body.items);
       expect(responseStatusInfoUser.body.items).toHaveLength(1);
 
-      const responseToken = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post(`/auth/login`)
         .set(`User-Agent`, `for test`)
         .send({ loginOrEmail: `${res[0].user.login}`, password: `asirius-120` })
-        //.expect(200);
-      console.log(responseToken.body);
+        .expect(401);
     });
 
   });

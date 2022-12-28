@@ -76,9 +76,18 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
 
   private async validateUser(userInputModel: CreateUserDto): Promise<boolean> {
     //finding user
-    const checkUser = await this.usersSqlRepositories.findByLoginAndEmail(
-      userInputModel.login, userInputModel.email);
-    if (checkUser)
+    const checkLogin = await this.usersSqlRepositories.findByLoginOrEmail(
+      userInputModel.login
+    );
+    if (checkLogin)
+      throw new BadRequestExceptionMY({
+        message: `Login or Email already in use, do you need choose new data`,
+        field: `login`
+      });
+    const checkEmail = await this.usersSqlRepositories.findByLoginOrEmail(
+      userInputModel.email
+    );
+    if (checkEmail)
       throw new BadRequestExceptionMY({
         message: `Login or Email already in use, do you need choose new data`,
         field: `email`
