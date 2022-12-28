@@ -22,7 +22,7 @@ import { PayloadRefresh } from "../../../decorators/payload-refresh.param.decora
 import { JwtAuthGuard } from "../../../guards/jwt-auth-bearer.guard";
 import { MeViewModel } from "../infrastructure/me-View-Model";
 import { CurrentUserId } from "../../../decorators/current-user-id.param.decorator";
-import { ThrottlerGuard } from "@nestjs/throttler";
+import { SkipThrottle } from "@nestjs/throttler";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateUserCommand } from "../../users/application/use-cases/create-user-command";
 import { LogoutCommand } from "../application/use-cases/logout-command";
@@ -40,18 +40,21 @@ export class AuthController {
               private commandBus: CommandBus) {
   }
 
+  @SkipThrottle()
   @HttpCode(204)
   @Post(`/password-recovery`)
   async recovery(@Body() emailInputModel: EmailRecoveryDto): Promise<boolean> {
     return await this.commandBus.execute(new RecoveryCommand(emailInputModel));
   }
 
+  @SkipThrottle()
   @HttpCode(204)
   @Post(`/new-password`)
   async newPassword(@Body() newPasswordInputModel: NewPasswordDto): Promise<boolean> {
     return await this.commandBus.execute(new NewPasswordCommand(newPasswordInputModel));
   }
 
+  @SkipThrottle()
   @HttpCode(200)
   @Post(`/login`)
   async login(@Request() req, @Ip() ip, @Body() loginInputModel: LoginDto,
@@ -62,7 +65,7 @@ export class AuthController {
     return { accessToken: createdToken.accessToken };
   }
 
-  @UseGuards(ThrottlerGuard)
+
   @HttpCode(200)
   @UseGuards(RefreshGuard)
   @Post(`refresh-token`)
@@ -73,12 +76,14 @@ export class AuthController {
     return { accessToken: createdToken.accessToken };
   }
 
+  @SkipThrottle()
   @HttpCode(204)
   @Post(`/registration-confirmation`)
   async confirmByCode(@Body() codeInputModel: ConfirmationCodeDto): Promise<boolean> {
     return await this.commandBus.execute(new ConfirmByCodeCommand(codeInputModel));
   }
 
+  @SkipThrottle()
   @HttpCode(204)
   @Post(`/registration`)
   async registration(@Body() userInputModel: CreateUserDto): Promise<boolean> {
@@ -87,12 +92,13 @@ export class AuthController {
   }
 
   @HttpCode(204)
+  @SkipThrottle()
   @Post(`/registration-email-resending`)
   async resending(@Body() resendingInputModel: EmailRecoveryDto): Promise<boolean> {
     return await this.commandBus.execute(new ResendingCommand(resendingInputModel));
   }
 
-  @UseGuards(ThrottlerGuard)
+
   @UseGuards(RefreshGuard)
   @HttpCode(204)
   @Post(`/logout`)
@@ -100,7 +106,7 @@ export class AuthController {
     return await this.commandBus.execute(new LogoutCommand(payloadRefresh));
   }
 
-  @UseGuards(ThrottlerGuard)
+
   @UseGuards(JwtAuthGuard)
   @Get(`me`)
   async getProfile(@CurrentUserId() userId: string): Promise<MeViewModel> {

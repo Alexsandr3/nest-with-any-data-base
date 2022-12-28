@@ -21,7 +21,9 @@ import { UpdateBanInfoForUserDto } from "./input-dtos/update-ban-info-for-User-D
 import { UpdateBanUserForCurrentBlogCommand } from "../application/use-cases/update-ban-User-For-Current-Blog-command";
 import { PostsQueryRepositories } from "../../posts/infrastructure/query-repositories/posts-query.reposit";
 import { ForbiddenExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
+import { SkipThrottle } from "@nestjs/throttler";
 
+@SkipThrottle()
 @UseGuards(JwtAuthGuard)
 @Controller(`blogger`)
 export class BloggersController {
