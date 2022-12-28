@@ -59,7 +59,7 @@ export class DeviceSqlRepositories {
 
   async deleteDevice(userId: string, deviceId: string): Promise<boolean> {
     const query = `
-        SELECT *
+        DELETE
         FROM devices
         WHERE user_id = '${userId}'
           AND "deviceId" = '${deviceId}'

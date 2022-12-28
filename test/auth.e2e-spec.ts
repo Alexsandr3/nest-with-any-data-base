@@ -262,12 +262,7 @@ describe.skip("Auth (e2e)", () => {
         .set(`Cookie`, `refreshToken=${validRefreshToken}`)
         .expect(204);
     });
-    it.skip("POST - `/auth/logout` - shouldn`t logout user", async () => {
-      await request(app.getHttpServer())
-        .post(`/auth/logout`)
-        .set("Cookie", `refreshToken=${validRefreshToken}`)
-        .expect(401);
-    });
+
   });
   describe(`/auth/registration-email-resending and registration`, () => {
     let validAccessToken: AccessTokenType;
