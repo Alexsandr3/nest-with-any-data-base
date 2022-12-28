@@ -70,10 +70,10 @@ const guards = [RefreshGuard, JwtAuthGuard];
   ],
   controllers: [AuthController],
   providers: [UsersService, AuthService, ...adapters, ...guards, ...handlers,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerGuard
-    // }
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
   ],
   exports: [JwtService]
 })

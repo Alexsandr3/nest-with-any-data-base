@@ -24,7 +24,9 @@ import { CreateUserSaCommand } from "../application/use-cases/create-user-sa-com
 import { UsersSqlQueryRepositories } from "../infrastructure/query-reposirory/users-sql-query.reposit";
 import { ValidateUuidPipe } from "../../../validators/validate-uuid-pipe";
 import { PaginationViewModel } from "../../blogs/infrastructure/query-repository/pagination-View-Model";
+import { SkipThrottle } from "@nestjs/throttler";
 
+@SkipThrottle()
 @Controller(`sa/users`)
 export class UsersController {
   constructor(private readonly usersService: UsersService,

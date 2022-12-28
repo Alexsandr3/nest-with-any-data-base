@@ -8,7 +8,9 @@ import { IdValidationPipe } from "../../../validators/id-validation-pipe";
 import { PostViewModel } from "../../posts/infrastructure/query-repositories/post-View-Model";
 import { CurrentUserId } from "../../../decorators/current-user-id.param.decorator";
 import { JwtForGetGuard } from "../../../guards/jwt-auth-bearer-for-get.guard";
+import { SkipThrottle } from "@nestjs/throttler";
 
+@SkipThrottle()
 @Controller(`blogs`)
 export class BlogsController {
   constructor(

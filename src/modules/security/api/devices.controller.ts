@@ -15,7 +15,9 @@ import { CommandBus } from "@nestjs/cqrs";
 import { DeleteDevicesCommand } from "../application/use-cases/delete-devices-command";
 import { DeleteDeviceByIdCommand } from "../application/use-cases/delete-device-by-id-command";
 import { DeviceSqlQueryRepositories } from "../infrastructure/query-repository/device-sql-query.repositories";
+import { SkipThrottle } from "@nestjs/throttler";
 
+@SkipThrottle()
 @Controller(`security`)
 export class DevicesController {
   constructor(private commandBus: CommandBus,

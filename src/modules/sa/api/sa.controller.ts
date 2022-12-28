@@ -18,7 +18,9 @@ import { IdValidationPipe } from "../../../validators/id-validation-pipe";
 import { BindBlogCommand } from "../application/use-cases/bindBlogCommand";
 import { UpdateBanInfoForBlogDto } from "./input-dtos/update-ban-info-for-blog-Dto-Model";
 import { UpdateBanInfoForBlogCommand } from "../application/use-cases/updateBanInfoForBlogCommand";
+import { SkipThrottle } from "@nestjs/throttler";
 
+@SkipThrottle()
 @UseGuards(BasicAuthGuard)
 @Controller(`sa/blogs`)
 export class SaController {

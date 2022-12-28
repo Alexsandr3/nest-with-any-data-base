@@ -24,7 +24,9 @@ import { CommandBus } from "@nestjs/cqrs";
 import { BlogsQueryRepositories } from "../../blogs/infrastructure/query-repository/blogs-query.repositories";
 import { CreateCommentCommand } from "../application/use-cases/create-comment-command";
 import { UpdateLikeStatusCommand } from "../application/use-cases/update-like-status-command";
+import { SkipThrottle } from "@nestjs/throttler";
 
+@SkipThrottle()
 @Controller(`posts`)
 export class PostsController {
   constructor(private readonly postsQueryRepositories: PostsQueryRepositories,

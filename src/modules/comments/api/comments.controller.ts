@@ -21,7 +21,9 @@ import { CommandBus } from "@nestjs/cqrs";
 import { DeleteCommentCommand } from "../application/use-cases/delete-comment-command";
 import { UpdateCommentCommand } from "../application/use-cases/update-comment-command";
 import { UpdateLikeStatusCommentCommand } from "../application/use-cases/update-like-status-comment-command";
+import { SkipThrottle } from "@nestjs/throttler";
 
+@SkipThrottle()
 @Controller(`comments`)
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService,
