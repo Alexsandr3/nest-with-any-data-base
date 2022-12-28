@@ -83,10 +83,12 @@ export class DeviceSqlRepositories {
   async deleteDevicesForBannedUser(userId: string): Promise<boolean> {
     const query = `
         DELETE
-        FROM devices;
-        WHERE user_id = "${userId}"
+        FROM devices
+        WHERE user_id = '${userId}'
     `;
-    return await this.dataSource.query(query);
+    const res =  await this.dataSource.query(query);
+    if(res[1] === 0) throw new Error(`not today`)
+    return true
 
   }
 
