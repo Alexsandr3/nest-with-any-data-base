@@ -59,23 +59,13 @@ export class UsersSqlRepositories {
         FROM users
         WHERE user_id = '${id}';
     `;
-    const res = await this.dataSource.query(query);
+    await this.dataSource.query(query);
     return true;
 
     // const result = await this.userModel.deleteOne({ _id: new ObjectId(id) });
     // return result.deletedCount === 1;
   }
 
-  async findByLoginAndEmail(login: string, email: string): Promise<UserDBSQLType> {
-    const query = `
-        SELECT *
-        FROM users
-        WHERE login = '${login}'
-           OR email = '${email}'
-    `;
-    const user = await this.dataSource.query(query);
-    return user[0];
-  }
 
   async findByLoginOrEmail(loginOrEmail: string): Promise<UserDBSQLType> {
     const query = `
@@ -150,7 +140,7 @@ export class UsersSqlRepositories {
         SET "isConfirmation"= true
         WHERE user_id = '${userId}';
     `;
-    const res = await this.dataSource.query(query);
+    await this.dataSource.query(query);
     // if (res[1] === 0) throw new Error("not today");
     return true;
   }
@@ -176,7 +166,7 @@ export class UsersSqlRepositories {
     `;
     const res = await this.dataSource.query(query);
     if (res[1] === 0) throw new Error("not today");
-    return res;
+    return res[0];
   }
 
   // async findBanStatusUser(userId: string): Promise<UserDocument> {
