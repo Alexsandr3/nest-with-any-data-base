@@ -23,6 +23,9 @@ import { RecoveryHandler } from "./application/use-cases/handlers/recovery-handl
 import { LoginHandler } from "./application/use-cases/handlers/login-handler";
 import { RefreshHandler } from "./application/use-cases/handlers/refresh-handler";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+import { UsersSqlRepositories } from "../users/infrastructure/users-sql-repositories";
+import { UsersSqlQueryRepositories } from "../users/infrastructure/query-reposirory/users-sql-query.reposit";
+import { DeviceSqlRepositories } from "../security/infrastructure/device-sql-repositories";
 
 const handlers = [
   CreateUserHandler,
@@ -38,7 +41,10 @@ const adapters = [
   JwtService,
   DeviceRepositories,
   UsersRepositories,
-  UsersQueryRepositories
+  UsersQueryRepositories,
+  UsersSqlRepositories,
+  UsersSqlQueryRepositories,
+  DeviceSqlRepositories
 ];
 const guards = [RefreshGuard, JwtAuthGuard];
 

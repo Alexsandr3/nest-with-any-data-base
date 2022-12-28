@@ -33,7 +33,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
       //username: 'wjAwVIGcCYqsGKcanuhfSWRmvFKeXUmK',
       //password: 'dltVsYUJmQJxMcYwmTzLoWMmOvfZNqhj',
       //database: '3efec63b-8094-4fa8-8583-2adf1954a134',
-      url: 'postgresql://wjAwVIGcCYqsGKcanuhfSWRmvFKeXUmK:dltVsYUJmQJxMcYwmTzLoWMmOvfZNqhj@db.thin.dev/3efec63b-8094-4fa8-8583-2adf1954a134',
+      url: 'postgresql://wLjoUVUEoGPesZQZWUfFpbGlgALmADiw:sTyvDcUdHXBjVNIkrVmwLUFskrexHxEX@db.thin.dev/b76168db-7f53-4e42-8393-63c227017d05',
       //entities: [],
       synchronize: false,
       autoLoadEntities: false

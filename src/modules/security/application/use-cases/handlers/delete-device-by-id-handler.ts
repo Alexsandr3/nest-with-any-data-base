@@ -1,15 +1,15 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { DeviceRepositories } from "../../../infrastructure/device-repositories";
 import {
   ForbiddenExceptionMY,
   NotFoundExceptionMY
 } from "../../../../../helpers/My-HttpExceptionFilter";
 import { DeleteDeviceByIdCommand } from "../delete-device-by-id-command";
+import { DeviceSqlRepositories } from "../../../infrastructure/device-sql-repositories";
 
 @CommandHandler(DeleteDeviceByIdCommand)
 export class DeleteDeviceByIdHandler
   implements ICommandHandler<DeleteDeviceByIdCommand> {
-  constructor(private readonly deviceRepositories: DeviceRepositories) {
+  constructor(private readonly deviceRepositories: DeviceSqlRepositories) {
   }
 
   async execute(command: DeleteDeviceByIdCommand): Promise<boolean> {

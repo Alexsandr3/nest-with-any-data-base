@@ -20,7 +20,6 @@ import { RefreshGuard } from "../../../guards/jwt-auth-refresh.guard";
 import { Response } from "express";
 import { PayloadRefresh } from "../../../decorators/payload-refresh.param.decorator";
 import { JwtAuthGuard } from "../../../guards/jwt-auth-bearer.guard";
-import { UsersQueryRepositories } from "../../users/infrastructure/query-reposirory/users-query.reposit";
 import { MeViewModel } from "../infrastructure/me-View-Model";
 import { CurrentUserId } from "../../../decorators/current-user-id.param.decorator";
 import { ThrottlerGuard } from "@nestjs/throttler";
@@ -33,10 +32,11 @@ import { NewPasswordCommand } from "../application/use-cases/new-password-comman
 import { RecoveryCommand } from "../application/use-cases/recovery-command";
 import { LoginCommand } from "../application/use-cases/login-command";
 import { RefreshCommand } from "../application/use-cases/refresh-command";
+import { UsersSqlQueryRepositories } from "../../users/infrastructure/query-reposirory/users-sql-query.reposit";
 
 @Controller(`auth`)
 export class AuthController {
-  constructor(private readonly usersQueryRepositories: UsersQueryRepositories,
+  constructor(private readonly usersQueryRepositories: UsersSqlQueryRepositories,
               private commandBus: CommandBus) {
   }
 
@@ -58,7 +58,7 @@ export class AuthController {
               @Res({ passthrough: true }) res: Response): Promise<Pick<TokensType, "accessToken">> {
     const deviceName = req.headers["user-agent"];
     const createdToken = await this.commandBus.execute(new LoginCommand(loginInputModel, ip, deviceName));
-    res.cookie("refreshToken", createdToken.refreshToken, { httpOnly: true, secure: true });
+    res.cookie("refreshToken", createdToken.refreshToken, { httpOnly: true, secure: false });
     return { accessToken: createdToken.accessToken };
   }
 

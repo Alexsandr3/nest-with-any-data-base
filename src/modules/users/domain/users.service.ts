@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
-import { BadRequestExceptionMY } from '../../../helpers/My-HttpExceptionFilter';
-import { UsersDBType } from './user-DB-Type';
+import { Injectable } from "@nestjs/common";
+import * as bcrypt from "bcrypt";
+import { BadRequestExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
+import { UsersDBType } from "../infrastructure/user-DB-Type";
 
 @Injectable()
 export class UsersService {
-  constructor() {}
+  constructor() {
+  }
 
   public generateHash(password: string) {
     return bcrypt.hash(password, 10);
@@ -15,31 +16,51 @@ export class UsersService {
     if (user.emailConfirmation.isConfirmation)
       throw new BadRequestExceptionMY({
         message: `Code has confirmation already`,
-        field: 'code',
+        field: "code"
       });
     if (user.emailConfirmation.confirmationCode !== code)
       throw new BadRequestExceptionMY({
-        message: `Company is not confirmed`,
-        field: 'code',
+        message: `user is not confirmed`,
+        field: "code"
       });
     if (user.emailConfirmation.expirationDate < new Date())
       throw new BadRequestExceptionMY({
         message: `Confirmation has expired`,
-        field: 'code',
+        field: "code"
       });
     return;
   }
+
+  public checkCodeConfirmForSql(isConfirmation: boolean, confirmationCode: string, expirationDate: Date, code: string) {
+    if (isConfirmation)
+      throw new BadRequestExceptionMY({
+        message: `Code has confirmation already`,
+        field: "code"
+      });
+    if (confirmationCode !== code)
+      throw new BadRequestExceptionMY({
+        message: `user is not confirmed`,
+        field: "code"
+      });
+    if (expirationDate < new Date())
+      throw new BadRequestExceptionMY({
+        message: `Confirmation has expired`,
+        field: "code"
+      });
+    return;
+  }
+
 
   public checkUser(isConfirmation: boolean, expirationDate: Date) {
     if (isConfirmation)
       throw new BadRequestExceptionMY({
         message: `Code has confirmation already`,
-        field: 'email',
+        field: "email"
       });
     if (expirationDate < new Date())
       throw new BadRequestExceptionMY({
         message: `Confirmation has expired`,
-        field: 'email',
+        field: "email"
       });
     return;
   }

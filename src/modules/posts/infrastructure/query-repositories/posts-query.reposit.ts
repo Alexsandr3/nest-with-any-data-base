@@ -246,8 +246,6 @@ export class PostsQueryRepositories {
     );
   }
 
-
-
   async findCommentsBloggerForPosts(userId: string, paginationInputModel: PaginationDto) {
     const { sortDirection, sortBy, pageSize, pageNumber } = paginationInputModel;
     //search all comments with pagination
@@ -271,6 +269,7 @@ export class PostsQueryRepositories {
       items
     );
   }
+
   private async bloggerCommentViewModel(comment: CommentsDBType, userId: string | null) {
     let myStatus: string = LikeStatusType.None;
     if (userId) {
@@ -295,7 +294,7 @@ export class PostsQueryRepositories {
       myStatus
     );
 
-    const post = await this.postModel.findOne({_id: new Object(comment.postId)})
+    const post = await this.postModel.findOne({ _id: new Object(comment.postId) });
     const commentatorInfo = new CommentatorInfoModel(
       comment.userId,
       comment.userLogin
