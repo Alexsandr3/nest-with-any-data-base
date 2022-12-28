@@ -53,8 +53,8 @@ export class DeviceSqlRepositories {
           AND "deviceId" = '${deviceId}'
           AND "lastActiveDate" = '${dateCreatedToken}'
     `;
-    const devices = await this.dataSource.query(query)
-    return devices[0]
+    const devices = await this.dataSource.query(query);
+    return devices[0];
   }
 
   async deleteDevice(userId: string, deviceId: string): Promise<boolean> {
@@ -64,45 +64,41 @@ export class DeviceSqlRepositories {
         WHERE user_id = '${userId}'
           AND "deviceId" = '${deviceId}'
     `;
-    const devices = await this.dataSource.query(query)
-    if (devices[1] === 0) throw new Error(`not today`)
-    return true
+    const devices = await this.dataSource.query(query);
+    if (devices[1] === 0) throw new Error(`not today`);
+    return true;
   }
 
   async deleteDevices(userId: string, deviceId: string): Promise<boolean> {
     const query = `
         DELETE
         FROM devices
-        WHERE user_id = '${userId}' AND "deviceId" != '${deviceId}'
-    `
-    await this.dataSource.query(query)
-    return true
+        WHERE user_id = '${userId}'
+          AND "deviceId" != '${deviceId}'
+    `;
+    await this.dataSource.query(query);
+    return true;
   }
 
   async deleteDevicesForBannedUser(userId: string): Promise<boolean> {
-    const query = `;
-    DELETE;
-    FROM;
-    devices;
-    WHERE;
-    user_id = "${userId}"
-      `;
-    const res = await this.dataSource.query(query);
-    console.log("res", res);
-    return res;
+    const query = `
+        DELETE
+        FROM devices;
+        WHERE user_id = "${userId}"
+    `;
+    return await this.dataSource.query(query);
 
-    // const result = await this.deviceModel.deleteMany({ userId: userId });
-    // return result.deletedCount === 1;
   }
 
   async findByDeviceIdAndUserId(userId: string, deviceId: string): Promise<DeviceDBType> {
     const query = `
         SELECT *
         FROM devices
-        WHERE user_id = '${userId}' AND "deviceId" = '${deviceId}'
-    `
-    const devices = await this.dataSource.query(query)
-    return devices[0]
+        WHERE user_id = '${userId}'
+          AND "deviceId" = '${deviceId}'
+    `;
+    const devices = await this.dataSource.query(query);
+    return devices[0];
   }
 
   async deleteDeviceByDeviceId(deviceId: string): Promise<boolean> {
@@ -110,10 +106,10 @@ export class DeviceSqlRepositories {
         DELETE
         FROM devices
         WHERE "deviceId" = '${deviceId}'
-    `
-    const devices = await this.dataSource.query(query)
-    if (devices[1] === 0) throw new Error(`not today`)
-    return true
+    `;
+    const devices = await this.dataSource.query(query);
+    if (devices[1] === 0) throw new Error(`not today`);
+    return true;
   }
 
   async findDeviceForValid(
@@ -142,9 +138,9 @@ export class DeviceSqlRepositories {
         SELECT *
         FROM devices
         WHERE "deviceId" = '${deviceId}'
-    `
-    const devices = await this.dataSource.query(query)
-    if (!devices[0]){
+    `;
+    const devices = await this.dataSource.query(query);
+    if (!devices[0]) {
       return null;
     } else {
       return devices[0];
