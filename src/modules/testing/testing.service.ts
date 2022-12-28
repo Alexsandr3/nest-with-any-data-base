@@ -18,6 +18,7 @@ import {
   LikesStatusDocument,
 } from '../comments/domain/likesStatus-schema-Model';
 import { BlogBanInfo, BlogBanInfoDocument } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
+import { DataSource } from "typeorm";
 
 @Injectable()
 export class TestingService {
@@ -33,7 +34,8 @@ export class TestingService {
     private readonly likesStatusModel: Model<LikesStatusDocument>,
     @InjectModel(LikesPostsStatus.name)
     private readonly likesPostsStatusModel: Model<LikesPostsStatusDocument>,
-    @InjectModel(BlogBanInfo.name) private readonly blogBanInfoModel: Model<BlogBanInfoDocument>
+    @InjectModel(BlogBanInfo.name) private readonly blogBanInfoModel: Model<BlogBanInfoDocument>,
+    private readonly dataSource: DataSource
   ) {}
   async deleteAll() {
     await this.blogsModel.deleteMany();
@@ -44,6 +46,16 @@ export class TestingService {
     await this.likesStatusModel.deleteMany();
     await this.likesPostsStatusModel.deleteMany();
     await this.blogBanInfoModel.deleteMany();
+    await this.dataSource.query(`
+        DELETE
+        FROM user_email_confirmation;
+        DELETE
+        FROM user_email_recovery;
+        DELETE
+        FROM devices;
+        DELETE
+        FROM users;
+    `)
     return;
   }
 }

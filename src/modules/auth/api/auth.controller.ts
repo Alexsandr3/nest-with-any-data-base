@@ -58,7 +58,7 @@ export class AuthController {
               @Res({ passthrough: true }) res: Response): Promise<Pick<TokensType, "accessToken">> {
     const deviceName = req.headers["user-agent"];
     const createdToken = await this.commandBus.execute(new LoginCommand(loginInputModel, ip, deviceName));
-    res.cookie("refreshToken", createdToken.refreshToken, { httpOnly: true, secure: false });
+    res.cookie("refreshToken", createdToken.refreshToken, { httpOnly: true, secure: true });
     return { accessToken: createdToken.accessToken };
   }
 

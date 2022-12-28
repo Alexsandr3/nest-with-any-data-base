@@ -35,7 +35,7 @@ export class UsersController {
   }
 
   @UseGuards(BasicAuthGuard)
-  // @UsePipes(new ValidateUuidPipe())
+   // @UsePipes(new ValidateUuidPipe())
   @HttpCode(204)
   @Put(`/:userId/ban`)
   async updateBanInfo(@Body() updateBanInfoModel: UpdateBanInfoDto,
