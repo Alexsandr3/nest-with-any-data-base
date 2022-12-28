@@ -95,7 +95,7 @@ export class UsersSqlQueryRepositories {
           FROM users
           WHERE email ILIKE '%${searchEmailTerm}%' 
        OR login ILIKE '%${searchLoginTerm}%'
-          ORDER BY "${sortBy}" COLLATE "en_US.utf8" ${sortDirection}
+          ORDER BY "${sortBy}" ${sortDirection}
               LIMIT ${pageSize}
           OFFSET ${(pageNumber - 1) * pageSize}
       `;

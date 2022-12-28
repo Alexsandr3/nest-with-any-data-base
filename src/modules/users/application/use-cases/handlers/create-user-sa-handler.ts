@@ -62,7 +62,7 @@ export class CreateUserSaHandler implements ICommandHandler<CreateUserSaCommand>
     if (checkUser)
       throw new BadRequestExceptionMY({
         message: `Login or Email already in use, do you need choose new data`,
-        field: `email`
+        field: `login`
       });
     return true;
   }
