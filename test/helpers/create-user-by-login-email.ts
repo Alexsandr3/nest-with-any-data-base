@@ -26,6 +26,29 @@ export const createUserByLoginEmail = async (count: number, app: INestApplicatio
   }
   return result;
 };
+export const createUniqeUserByLoginEmail = async (count: number, uniq: string, app: INestApplication) => {
+  const result: { userId: string, user: UsersViewType, accessToken: string, refreshToken: string }[] = [];
+  for (let i = 0; i < count; i++) {
+    const response00 = await request(app.getHttpServer())
+      .post(`/sa/users`)
+      .auth(`admin`, `qwerty`, { type: "basic" })
+      .send({ login: `log${uniq}-${i}`, password: `asirius-12${i}`, email: `${uniq}asirius${i}@jive.com` })
+      .expect(201);
+
+    const responseToken = await request(app.getHttpServer())
+      .post(`/auth/login`)
+      .set(`User-Agent`, `for test`)
+      .send({ loginOrEmail: `log${uniq}-${i}`, password: `asirius-12${i}` })
+      .expect(200);
+    result.push({
+      userId: response00.body.id,
+      user: response00.body,
+      accessToken: responseToken.body.accessToken,
+      refreshToken: responseToken.headers["set-cookie"]
+    });
+  }
+  return result;
+};
 
 export const userTestSchema = {
   id: expect.any(String),
