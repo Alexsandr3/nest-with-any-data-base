@@ -30,8 +30,11 @@ import {
   LikesStatusSchema,
 } from '../comments/domain/likesStatus-schema-Model';
 import { DeleteUserHandler } from './application/use-cases/handlers/delete-user-handler';
+import { CreateUserSaHandler } from "./application/use-cases/handlers/create-user-sa-handler";
+import { UsersSqlRepositories } from "./infrastructure/users-sql-repositories";
+import { UsersSqlQueryRepositories } from "./infrastructure/query-reposirory/users-sql-query.reposit";
 
-const handlers = [CreateUserHandler, DeleteUserHandler, UpdateBanInfoHandler];
+const handlers = [CreateUserHandler, CreateUserSaHandler, DeleteUserHandler, UpdateBanInfoHandler];
 const adapters = [
   JwtService,
   MailService,
@@ -40,6 +43,8 @@ const adapters = [
   UsersQueryRepositories,
   DeviceRepositories,
   CommentsRepositories,
+  UsersSqlRepositories,
+  UsersSqlQueryRepositories,
 ];
 const guards = [BasicAuthGuard];
 

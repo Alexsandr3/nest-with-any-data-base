@@ -4,7 +4,7 @@ import { Model } from "mongoose";
 import { User, UserDocument } from "../domain/users-schema-Model";
 import { PreparationUserForDB } from "../domain/user-preparation-for-DB";
 import { ObjectId } from "mongodb";
-import { UsersDBType } from "../domain/user-DB-Type";
+import { UsersDBType } from "./user-DB-Type";
 
 @Injectable()
 export class UsersRepositories {

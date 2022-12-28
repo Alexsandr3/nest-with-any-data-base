@@ -4,14 +4,14 @@ import { ResendingCommand } from '../resending-command';
 import { randomUUID } from 'crypto';
 import { add } from 'date-fns';
 import { HttpException } from '@nestjs/common';
-import { UsersRepositories } from '../../../../users/infrastructure/users-repositories';
 import { UsersService } from '../../../../users/domain/users.service';
 import { MailService } from '../../../../mail/mail.service';
+import { UsersSqlRepositories } from "../../../../users/infrastructure/users-sql-repositories";
 
 @CommandHandler(ResendingCommand)
 export class ResendingHandler implements ICommandHandler<ResendingCommand> {
   constructor(
-    private readonly usersRepositories: UsersRepositories,
+    private readonly usersSqlRepositories: UsersSqlRepositories,
     private readonly userService: UsersService,
     private readonly mailService: MailService,
   ) {}
@@ -19,16 +19,17 @@ export class ResendingHandler implements ICommandHandler<ResendingCommand> {
   async execute(command: ResendingCommand): Promise<boolean> {
     const { email } = command.resendingInputModel;
     //search user by email
-    const user = await this.usersRepositories.findByLoginOrEmail(email);
+    const user = await this.usersSqlRepositories.findByLoginOrEmail(email);
     if (!user)
       throw new BadRequestExceptionMY({
         message: `Incorrect input data`,
         field: 'email',
       });
+    const foundData = await this.usersSqlRepositories.findUserByUserId(user.user_id)
     //check code
     await this.userService.checkUser(
-      user.emailConfirmation.isConfirmation,
-      user.emailConfirmation.expirationDate,
+      foundData.isConfirmation,
+      foundData.expirationDate,
     );
     //generation a new code
     const code: any = {
@@ -38,15 +39,15 @@ export class ResendingHandler implements ICommandHandler<ResendingCommand> {
       },
     };
     //update code confirmation
-    await this.usersRepositories.updateCodeConfirmation(
-      user._id,
+    await this.usersSqlRepositories.updateCodeConfirmation(
+      user.user_id,
       code.emailConfirmation.confirmationCode,
       code.emailConfirmation.expirationDate,
     );
     try {
       //sending code to email
       await this.mailService.sendEmailRecoveryMessage(
-        user.accountData.email,
+        user.email,
         code.emailConfirmation.confirmationCode,
       );
     } catch (error) {

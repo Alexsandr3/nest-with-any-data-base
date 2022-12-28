@@ -12,7 +12,7 @@ import { PostViewModel } from "../src/modules/posts/infrastructure/query-reposit
 
 jest.setTimeout(120000);
 
-describe("Blogger (e2e)", () => {
+describe.skip("Blogger (e2e)", () => {
 
   let app: INestApplication;
 

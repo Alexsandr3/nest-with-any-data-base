@@ -1,29 +1,26 @@
-import { HttpException } from "@nestjs/common";
-import { CreateUserDto } from "../../../api/input-Dto/create-User-Dto-Model";
-import { UsersViewType } from "../../../infrastructure/query-reposirory/user-View-Model";
-import { MailService } from "../../../../mail/mail.service";
-import { randomUUID } from "crypto";
-import { BadRequestExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
-import { add } from "date-fns";
-import { PreparationUserForDB } from "../../../domain/user-preparation-for-DB";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { CreateUserCommand } from "../create-user-command";
+import { CreateUserSaCommand } from "../create-user-sa-command";
 import { UsersService } from "../../../domain/users.service";
+import { UsersViewType } from "../../../infrastructure/query-reposirory/user-View-Model";
+import { PreparationUserForDB } from "../../../domain/user-preparation-for-DB";
+import { randomUUID } from "crypto";
+import { add } from "date-fns";
+import { CreateUserDto } from "../../../api/input-Dto/create-User-Dto-Model";
+import { BadRequestExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
 import { UsersSqlRepositories } from "../../../infrastructure/users-sql-repositories";
 import { UsersSqlQueryRepositories } from "../../../infrastructure/query-reposirory/users-sql-query.reposit";
 
 
-@CommandHandler(CreateUserCommand)
-export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
+@CommandHandler(CreateUserSaCommand)
+export class CreateUserSaHandler implements ICommandHandler<CreateUserSaCommand> {
   constructor(
     private readonly usersSqlRepositories: UsersSqlRepositories,
     private readonly usersSqlQueryRepositories: UsersSqlQueryRepositories,
-    private readonly usersService: UsersService,
-    private readonly mailService: MailService
+    private readonly usersService: UsersService
   ) {
   }
 
-  async execute(command: CreateUserCommand): Promise<UsersViewType> {
+  async execute(command: CreateUserSaCommand): Promise<UsersViewType> {
     const { email, login, password } = command.userInputModel;
     //email verification and login for uniqueness
     await this.validateUser(command.userInputModel);
@@ -40,7 +37,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
       {
         confirmationCode: randomUUID(),
         expirationDate: add(new Date(), { hours: 1 }),
-        isConfirmation: false
+        isConfirmation: true
       },
       {
         recoveryCode: randomUUID(),
@@ -55,29 +52,13 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     );
     const userId = await this.usersSqlRepositories.createUser(user);
     //finding user for View
-    const foundUser = await this.usersSqlQueryRepositories.findUser(userId);
-    try {
-      //send mail for confirmation
-      await this.mailService.sendUserConfirmation(
-        foundUser.email,
-        user.emailConfirmation.confirmationCode
-      );
-    } catch (error) {
-      console.error(error);
-      //if not saved user - him need remove ??
-      //await this.usersRepositories.deleteUser(userId);
-      throw new HttpException(
-        "Service is unavailable. Please try again later. We need saved User",
-        421
-      );
-    }
-    return foundUser;
+    return await this.usersSqlQueryRepositories.findUser(userId);
   }
-
   private async validateUser(userInputModel: CreateUserDto): Promise<boolean> {
     //finding user
     const checkUser = await this.usersSqlRepositories.findByLoginAndEmail(
-      userInputModel.login, userInputModel.email);
+      userInputModel.login, userInputModel.email
+    );
     if (checkUser)
       throw new BadRequestExceptionMY({
         message: `Login or Email already in use, do you need choose new data`,

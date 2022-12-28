@@ -3,7 +3,7 @@ import {
   AccountDataType,
   EmailConfirmationType,
   EmailRecoveryType,
-} from './user-preparation-for-DB';
+} from '../domain/user-preparation-for-DB';
 
 export class UsersDBType {
   constructor(

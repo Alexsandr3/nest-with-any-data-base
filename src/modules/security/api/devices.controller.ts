@@ -4,9 +4,8 @@ import {
   Get,
   HttpCode,
   Param,
-  UseGuards
+  UseGuards,
 } from "@nestjs/common";
-import { DeviceQueryRepositories } from "../infrastructure/query-repository/device-query.repositories";
 import { RefreshGuard } from "../../../guards/jwt-auth-refresh.guard";
 import { DeviceViewModel } from "../infrastructure/query-repository/device-View-Model";
 import { PayloadRefresh } from "../../../decorators/payload-refresh.param.decorator";
@@ -15,12 +14,12 @@ import { CurrentUserIdDevice } from "../../../decorators/current-device.param.de
 import { CommandBus } from "@nestjs/cqrs";
 import { DeleteDevicesCommand } from "../application/use-cases/delete-devices-command";
 import { DeleteDeviceByIdCommand } from "../application/use-cases/delete-device-by-id-command";
-import { DeviceIdDto } from "./input-dtos/deviceId-Dto-Model";
+import { DeviceSqlQueryRepositories } from "../infrastructure/query-repository/device-sql-query.repositories";
 
 @Controller(`security`)
 export class DevicesController {
   constructor(private commandBus: CommandBus,
-              private readonly deviceQueryRepositories: DeviceQueryRepositories) {
+              private readonly deviceQueryRepositories: DeviceSqlQueryRepositories) {
   }
 
   @UseGuards(RefreshGuard)
@@ -37,10 +36,11 @@ export class DevicesController {
   }
 
   @UseGuards(RefreshGuard)
+  //@UsePipes(new ValidateUuidPipe())
   @HttpCode(204)
   @Delete(`/devices/:deviceId`)
   async deleteByDeviceId(@PayloadRefresh() payloadRefresh: PayloadType,
-                         @Param(`deviceId`) inputId: DeviceIdDto): Promise<boolean> {
-    return await this.commandBus.execute(new DeleteDeviceByIdCommand(inputId.deviceId, payloadRefresh));
+                         @Param(`deviceId`) inputId: string): Promise<boolean> {
+    return await this.commandBus.execute(new DeleteDeviceByIdCommand(inputId, payloadRefresh));
   }
 }
