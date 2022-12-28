@@ -75,8 +75,7 @@ export class DeviceSqlRepositories {
         FROM devices
         WHERE user_id = '${userId}' AND "deviceId" != '${deviceId}'
     `
-    const res = await this.dataSource.query(query)
-    if(res[1] > 0) throw new Error(`not otday`)
+    await this.dataSource.query(query)
     return true
   }
 
