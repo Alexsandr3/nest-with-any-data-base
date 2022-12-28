@@ -40,9 +40,6 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     //validate user by login or email
     const user = await this.validateUser(loginInputModel);
     //finding user and check ban status
-    // const foundUser = await this.usersSqlRepositories.findBanStatusUser(
-    //   user.user_id,
-    // );
     if (user.isBanned === true) {
       //deleting a devices-sessions if the user is banned
       await this.deviceSqlRepositories.deleteDevicesForBannedUser(user.user_id);

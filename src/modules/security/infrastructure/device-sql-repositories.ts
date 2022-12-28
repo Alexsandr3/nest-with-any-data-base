@@ -86,8 +86,8 @@ export class DeviceSqlRepositories {
         FROM devices
         WHERE user_id = '${userId}'
     `;
-    const res =  await this.dataSource.query(query);
-    if(res[1] === 0) throw new Error(`not today`)
+    await this.dataSource.query(query);
+    //if(res[1] === 0) throw new Error(`not today`)
     return true
 
   }

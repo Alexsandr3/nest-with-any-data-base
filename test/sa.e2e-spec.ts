@@ -50,6 +50,12 @@ describe(`Ban blog by super admin`, () => {
         })
         .expect(204)
 
+      await request(app.getHttpServer())
+        .post(`/auth/login`)
+        .set(`User-Agent`, `for test`)
+        .send({ loginOrEmail: `${res[0].user.login}`, password: `asirius-120` })
+        .expect(401);
+
       const responseStatusInfoUser = await request(app.getHttpServer())
         .get(`/sa/users/`)
         .auth("admin", "qwerty", { type: "basic" })

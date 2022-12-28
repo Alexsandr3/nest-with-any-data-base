@@ -26,6 +26,7 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { UsersSqlRepositories } from "../users/infrastructure/users-sql-repositories";
 import { UsersSqlQueryRepositories } from "../users/infrastructure/query-reposirory/users-sql-query.reposit";
 import { DeviceSqlRepositories } from "../security/infrastructure/device-sql-repositories";
+import { APP_GUARD } from "@nestjs/core";
 
 const handlers = [
   CreateUserHandler,
@@ -56,7 +57,7 @@ const guards = [RefreshGuard, JwtAuthGuard];
     }),
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
-      { name: Device.name, schema: DeviceSchema },
+      { name: Device.name, schema: DeviceSchema }
     ]),
     /*    JwtModule.register({
           secret: settings.ACCESS_TOKEN_SECRET,
@@ -68,7 +69,12 @@ const guards = [RefreshGuard, JwtAuthGuard];
 
   ],
   controllers: [AuthController],
-  providers: [UsersService, AuthService, ...adapters, ...guards, ...handlers, ThrottlerGuard],
+  providers: [UsersService, AuthService, ...adapters, ...guards, ...handlers,
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard
+    // }
+  ],
   exports: [JwtService]
 })
 export class AuthModule {
