@@ -110,33 +110,92 @@ describe.skip(`Ban blog by super admin`, () => {
     });
 
     let user: UsersViewType;
+    let user1: UsersViewType;
     let blog: BlogViewModel;
     let post: PostViewModel
     let accessToken: string;
     let refreshToken: string;
 
     it(`01 - POST -> "/auth/login": Shouldn't login banned user. Should login unbanned user; status 401; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban;`, async () => {
-      const res = await createUserByLoginEmail(1, app);
+      const res = await createUserByLoginEmail(2, app);
+      user = res[0].user
+      user1 = res[1].user
       accessToken = res[0].accessToken
       const res2 = await createBlogsForTest(1, accessToken, app)
       blog = res2[0].blog
 
-      const responsePost = await request(app.getHttpServer())
-        .post(`/blogger/blogs/${blog.id}/posts`)
-        .auth(accessToken, { type: "bearer" })
-        .send({
-          title: "string113231423",
-          shortDescription: "fasdfdsfsd",
-          content: "strifdasdfsadfsadfng"
-        })
-        .expect(201)
-
-      post = responsePost.body
 
       await request(app.getHttpServer())
-        .delete(`/blogger/blogs/${blog.id}/posts/${post.id}`)
-        .auth(accessToken, { type: "bearer" })
+        .put(`/sa/blogs/${blog.id}/ban`)
+        .auth(`admin`, `qwerty`, { type: "basic" })
+        .send({
+          isBanned: true,
+          banReason: "stringstringstringst"
+        })
         .expect(204)
+
+      await request(app.getHttpServer())
+        .put(`/sa/blogs/${blog.id}/ban`)
+        .auth(`admin`, `qwerty`, { type: "basic" })
+        .send({
+          isBanned: false,
+          banReason: "stringstringstringst"
+        })
+        .expect(204)
+
+
+      // const responsePost = await request(app.getHttpServer())
+      //   .post(`/blogger/blogs/${blog.id}/posts`)
+      //   .auth(accessToken, { type: "bearer" })
+      //   .send({
+      //     title: "string113231423",
+      //     shortDescription: "fasdfdsfsd",
+      //     content: "strifdasdfsadfsadfng"
+      //   })
+      //   .expect(201)
+      //
+      // post = responsePost.body
+      // const id = "07a4e10f-4386-49d2-9b78-df1e47f1f62e"
+
+      // await request(app.getHttpServer())
+      //   .put(`/blogger/blogs/${blog.id}/posts/${id}`)
+      //   .auth(accessToken, { type: "bearer" })
+      //   .send({
+      //     title: "new string31423",
+      //     shortDescription: "new fasdfdsfsd",
+      //     content: "new strifdasdfsadfsadfng"
+      //   })
+      //   .expect(404)
+
+
+      // const response = await request(app.getHttpServer())
+      //   .delete(`/blogger/blogs/${blog.id}/posts/${id}`)
+      //   .auth(accessToken, { type: "bearer" })
+      //   // .send({
+      //   //   title: "new string31423",
+      //   //   shortDescription: "new fasdfdsfsd",
+      //   //   content: "new strifdasdfsadfsadfng"
+      //   // })
+      //   .expect(404)
+
+      // const response = await request(app.getHttpServer())
+      //   .put(`/blogger/users/${user1.id}/ban`)
+      //   .auth(accessToken, {type: "bearer"})
+      //   .send({
+      //     isBanned: false,
+      //     banReason: "stringstringstringst",
+      //     blogId: `${blog.id}`
+      //   })
+      //   .expect(204)
+      // console.log(response.body);
+
+
+
+      //
+      // await request(app.getHttpServer())
+      //   .delete(`/blogger/blogs/${blog.id}/posts/${post.id}`)
+      //   .auth(accessToken, { type: "bearer" })
+      //   .expect(204)
 
     });
 
