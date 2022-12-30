@@ -12,7 +12,7 @@ import { PostViewModel } from "../src/modules/posts/infrastructure/query-reposit
 
 jest.setTimeout(120000);
 
-describe.skip("Blogger (e2e)", () => {
+describe("Blogger (e2e)", () => {
 
   let app: INestApplication;
 
@@ -31,7 +31,7 @@ describe.skip("Blogger (e2e)", () => {
     await app.close();
   });
 
-  describe(`/blogger`, () => {
+  describe.skip(`/blogger`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);

@@ -280,7 +280,7 @@ export class BlogsSqlQueryRepositories {
     `;
     const blog = await this.dataSource.query(query);
     // const blog = await this.blogsModel.findOne({ _id: new Object(id), isBanned: false });
-    // if (!blog[0]) throw new NotFoundExceptionMY(`Not found for id:${id}`);
+     if (!blog[0]) throw new NotFoundExceptionMY(`Not found for id:${id}`);
     //returning Blog with View
     return blog[0];
   }

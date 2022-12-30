@@ -57,7 +57,9 @@ export class PostsSqlRepositories {
         FROM posts 
         WHERE "postId" = '${id}' AND "userId" = '${userId}'
     `
-    await this.dataSource.query(query)
+    const res = await this.dataSource.query(query)
+    console.log(res);
+    if(res[1] === 0) return false
     return true
   }
 
