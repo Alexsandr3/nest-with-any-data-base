@@ -47,7 +47,7 @@ describe.skip(`Ban blog by super admin`, () => {
     it(`01 - POST -> "/auth/login": Shouldn't login banned user. Should login unbanned user; status 401; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban;`, async () => {
       const res = await createUserByLoginEmail(1, app);
 
-      await createUniqeUserByLoginEmail(1, "S",app);
+      await createUniqeUserByLoginEmail(1, "S", app);
 
       await request(app.getHttpServer())
         .put(`/sa/users/${res[0].userId}/ban`)
@@ -56,7 +56,7 @@ describe.skip(`Ban blog by super admin`, () => {
           isBanned: true,
           banReason: "too much talking, bad user"
         })
-        .expect(204)
+        .expect(204);
 
       await request(app.getHttpServer())
         .post(`/auth/login`)
@@ -67,7 +67,7 @@ describe.skip(`Ban blog by super admin`, () => {
       const responseStatusInfoUser = await request(app.getHttpServer())
         .get(`/sa/users/`)
         .auth("admin", "qwerty", { type: "basic" })
-        .query({ pageSize: 50, sorBy: "login", sortDirection: "desc"})
+        .query({ pageSize: 50, sorBy: "login", sortDirection: "desc" })
         .expect(200);
 
       expect(responseStatusInfoUser.body.items).toHaveLength(1);
@@ -80,9 +80,9 @@ describe.skip(`Ban blog by super admin`, () => {
     });
     it.skip(`POST -> "/auth/refresh-token", "/auth/logout": should return an error if the "refresh" token has become invalid; status 401;`, async () => {
       const res = await createUserByLoginEmail(1, app);
-      user = res[0].user
-      accessToken = res[0].accessToken
-      refreshToken = res[0].refreshToken
+      user = res[0].user;
+      accessToken = res[0].accessToken;
+      refreshToken = res[0].refreshToken;
 
       await request(app.getHttpServer())
         .post(`/auth/login`)
@@ -92,12 +92,12 @@ describe.skip(`Ban blog by super admin`, () => {
 
       await request(app.getHttpServer())
         .post(`/auth/logout`)
-        .set('Cookie', `${refreshToken[0]}`)
+        .set("Cookie", `${refreshToken[0]}`)
         .expect(204);
 
       await request(app.getHttpServer())
         .post(`/auth/refresh-token`)
-        .set('Cookie', `${refreshToken[0]}`)
+        .set("Cookie", `${refreshToken[0]}`)
         .expect(401);
 
     });
@@ -112,17 +112,17 @@ describe.skip(`Ban blog by super admin`, () => {
     let user: UsersViewType;
     let user1: UsersViewType;
     let blog: BlogViewModel;
-    let post: PostViewModel
+    let post: PostViewModel;
     let accessToken: string;
     let refreshToken: string;
 
     it(`01 - POST -> "/auth/login": Shouldn't login banned user. Should login unbanned user; status 401; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban;`, async () => {
       const res = await createUserByLoginEmail(2, app);
-      user = res[0].user
-      user1 = res[1].user
-      accessToken = res[0].accessToken
-      const res2 = await createBlogsForTest(1, accessToken, app)
-      blog = res2[0].blog
+      user = res[0].user;
+      user1 = res[1].user;
+      accessToken = res[0].accessToken;
+      const res2 = await createBlogsForTest(1, accessToken, app);
+      blog = res2[0].blog;
 
 
       await request(app.getHttpServer())
@@ -134,14 +134,59 @@ describe.skip(`Ban blog by super admin`, () => {
         })
         .expect(204)
 
-      await request(app.getHttpServer())
-        .put(`/sa/blogs/${blog.id}/ban`)
+      const responseBlog = await request(app.getHttpServer())
+        .get(`/blogs`)
+        .query({ pageSize: 50, sorBy: "Name", sortDirection: "desc" })
+        .expect(200);
+      console.log("-1", responseBlog.body);
+      //
+      // expect(responseBlog.body).toEqual({
+      //   pagesCount: 0,
+      //   page: 1,
+      //   pageSize: 50,
+      //   totalCount: 0,
+      //   items: expect.any(Array)
+      // });
+
+      const responseBlogId = await request(app.getHttpServer())
+        .get(`/blogs/${blog.id}`)
+        .expect(404);
+      console.log("-2", responseBlogId.body);
+
+
+      const responseBlogSA = await request(app.getHttpServer())
+        .get(`/sa/blogs`)
         .auth(`admin`, `qwerty`, { type: "basic" })
-        .send({
-          isBanned: false,
-          banReason: "stringstringstringst"
-        })
-        .expect(204)
+        .query({ pageSize: 13, sorBy: "Name", sortDirection: "asc" })
+        .expect(200)
+
+      console.log("-3", responseBlogSA.body.items);
+      // expect(responseBlogSA.body).toEqual({
+      //   pagesCount: 1,
+      //   page: 1,
+      //   pageSize: 13,
+      //   totalCount: 1,
+      //   items: expect.any(Array)
+      // });
+
+
+      // await request(app.getHttpServer())
+      //   .put(`/sa/blogs/${blog.id}/ban`)
+      //   .auth(`admin`, `qwerty`, { type: "basic" })
+      //   .send({
+      //     isBanned: true,
+      //     banReason: "stringstringstringst"
+      //   })
+      //   .expect(204)
+      //
+      // await request(app.getHttpServer())
+      //   .put(`/sa/blogs/${blog.id}/ban`)
+      //   .auth(`admin`, `qwerty`, { type: "basic" })
+      //   .send({
+      //     isBanned: false,
+      //     banReason: "stringstringstringst"
+      //   })
+      //   .expect(204)
 
 
       // const responsePost = await request(app.getHttpServer())
@@ -188,7 +233,6 @@ describe.skip(`Ban blog by super admin`, () => {
       //   })
       //   .expect(204)
       // console.log(response.body);
-
 
 
       //
