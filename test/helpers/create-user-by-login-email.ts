@@ -10,8 +10,9 @@ export const createUserByLoginEmail = async (count: number, app: INestApplicatio
     const response00 = await request(app.getHttpServer())
       .post(`/sa/users`)
       .auth(`admin`, `qwerty`, { type: "basic" })
-      .send({ login: `asirius-${i}`, password: `${randomText}`, email: `asirius${i}@jive.com` })
+      .send({ login: `asirius-${i}`, password: `asirius-12${i}`, email: `asirius${i}@jive.com` })
       .expect(201);
+    console.log("----",response00.body);
 
     const responseToken = await request(app.getHttpServer())
       .post(`/auth/login`)

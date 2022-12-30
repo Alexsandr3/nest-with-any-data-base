@@ -8,6 +8,9 @@ import {
   createUserByLoginEmail
 } from "./helpers/create-user-by-login-email";
 import { UsersViewType } from "../src/modules/users/infrastructure/query-reposirory/user-View-Model";
+import { BlogViewModel } from "../src/modules/blogs/infrastructure/query-repository/blog-View-Model";
+import { PostViewModel } from "../src/modules/posts/infrastructure/query-repositories/post-View-Model";
+import { createBlogsForTest } from "./helpers/create-blog-for-test";
 
 
 jest.setTimeout(120000);
@@ -31,7 +34,7 @@ describe.skip(`Ban blog by super admin`, () => {
     await app.close();
   });
 
-  describe(`Super admin Api > Users`, () => {
+  describe.skip(`Super admin Api > Users`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -96,6 +99,44 @@ describe.skip(`Ban blog by super admin`, () => {
         .post(`/auth/refresh-token`)
         .set('Cookie', `${refreshToken[0]}`)
         .expect(401);
+
+    });
+
+  });
+  describe(`Check error for testing`, () => {
+    beforeAll(async () => {
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`).expect(204);
+    });
+
+    let user: UsersViewType;
+    let blog: BlogViewModel;
+    let post: PostViewModel
+    let accessToken: string;
+    let refreshToken: string;
+
+    it(`01 - POST -> "/auth/login": Shouldn't login banned user. Should login unbanned user; status 401; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban;`, async () => {
+      const res = await createUserByLoginEmail(1, app);
+      accessToken = res[0].accessToken
+      const res2 = await createBlogsForTest(1, accessToken, app)
+      blog = res2[0].blog
+
+      const responsePost = await request(app.getHttpServer())
+        .post(`/blogger/blogs/${blog.id}/posts`)
+        .auth(accessToken, { type: "bearer" })
+        .send({
+          title: "string113231423",
+          shortDescription: "fasdfdsfsd",
+          content: "strifdasdfsadfsadfng"
+        })
+        .expect(201)
+
+      post = responsePost.body
+
+      await request(app.getHttpServer())
+        .delete(`/blogger/blogs/${blog.id}/posts/${post.id}`)
+        .auth(accessToken, { type: "bearer" })
+        .expect(204)
 
     });
 
