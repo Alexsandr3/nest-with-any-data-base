@@ -13,7 +13,7 @@ import { UsersViewType } from "../src/modules/users/infrastructure/query-reposir
 jest.setTimeout(120000);
 
 
-describe(`Ban blog by super admin`, () => {
+describe.skip(`Ban blog by super admin`, () => {
 
   let app: INestApplication;
 
