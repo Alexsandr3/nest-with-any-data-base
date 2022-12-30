@@ -1,19 +1,19 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { UpdateBanUserForCurrentBlogCommand } from "../update-ban-User-For-Current-Blog-command";
-import { UsersQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-query.reposit";
 import {
   BadRequestExceptionMY,
   ForbiddenExceptionMY,
   NotFoundExceptionMY
 } from "../../../../../helpers/My-HttpExceptionFilter";
-import { BlogsRepositories } from "../../../../blogs/infrastructure/blogs.repositories";
 import { BanUserForBlogPreparationForDB } from "../../../domain/ban-user-for-blog-preparation-for-DB";
+import { UsersSqlQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-sql-query.reposit";
+import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
 
 @CommandHandler(UpdateBanUserForCurrentBlogCommand)
 export class UpdateBanUserForCurrentBlogHandler
   implements ICommandHandler<UpdateBanUserForCurrentBlogCommand> {
-  constructor(private readonly usersQueryRepositories: UsersQueryRepositories,
-              private readonly blogsRepositories: BlogsRepositories) {
+  constructor(private readonly usersQueryRepositories: UsersSqlQueryRepositories,
+              private readonly blogsRepositories: BlogsSqlRepositories) {
   }
 
   async execute(command: UpdateBanUserForCurrentBlogCommand): Promise<boolean> {
@@ -26,7 +26,7 @@ export class UpdateBanUserForCurrentBlogHandler
     if (userId !== foundBlog.userId)
       throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
     const banStatus = new BanUserForBlogPreparationForDB(
-      foundBlog._id.toString(),
+      foundBlog.blogId,
       userId,
       foundUser.id,
       foundUser.login,
@@ -68,6 +68,7 @@ export class UpdateBanUserForCurrentBlogHandler
         banDate,
         banReason
       );
+
       const banInfoId = await this.blogsRepositories.updateBanStatus(banStatus);
       if (!banInfoId)
         throw new BadRequestExceptionMY({

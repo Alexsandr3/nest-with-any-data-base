@@ -14,7 +14,7 @@ export class DeviceSqlRepositories {
     const { userId, deviceId, lastActiveDate, expiredDate, ip, title } = device;
     const query = `
         INSERT
-        INTO devices ("deviceId", "user_id", "ip", "title", "lastActiveDate", "expiredDate")
+        INTO devices ("deviceId", "userId", "ip", "title", "lastActiveDate", "expiredDate")
         VALUES ('${deviceId}', '${userId}', '${ip}', '${title}', '${lastActiveDate}', '${expiredDate}');
     `;
     return await this.dataSource.query(query);
@@ -32,7 +32,7 @@ export class DeviceSqlRepositories {
         UPDATE devices
         SET "lastActiveDate"='${dateCreateToken}',
             "expiredDate"='${dateExpiredToken}'
-        WHERE user_id = '${userId}'
+        WHERE "userId" = '${userId}'
           AND "deviceId" = '${deviceId}'
           AND "lastActiveDate" = '${dateCreatedOldToken}'
     `;
@@ -49,7 +49,7 @@ export class DeviceSqlRepositories {
     const query = `
         SELECT *
         FROM devices
-        WHERE user_id = '${userId}'
+        WHERE "userId" = '${userId}'
           AND "deviceId" = '${deviceId}'
           AND "lastActiveDate" = '${dateCreatedToken}'
     `;
@@ -61,7 +61,7 @@ export class DeviceSqlRepositories {
     const query = `
         DELETE
         FROM devices
-        WHERE user_id = '${userId}'
+        WHERE "userId" = '${userId}'
           AND "deviceId" = '${deviceId}'
     `;
     const devices = await this.dataSource.query(query);
@@ -73,7 +73,7 @@ export class DeviceSqlRepositories {
     const query = `
         DELETE
         FROM devices
-        WHERE user_id = '${userId}'
+        WHERE "userId" = '${userId}'
           AND "deviceId" != '${deviceId}'
     `;
     await this.dataSource.query(query);
@@ -84,19 +84,17 @@ export class DeviceSqlRepositories {
     const query = `
         DELETE
         FROM devices
-        WHERE user_id = '${userId}'
+        WHERE "userId" = '${userId}'
     `;
     await this.dataSource.query(query);
-    //if(res[1] === 0) throw new Error(`not today`)
-    return true
-
+    return true;
   }
 
   async findByDeviceIdAndUserId(userId: string, deviceId: string): Promise<DeviceDBType> {
     const query = `
         SELECT *
         FROM devices
-        WHERE user_id = '${userId}'
+        WHERE "userId" = '${userId}'
           AND "deviceId" = '${deviceId}'
     `;
     const devices = await this.dataSource.query(query);
@@ -123,7 +121,7 @@ export class DeviceSqlRepositories {
     const query = `
         SELECT *
         FROM devices
-        WHERE user_id = '${userId}'
+        WHERE "userId" = '${userId}'
           AND "deviceId" = '${deviceId}'
           AND "lastActiveDate" = '${dateCreateToken}'
     `;

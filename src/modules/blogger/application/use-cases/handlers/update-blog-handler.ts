@@ -1,14 +1,14 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BlogsRepositories } from '../../../../blogs/infrastructure/blogs.repositories';
 import {
   ForbiddenExceptionMY,
   NotFoundExceptionMY,
 } from '../../../../../helpers/My-HttpExceptionFilter';
 import { UpdateBlogCommand } from '../update-blog-command';
+import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
 
 @CommandHandler(UpdateBlogCommand)
 export class UpdateBlogHandler implements ICommandHandler<UpdateBlogCommand> {
-  constructor(private readonly blogsRepositories: BlogsRepositories) {}
+  constructor(private readonly blogsRepositories: BlogsSqlRepositories) {}
 
   async execute(command: UpdateBlogCommand): Promise<boolean> {
     const { blogInputModel, blogId, userId } = command;

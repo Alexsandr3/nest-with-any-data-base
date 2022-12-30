@@ -14,7 +14,6 @@ import { CreateUserDto } from "./input-Dto/create-User-Dto-Model";
 import { UsersService } from "../domain/users.service";
 import { UsersViewType } from "../infrastructure/query-reposirory/user-View-Model";
 import { PaginationUsersDto } from "./input-Dto/pagination-Users-Dto-Model";
-import { UsersQueryRepositories } from "../infrastructure/query-reposirory/users-query.reposit";
 import { BasicAuthGuard } from "../../../guards/basic-auth.guard";
 import { CommandBus } from "@nestjs/cqrs";
 import { DeleteUserCommand } from "../application/use-cases/delete-user-command";
@@ -30,19 +29,16 @@ import { SkipThrottle } from "@nestjs/throttler";
 @Controller(`sa/users`)
 export class UsersController {
   constructor(private readonly usersService: UsersService,
-              private readonly usersQueryRepositories: UsersQueryRepositories,
               private readonly usersSqlQueryRepositories: UsersSqlQueryRepositories,
               private commandBus: CommandBus
   ) {
   }
 
   @UseGuards(BasicAuthGuard)
-   // @UsePipes(new ValidateUuidPipe())
   @HttpCode(204)
   @Put(`/:userId/ban`)
   async updateBanInfo(@Body() updateBanInfoModel: UpdateBanInfoDto,
                       @Param(`userId`) userId: string): Promise<boolean> {
-                      // @Param(`userId`, IdValidationPipe) userId: string): Promise<boolean> {
     return this.commandBus.execute(new UpdateBanInfoCommand(updateBanInfoModel, userId));
   }
 
@@ -60,11 +56,9 @@ export class UsersController {
 
   @UseGuards(BasicAuthGuard)
   @UsePipes(new ValidateUuidPipe())
-  // @UsePipes(new IdValidationPipe())
   @HttpCode(204)
   @Delete(`:userId`)
   async deleteUser(@Param(`userId`) userId: string): Promise<boolean> {
-  //async deleteUser(@Param(`userId`, IdValidationPipe) userId: string): Promise<boolean> {
     return await this.commandBus.execute(new DeleteUserCommand(userId));
   }
 }

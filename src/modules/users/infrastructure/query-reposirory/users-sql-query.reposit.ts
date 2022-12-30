@@ -24,7 +24,7 @@ export class UsersSqlQueryRepositories {
       user.banReason
     );
     return new UsersViewType(
-      user.user_id,
+      user.userId,
       user.login,
       user.email,
       user.createdAt,
@@ -36,7 +36,7 @@ export class UsersSqlQueryRepositories {
     const query = `
         SELECT *
         FROM users
-        WHERE user_id = '${id}'
+        WHERE "userId" = '${id}'
     `;
     const user = await this.dataSource.query(query);
     if (!user[0]) {
@@ -127,7 +127,7 @@ export class UsersSqlQueryRepositories {
     const query = `
         SELECT email, login, user_id AS "userId"
         FROM users
-        WHERE user_id = '${id}'
+        WHERE "userId" = '${id}'
     `;
     const users = await this.dataSource.query(query);
     if (!users[0]) {

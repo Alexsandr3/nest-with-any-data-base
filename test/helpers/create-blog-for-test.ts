@@ -2,8 +2,8 @@ import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { BlogViewModel } from "../../src/modules/blogs/infrastructure/query-repository/blog-View-Model";
 
-export const createBlogsForTest = async (count: number, accessToken: string,  app: INestApplication) => {
-  const result: { blog: BlogViewModel}[] = [];
+export const createBlogsForTest = async (count: number, accessToken: string, app: INestApplication) => {
+  const result: { blog: BlogViewModel }[] = [];
   for (let i = 0; i < count; i++) {
     const responseBlog = await request(app.getHttpServer())
       .post(`/blogger/blogs/`)
@@ -14,7 +14,7 @@ export const createBlogsForTest = async (count: number, accessToken: string,  ap
         websiteUrl: `https://www.mongoose${i}${i}.com`
       })
       .expect(201);
-    result.push({ blog: responseBlog.body});
+    result.push({ blog: responseBlog.body });
   }
   return result;
 };

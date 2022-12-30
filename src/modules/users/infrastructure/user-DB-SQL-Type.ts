@@ -1,7 +1,7 @@
 
 export class UserDBSQLType {
   constructor(
-    public user_id: string,
+    public userId: string,
     public login: string,
     public email: string,
     public passwordHash: string,
@@ -14,7 +14,7 @@ export class UserDBSQLType {
 
 export class EmailConfirmationSQLType {
   constructor(
-    public user_id: string,
+    public userId: string,
     public confirmationCode: string,
     public expirationDate: Date,
     public isConfirmation: boolean,
@@ -23,7 +23,7 @@ export class EmailConfirmationSQLType {
 
 export class EmailRecoverySQLType {
   constructor(
-    public user_id: string,
+    public userId: string,
     public recoveryCode: string,
     public expirationDate: Date,
     public isConfirmation: boolean,

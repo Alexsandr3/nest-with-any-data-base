@@ -1,14 +1,14 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { NotFoundExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
 import { UpdateBanInfoForBlogCommand } from "../updateBanInfoForBlogCommand";
-import { BlogsRepositories } from "../../../../blogs/infrastructure/blogs.repositories";
-import { PostsRepositories } from "../../../../posts/infrastructure/posts-repositories";
+import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
+import { PostsSqlRepositories } from "../../../../posts/infrastructure/posts-sql-repositories";
 
 @CommandHandler(UpdateBanInfoForBlogCommand)
 export class UpdateBanInfoForBlogHandler
   implements ICommandHandler<UpdateBanInfoForBlogCommand> {
-  constructor(private readonly blogsRepositories: BlogsRepositories,
-              private readonly postsRepositories: PostsRepositories) {
+  constructor(private readonly blogsRepositories: BlogsSqlRepositories,
+              private readonly postsRepositories: PostsSqlRepositories) {
   }
 
   async execute(command: UpdateBanInfoForBlogCommand): Promise<boolean> {

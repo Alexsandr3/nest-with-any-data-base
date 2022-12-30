@@ -23,9 +23,11 @@ import {
   LikesStatusSchema,
 } from '../comments/domain/likesStatus-schema-Model';
 import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
+import { BlogsSqlQueryRepositories } from "./infrastructure/query-repository/blogs-sql-query.repositories";
+import { PostsSqlQueryRepositories } from "../posts/infrastructure/query-repositories/posts-sql-query.reposit";
 
 const handlers = [];
-const adapters = [BlogsQueryRepositories, PostsQueryRepositories, JwtService];
+const adapters = [BlogsQueryRepositories, BlogsSqlQueryRepositories, PostsQueryRepositories, PostsSqlQueryRepositories, JwtService];
 
 @Module({
   imports: [

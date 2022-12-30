@@ -2,10 +2,11 @@ import { UsersRepositories } from '../../../infrastructure/users-repositories';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UpdateBanInfoCommand } from '../updateBanInfoCommand';
 import { UsersQueryRepositories } from '../../../infrastructure/query-reposirory/users-query.reposit';
-import { PostsRepositories } from '../../../../posts/infrastructure/posts-repositories';
 import { CommentsRepositories } from '../../../../comments/infrastructure/comments.repositories';
 import { UsersSqlQueryRepositories } from "../../../infrastructure/query-reposirory/users-sql-query.reposit";
 import { UsersSqlRepositories } from "../../../infrastructure/users-sql-repositories";
+import { BadRequestExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
+import { PostsSqlRepositories } from "../../../../posts/infrastructure/posts-sql-repositories";
 
 @CommandHandler(UpdateBanInfoCommand)
 export class UpdateBanInfoHandler
@@ -16,7 +17,7 @@ export class UpdateBanInfoHandler
     private readonly usersQueryRepositories: UsersQueryRepositories,
     private readonly usersSqlQueryRepositories: UsersSqlQueryRepositories,
     private readonly usersSqlRepositories: UsersSqlRepositories,
-    private readonly postsRepositories: PostsRepositories,
+    private readonly postsRepositories: PostsSqlRepositories,
     private readonly commentsRepositories: CommentsRepositories,
   ) {}
 
@@ -35,14 +36,14 @@ export class UpdateBanInfoHandler
         banDate,
         banReason,
       );
-      // if (!banInfo)
-      //   throw new BadRequestExceptionMY({
-      //     message: `New data not received for update`,
-      //     field: `database`,
-      //   });
-      // //update status ban posts for User
-      // await this.postsRepositories.updateStatusBanPostForUser(userId, isBanned);
-      // //update status ban likes post
+      if (!banInfo)
+        throw new BadRequestExceptionMY({
+          message: `New data not received for update`,
+          field: `database`,
+        });
+      //update status ban posts for User
+      await this.postsRepositories.updateStatusBanPostForUser(userId, isBanned);
+      //update status ban likes post
       // await this.postsRepositories.updateStatusBanLikePost(userId, isBanned);
       // //update status ban comments
       // await this.commentsRepositories.updateStatusBanComments(userId, isBanned);
@@ -57,14 +58,14 @@ export class UpdateBanInfoHandler
         banDate,
         banReason,
       );
-      // if (!banInfo)
-      //   throw new BadRequestExceptionMY({
-      //     message: `New data not received for update`,
-      //     field: `database`,
-      //   });
-      // //update status ban likes post
-      // await this.postsRepositories.updateStatusBanPostForUser(userId, isBanned);
-      // //update status ban likes post
+      if (!banInfo)
+        throw new BadRequestExceptionMY({
+          message: `New data not received for update`,
+          field: `database`,
+        });
+      //update status ban likes post
+      await this.postsRepositories.updateStatusBanPostForUser(userId, isBanned);
+      //update status ban likes post
       // await this.postsRepositories.updateStatusBanLikePost(userId, isBanned);
       // //update status ban comments
       // await this.commentsRepositories.updateStatusBanComments(userId, isBanned);

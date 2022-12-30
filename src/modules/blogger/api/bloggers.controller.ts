@@ -1,13 +1,11 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards, UsePipes } from "@nestjs/common";
 import { CreatePostDto } from "../../posts/api/input-Dtos/create-Post-Dto-Model";
-import { IdValidationPipe } from "../../../validators/id-validation-pipe";
 import { PostViewModel } from "../../posts/infrastructure/query-repositories/post-View-Model";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateBlogCommand } from "../application/use-cases/create-blog-command";
 import { DeleteBlogCommand } from "../application/use-cases/delete-blog-command";
 import { UpdateBlogCommand } from "../application/use-cases/update-blog-command";
 import { CreatePostCommand } from "../application/use-cases/create-post-command";
-import { BlogsQueryRepositories } from "../../blogs/infrastructure/query-repository/blogs-query.repositories";
 import { JwtAuthGuard } from "../../../guards/jwt-auth-bearer.guard";
 import { PaginationDto } from "../../blogs/api/input-Dtos/pagination-Dto-Model";
 import { BlogViewModel } from "../../blogs/infrastructure/query-repository/blog-View-Model";
@@ -19,16 +17,18 @@ import { CreateBlogDto } from "./input-dtos/create-Blog-Dto-Model";
 import { UpdateBlogDto } from "./input-dtos/update-Blog-Dto-Model";
 import { UpdateBanInfoForUserDto } from "./input-dtos/update-ban-info-for-User-Dto-Model";
 import { UpdateBanUserForCurrentBlogCommand } from "../application/use-cases/update-ban-User-For-Current-Blog-command";
-import { PostsQueryRepositories } from "../../posts/infrastructure/query-repositories/posts-query.reposit";
 import { ForbiddenExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
 import { SkipThrottle } from "@nestjs/throttler";
+import { BlogsSqlQueryRepositories } from "../../blogs/infrastructure/query-repository/blogs-sql-query.repositories";
+import { ValidateUuidPipe } from "../../../validators/validate-uuid-pipe";
+import { PostsSqlQueryRepositories } from "../../posts/infrastructure/query-repositories/posts-sql-query.reposit";
 
 @SkipThrottle()
 @UseGuards(JwtAuthGuard)
 @Controller(`blogger`)
 export class BloggersController {
-  constructor(private readonly blogsQueryRepositories: BlogsQueryRepositories,
-              private readonly postsQueryRepositories: PostsQueryRepositories,
+  constructor(private readonly blogsQueryRepositories: BlogsSqlQueryRepositories,
+              private readonly postsQueryRepositories: PostsSqlQueryRepositories,
               private commandBus: CommandBus) {
   }
 
@@ -38,24 +38,25 @@ export class BloggersController {
     return await this.postsQueryRepositories.findCommentsBloggerForPosts(userId, paginationInputModel);
   }
 
+  @UsePipes(new ValidateUuidPipe())
   @HttpCode(204)
   @Delete(`blogs/:blogId`)
   async deleteBlog(@CurrentUserIdBlogger() userId: string,
-                   @Param(`blogId`, IdValidationPipe) blogId: string): Promise<boolean> {
+                   @Param(`blogId`) blogId: string): Promise<boolean> {
     return await this.commandBus.execute(new DeleteBlogCommand(blogId, userId));
   }
 
   @HttpCode(204)
   @Put(`blogs/:blogId`)
   async updateBlog(@CurrentUserIdBlogger() userId: string,
-                   @Param(`blogId`, IdValidationPipe) blogId: string,
+                   @Param(`blogId`) blogId: string,
                    @Body() blogInputModel: UpdateBlogDto): Promise<boolean> {
     return await this.commandBus.execute(new UpdateBlogCommand(userId, blogId, blogInputModel));
   }
 
   @Post(`blogs/:blogId/posts`)
   async createPost(@CurrentUserIdBlogger() userId: string,
-                   @Param(`blogId`, IdValidationPipe) blogId: string,
+                   @Param(`blogId`, ValidateUuidPipe) blogId: string,
                    @Body() postInputModel: CreatePostDto): Promise<PostViewModel> {
     return this.commandBus.execute(new CreatePostCommand(postInputModel, blogId, userId));
   }
@@ -63,8 +64,8 @@ export class BloggersController {
   @HttpCode(204)
   @Put(`blogs/:blogId/posts/:postId`)
   async updatePost(@CurrentUserIdBlogger() userId: string,
-                   @Param(`blogId`, IdValidationPipe) blogId: string,
-                   @Param(`postId`, IdValidationPipe) postId: string,
+                   @Param(`blogId`, ValidateUuidPipe) blogId: string,
+                   @Param(`postId`, ValidateUuidPipe) postId: string,
                    @Body() postInputModel: CreatePostDto): Promise<boolean> {
     return await this.commandBus.execute(new UpdatePostCommand(userId, blogId, postId, postInputModel)
     );
@@ -73,8 +74,8 @@ export class BloggersController {
   @Delete(`blogs/:blogId/posts/:postId`)
   @HttpCode(204)
   async deletePost(@CurrentUserIdBlogger() userId: string,
-                   @Param(`blogId`, IdValidationPipe) blogId: string,
-                   @Param(`postId`, IdValidationPipe) postId: string): Promise<boolean> {
+                   @Param(`blogId`, ValidateUuidPipe) blogId: string,
+                   @Param(`postId`, ValidateUuidPipe) postId: string): Promise<boolean> {
     return await this.commandBus.execute(new DeletePostCommand(userId, blogId, postId));
   }
 
@@ -94,14 +95,14 @@ export class BloggersController {
   @HttpCode(204)
   @Put(`users/:id/ban`)
   async banUserForCurrentBlog(@CurrentUserIdBlogger() userId: string,
-                              @Param(`id`, IdValidationPipe) id: string,
+                              @Param(`id`, ValidateUuidPipe) id: string,
                               @Body() banUserForCurrentBlogInputModel: UpdateBanInfoForUserDto): Promise<boolean> {
     return await this.commandBus.execute(new UpdateBanUserForCurrentBlogCommand(userId, id, banUserForCurrentBlogInputModel));
   }
 
   @Get(`users/blog/:id`)
   async getBanedUser(@CurrentUserIdBlogger() userId: string,
-                     @Param(`id`, IdValidationPipe) id: string,
+                     @Param(`id`, ValidateUuidPipe) id: string,
                      @Query() paginationInputModel: PaginationDto) {
     const blog = await this.blogsQueryRepositories.findBlogWithMap(id);
     if (blog.userId !== userId) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);

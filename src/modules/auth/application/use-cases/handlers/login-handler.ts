@@ -42,12 +42,12 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     //finding user and check ban status
     if (user.isBanned === true) {
       //deleting a devices-sessions if the user is banned
-      await this.deviceSqlRepositories.deleteDevicesForBannedUser(user.user_id);
+      await this.deviceSqlRepositories.deleteDevicesForBannedUser(user.userId);
       throw new UnauthorizedExceptionMY(`Did you get a ban!`);
     }
     //preparation data for token
     const deviceId = randomUUID();
-    const userId = user.user_id;
+    const userId = user.userId;
     //generation of a new pair of tokens
     const token = await this.jwtService.createJwt(userId, deviceId);
     const payloadNew = await this.jwtService.verifyRefreshToken(

@@ -30,6 +30,6 @@ export class ConfirmByCodeHandler
     //checking confirmation code
     //  await this.userService.checkCodeConfirm(user, code);
     //update status code-> true
-    return await this.usersSqlRepositories.updateConfirmation(user.user_id);
+    return await this.usersSqlRepositories.updateConfirmation(user.userId);
   }
 }

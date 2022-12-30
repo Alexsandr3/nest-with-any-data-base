@@ -4,14 +4,14 @@ import {
   NotFoundExceptionMY,
 } from '../../../../../helpers/My-HttpExceptionFilter';
 import { DeletePostCommand } from '../delete-post-command';
-import { PostsRepositories } from '../../../../posts/infrastructure/posts-repositories';
-import { BlogsRepositories } from '../../../../blogs/infrastructure/blogs.repositories';
+import { PostsSqlRepositories } from "../../../../posts/infrastructure/posts-sql-repositories";
+import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
 
 @CommandHandler(DeletePostCommand)
 export class DeletePostHandler implements ICommandHandler<DeletePostCommand> {
   constructor(
-    private readonly postsRepositories: PostsRepositories,
-    private readonly blogsRepositories: BlogsRepositories,
+    private readonly postsRepositories: PostsSqlRepositories,
+    private readonly blogsRepositories: BlogsSqlRepositories,
   ) {}
 
   async execute(command: DeletePostCommand): Promise<boolean> {
