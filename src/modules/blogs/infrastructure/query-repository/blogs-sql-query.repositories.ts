@@ -264,7 +264,7 @@ export class BlogsSqlQueryRepositories {
       `
           SELECT "blogId" AS "id", "name", "description", "websiteUrl", "createdAt"
           FROM blogs
-          WHERE "blogId" = '${id}'
+          WHERE "blogId" = '${id}' AND "isBanned" = false
       `;
     const blog = await this.dataSource.query(query);
     if (!blog[0]) throw new NotFoundExceptionMY("not found");
