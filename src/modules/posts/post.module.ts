@@ -32,11 +32,13 @@ import { CreateCommentHandler } from './application/use-cases/handlers/create-co
 import { UpdateLikeStatusHandler } from './application/use-cases/handlers/update-like-status-handler';
 import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
 import { BlogsRepositories } from "../blogs/infrastructure/blogs.repositories";
+import { PostsSqlQueryRepositories } from "./infrastructure/query-repositories/posts-sql-query.reposit";
 
 const handlers = [CreateCommentHandler, UpdateLikeStatusHandler];
 const adapters = [
   PostsRepositories,
   PostsQueryRepositories,
+  PostsSqlQueryRepositories,
   BlogsRepositories,
   BlogsQueryRepositories,
   CommentsRepositories,

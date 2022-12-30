@@ -28,6 +28,6 @@ export class NewPasswordHandler implements ICommandHandler<NewPasswordCommand> {
     // await this.usersService.checkCodeConfirm(user, recoveryCode);
     //generation new passwordHash for save
     const passwordHash = await this.usersService.generateHash(newPassword);
-    return await this.usersSqlRepositories.updateRecovery(user.user_id, passwordHash);
+    return await this.usersSqlRepositories.updateRecovery(user.userId, passwordHash);
   }
 }

@@ -4,7 +4,8 @@ import request from "supertest";
 import { AppModule } from "../src/app.module";
 import { createdApp } from "../src/helpers/createdApp";
 import {
-  createUserByLoginEmail,
+  createUniqeUserByLoginEmail,
+  createUserByLoginEmail
 } from "./helpers/create-user-by-login-email";
 import { UsersViewType } from "../src/modules/users/infrastructure/query-reposirory/user-View-Model";
 
@@ -12,7 +13,7 @@ import { UsersViewType } from "../src/modules/users/infrastructure/query-reposir
 jest.setTimeout(120000);
 
 
-describe.skip(`Ban blog by super admin`, () => {
+describe(`Ban blog by super admin`, () => {
 
   let app: INestApplication;
 
@@ -40,10 +41,10 @@ describe.skip(`Ban blog by super admin`, () => {
     let accessToken: string;
     let refreshToken: string;
 
-    it.skip(`01 - POST -> "/auth/login": Shouldn't login banned user. Should login unbanned user; status 401; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban;`, async () => {
+    it(`01 - POST -> "/auth/login": Shouldn't login banned user. Should login unbanned user; status 401; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban;`, async () => {
       const res = await createUserByLoginEmail(1, app);
 
-      // const res2 = await createUniqeUserByLoginEmail(1, "S",app);
+      await createUniqeUserByLoginEmail(1, "S",app);
 
       await request(app.getHttpServer())
         .put(`/sa/users/${res[0].userId}/ban`)
@@ -74,7 +75,7 @@ describe.skip(`Ban blog by super admin`, () => {
         .send({ loginOrEmail: `${res[0].user.login}`, password: `asirius-120` })
         .expect(401);
     });
-    it(`POST -> "/auth/refresh-token", "/auth/logout": should return an error if the "refresh" token has become invalid; status 401;`, async () => {
+    it.skip(`POST -> "/auth/refresh-token", "/auth/logout": should return an error if the "refresh" token has become invalid; status 401;`, async () => {
       const res = await createUserByLoginEmail(1, app);
       user = res[0].user
       accessToken = res[0].accessToken

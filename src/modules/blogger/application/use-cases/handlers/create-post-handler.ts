@@ -2,20 +2,20 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreatePostCommand } from '../create-post-command';
 import { PostViewModel } from '../../../../posts/infrastructure/query-repositories/post-View-Model';
 import { PreparationPostForDB } from '../../../../posts/domain/post-preparation-for-DB';
-import { PostsRepositories } from '../../../../posts/infrastructure/posts-repositories';
-import { PostsQueryRepositories } from '../../../../posts/infrastructure/query-repositories/posts-query.reposit';
 import {
   ForbiddenExceptionMY,
   NotFoundExceptionMY,
 } from '../../../../../helpers/My-HttpExceptionFilter';
-import { BlogsRepositories } from '../../../../blogs/infrastructure/blogs.repositories';
+import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
+import { PostsSqlRepositories } from "../../../../posts/infrastructure/posts-sql-repositories";
+import { PostsSqlQueryRepositories } from "../../../../posts/infrastructure/query-repositories/posts-sql-query.reposit";
 
 @CommandHandler(CreatePostCommand)
 export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
   constructor(
-    private readonly blogsRepositories: BlogsRepositories,
-    private readonly postsRepositories: PostsRepositories,
-    private readonly postsQueryRepositories: PostsQueryRepositories,
+    private readonly blogsRepositories: BlogsSqlRepositories,
+    private readonly postsRepositories: PostsSqlRepositories,
+    private readonly postsQueryRepositories: PostsSqlQueryRepositories,
   ) {}
 
   async execute(command: CreatePostCommand): Promise<PostViewModel> {
@@ -38,7 +38,7 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
       blog.name,
       new Date().toISOString(),
     );
-    const createdPost = await this.postsRepositories.createPost(newPost);
-    return await this.postsQueryRepositories.createPostForView(createdPost);
+    const createdPostId = await this.postsRepositories.createPost(newPost);
+    return await this.postsQueryRepositories.createPostForView(createdPostId);
   }
 }

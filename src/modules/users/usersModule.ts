@@ -33,6 +33,7 @@ import { DeleteUserHandler } from './application/use-cases/handlers/delete-user-
 import { CreateUserSaHandler } from "./application/use-cases/handlers/create-user-sa-handler";
 import { UsersSqlRepositories } from "./infrastructure/users-sql-repositories";
 import { UsersSqlQueryRepositories } from "./infrastructure/query-reposirory/users-sql-query.reposit";
+import { PostsSqlRepositories } from "../posts/infrastructure/posts-sql-repositories";
 
 const handlers = [CreateUserHandler, CreateUserSaHandler, DeleteUserHandler, UpdateBanInfoHandler];
 const adapters = [
@@ -40,6 +41,7 @@ const adapters = [
   MailService,
   UsersRepositories,
   PostsRepositories,
+  PostsSqlRepositories,
   UsersQueryRepositories,
   DeviceRepositories,
   CommentsRepositories,

@@ -30,7 +30,13 @@ import {
   UpdateBanUserForCurrentBlogHandler
 } from "./application/use-cases/handlers/update-ban-user-for-current-blog-handler";
 import { UsersRepositories } from "../users/infrastructure/users-repositories";
-import { BlogIdValidator } from "../../validators/is-mongo-id-validator.service";
+import { BlogsSqlRepositories } from "../blogs/infrastructure/blogs-sql.repositories";
+import { BlogsSqlQueryRepositories } from "../blogs/infrastructure/query-repository/blogs-sql-query.repositories";
+import { UsersSqlRepositories } from "../users/infrastructure/users-sql-repositories";
+import { PostsSqlRepositories } from "../posts/infrastructure/posts-sql-repositories";
+import { PostsSqlQueryRepositories } from "../posts/infrastructure/query-repositories/posts-sql-query.reposit";
+import { UsersSqlQueryRepositories } from "../users/infrastructure/query-reposirory/users-sql-query.reposit";
+import { BlogUuidIdValidator } from "../../validators/is-uuid-id-validator.service";
 
 const handlers = [
   CreateBlogHandler,
@@ -43,11 +49,17 @@ const handlers = [
 ];
 const adapters = [
   BlogsRepositories,
+  BlogsSqlRepositories,
   BlogsQueryRepositories,
+  BlogsSqlQueryRepositories,
   PostsRepositories,
+  PostsSqlRepositories,
   PostsQueryRepositories,
+  PostsSqlQueryRepositories,
   UsersRepositories,
+  UsersSqlRepositories,
   UsersQueryRepositories,
+  UsersSqlQueryRepositories,
   JwtService
 ];
 const guards = [JwtAuthGuard];
@@ -67,7 +79,7 @@ const guards = [JwtAuthGuard];
     CqrsModule
   ],
   controllers: [BloggersController],
-  providers: [BloggersService, ...guards, ...handlers, ...adapters, BlogIdValidator]
+  providers: [BloggersService, ...guards, ...handlers, ...adapters, BlogUuidIdValidator]
 })
 export class BloggerModule {
 }

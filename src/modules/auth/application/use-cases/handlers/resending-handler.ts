@@ -25,7 +25,7 @@ export class ResendingHandler implements ICommandHandler<ResendingCommand> {
         message: `Incorrect input data`,
         field: 'email',
       });
-    const foundData = await this.usersSqlRepositories.findUserByUserId(user.user_id)
+    const foundData = await this.usersSqlRepositories.findUserByUserId(user.userId)
     //check code
     await this.userService.checkUser(
       foundData.isConfirmation,
@@ -40,7 +40,7 @@ export class ResendingHandler implements ICommandHandler<ResendingCommand> {
     };
     //update code confirmation
     await this.usersSqlRepositories.updateCodeConfirmation(
-      user.user_id,
+      user.userId,
       code.emailConfirmation.confirmationCode,
       code.emailConfirmation.expirationDate,
     );

@@ -13,7 +13,7 @@ export class DeviceSqlQueryRepositories {
     const query = `
         SELECT ip, title, "lastActiveDate", "deviceId"
         FROM devices
-        WHERE user_id = '${userId}'
+        WHERE "userId" = '${userId}'
     `;
     return await this.dataSource.query(query);
   }

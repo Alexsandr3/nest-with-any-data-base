@@ -4,14 +4,14 @@ import {
   NotFoundExceptionMY,
 } from '../../../../../helpers/My-HttpExceptionFilter';
 import { UpdatePostCommand } from '../update-post-command';
-import { PostsRepositories } from '../../../../posts/infrastructure/posts-repositories';
-import { BlogsRepositories } from '../../../../blogs/infrastructure/blogs.repositories';
+import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
+import { PostsSqlRepositories } from "../../../../posts/infrastructure/posts-sql-repositories";
 
 @CommandHandler(UpdatePostCommand)
 export class UpdatePostHandler implements ICommandHandler<UpdatePostCommand> {
   constructor(
-    private readonly postsRepositories: PostsRepositories,
-    private readonly blogsRepositories: BlogsRepositories,
+    private readonly postsRepositories: PostsSqlRepositories,
+    private readonly blogsRepositories: BlogsSqlRepositories,
   ) {}
 
   async execute(command: UpdatePostCommand): Promise<boolean> {

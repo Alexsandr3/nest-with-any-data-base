@@ -27,7 +27,7 @@ export class RecoveryHandler implements ICommandHandler<RecoveryCommand> {
         message: `${email} has invalid`,
         field: 'email',
       });
-    const foundData = await this.usersSqlRepositories.findUserByUserId(user.user_id)
+    const foundData = await this.usersSqlRepositories.findUserByUserId(user.userId)
     //check code confirmation
     await this.userService.checkUser(
       foundData.isConfirmation,
@@ -42,7 +42,7 @@ export class RecoveryHandler implements ICommandHandler<RecoveryCommand> {
     };
     //updating new code in DB
     await this.usersSqlRepositories.updateCodeRecovery(
-      user.user_id,
+      user.userId,
       code.emailRecovery.recoveryCode,
       code.emailRecovery.expirationDate,
     );

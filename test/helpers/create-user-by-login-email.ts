@@ -3,13 +3,14 @@ import { UsersViewType } from "../../src/modules/users/infrastructure/query-repo
 import request from "supertest";
 import { LikeStatusType } from "../../src/modules/posts/domain/likesPost-schema-Model";
 
+let randomText = (Math.random() + 1).toString(36).substring(7);
 export const createUserByLoginEmail = async (count: number, app: INestApplication) => {
   const result: { userId: string, user: UsersViewType, accessToken: string, refreshToken: string }[] = [];
   for (let i = 0; i < count; i++) {
     const response00 = await request(app.getHttpServer())
       .post(`/sa/users`)
       .auth(`admin`, `qwerty`, { type: "basic" })
-      .send({ login: `asirius-${i}`, password: `asirius-12${i}`, email: `asirius${i}@jive.com` })
+      .send({ login: `asirius-${i}`, password: `${randomText}`, email: `asirius${i}@jive.com` })
       .expect(201);
 
     const responseToken = await request(app.getHttpServer())
