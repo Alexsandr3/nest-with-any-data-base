@@ -11,6 +11,7 @@ import { ObjectId } from "mongodb";
 import { PostDBType } from "../domain/post-DB-Type";
 import { CreatePostDto } from "../api/input-Dtos/create-Post-Dto-Model";
 import { DataSource } from "typeorm";
+import { NotFoundExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
 
 @Injectable()
 export class PostsSqlRepositories {
@@ -47,7 +48,8 @@ export class PostsSqlRepositories {
           WHERE "postId" = '${id}'
             AND "userId" = '${userId}'
       `;
-    await this.dataSource.query(query)
+    const res = await this.dataSource.query(query)
+    if(res[1] === 0) throw new NotFoundExceptionMY(`Not found post for blog`)
     return true
   }
 
@@ -58,7 +60,6 @@ export class PostsSqlRepositories {
         WHERE "postId" = '${id}' AND "userId" = '${userId}'
     `
     const res = await this.dataSource.query(query)
-    console.log(res);
     if(res[1] === 0) return false
     return true
   }

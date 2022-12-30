@@ -113,7 +113,6 @@ export class BlogsSqlRepositories {
   }
 
   async updateBanStatus(banStatus: BanUserForBlogPreparationForDB): Promise<boolean> {
-
     const { blogId, isBanned, banReason, banDate, userId, login, ownerId, email, createdAt } = banStatus;
     const query = `
         UPDATE banned_blog_users
