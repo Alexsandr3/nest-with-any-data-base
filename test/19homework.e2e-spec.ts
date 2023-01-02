@@ -16,6 +16,7 @@ import { createBlogsAndPostForTest } from "./helpers/create-blog-and-post-for-te
 import { CommentsViewType } from "../src/modules/comments/infrastructure/query-repository/comments-View-Model";
 import { randomUUID } from "crypto";
 import { createCommentForTest } from "./helpers/create-comment-for-test";
+import { UsersViewType } from "../src/modules/users/infrastructure/query-reposirory/user-View-Model";
 
 
 jest.setTimeout(120000);
@@ -875,7 +876,7 @@ describe.skip(`Homework 19`, () => {
       });
     });
   });
-  describe(`Comment likes - 02`, () => {
+  describe.skip(`Comment likes - 02`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -1114,6 +1115,178 @@ describe.skip(`Homework 19`, () => {
         items: expect.any(Array)
       });
     });
+  });
+  describe(`Ban user by super admin`, () => {
+    beforeAll(async () => {
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`).expect(204);
+    });
+
+    let user: UsersViewType;
+    let user1: UsersViewType;
+    let post: PostViewModel;
+    let comment: CommentsViewType;
+    let accessToken: string;
+    let accessToken1: string;
+    it(`01 - GET -> "/comments/:id": Shouldn't return banned user like for comment. Should return unbanned user like for comment; status 200; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban, POST => /auth/login, POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments;`, async () => {
+      const res = await createUserByLoginEmail(2, app);
+      user = res[0].user;
+      user1 = res[1].user;
+      accessToken = res[0].accessToken;
+      accessToken1 = res[1].accessToken;
+
+      //finding Users
+      const responseBefore = await request(app.getHttpServer())
+        .get(`/sa/users`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .expect(200);
+
+      expect(responseBefore.body).toEqual({
+        pagesCount: 1,
+        page: 1,
+        pageSize: 10,
+        totalCount: 2,
+        items: expect.any(Array)
+      });
+      expect(responseBefore.body.items).toEqual([{
+        id: expect.any(String),
+        login: "asirius-1",
+        email: "asirius1@jive.com",
+        createdAt: expect.any(String),
+        banInfo: { isBanned: false, banDate: null, banReason: null }
+      },
+        {
+          id: expect.any(String),
+          login: "asirius-0",
+          email: "asirius0@jive.com",
+          createdAt: expect.any(String),
+          banInfo: { isBanned: false, banDate: null, banReason: null }
+        }]);
+
+      //created a post
+      const response = await createBlogsAndPostForTest(1, accessToken, app);
+      post = response[0].post;
+
+      //created comment
+      const resComment = await request(app.getHttpServer())
+        .post(`/posts/${post.id}/comments`)
+        .auth(accessToken, { type: "bearer" })
+        .send({
+          content: "This is a new comment for post"
+        })
+        .expect(201);
+
+      comment = resComment.body;
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment.id}/like-status`)
+        .auth(accessToken, { type: "bearer" })
+        .send({ likeStatus: "Like" })
+        .expect(204);
+
+
+      const responseComment = await request(app.getHttpServer())
+        .get(`/comments/${comment.id}`)
+        .auth(accessToken, { type: "bearer" })
+        .expect(200);
+
+
+      expect(responseComment.body).toBeTruthy();
+      expect(responseComment.body).toEqual({
+        id: expect.any(String),
+        content: 'This is a new comment for post',
+        userId: expect.any(String),
+        userLogin: 'asirius-0',
+        createdAt: expect.any(String),
+        likesInfo: { likesCount: 1, dislikesCount: 0, myStatus: 'Like' }
+      })
+
+      //ban user
+      await request(app.getHttpServer())
+        .put(`/sa/users/${user.id}/ban`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .send({
+          isBanned: true,
+          banReason: "This user is very talk, its bad user"
+        })
+        .expect(204);
+
+
+      //checking users
+      const responseAfter = await request(app.getHttpServer())
+        .get(`/sa/users`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .expect(200);
+
+
+      expect(responseAfter.body).toEqual({
+        pagesCount: 1,
+        page: 1,
+        pageSize: 10,
+        totalCount: 2,
+        items: expect.any(Array)
+      });
+      expect(responseAfter.body.items).toEqual([
+        {
+          id: expect.any(String),
+          login: "asirius-1",
+          email: "asirius1@jive.com",
+          createdAt: expect.any(String),
+          banInfo: { isBanned: false, banDate: null, banReason: null }
+        },
+        {
+          id: expect.any(String),
+          login: "asirius-0",
+          email: "asirius0@jive.com",
+          createdAt: expect.any(String),
+          banInfo: {
+            isBanned: true,
+            banDate: expect.any(String),
+            banReason: "This user is very talk, its bad user"
+          }
+        }
+      ]);
+
+      //checking at login, should return - status -  401
+      await request(app.getHttpServer())
+        .post(`/auth/login`)
+        .send({ loginOrEmail: `asirius-0`, password: `asirius-120`})
+        .expect(401)
+
+      //finding comment banned user, should return status 404
+      await request(app.getHttpServer())
+        .get(`/comments/${comment.id}`)
+        .auth(accessToken, { type: "bearer" })
+        .expect(404);
+
+      //unbanned user
+      await request(app.getHttpServer())
+        .put(`/sa/users/${user.id}/ban`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .send({
+          isBanned: false,
+          banReason: "This user is very talk, its bad user"
+        })
+        .expect(204);
+
+
+      const responseComment2 = await request(app.getHttpServer())
+        .get(`/comments/${comment.id}`)
+        .auth(accessToken, { type: "bearer" })
+        .expect(200);
+
+      expect(responseComment2.body).toEqual({
+        id: expect.any(String),
+        content: 'This is a new comment for post',
+        userId: expect.any(String),
+        userLogin: 'asirius-0',
+        createdAt: expect.any(String),
+        likesInfo: { likesCount: 1, dislikesCount: 0, myStatus: 'Like' }
+      })
+
+
+    });
+
   });
 });
 

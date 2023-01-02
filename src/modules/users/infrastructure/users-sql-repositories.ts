@@ -153,12 +153,13 @@ export class UsersSqlRepositories {
 
   async updateBanInfoUser(userId: string, isBanned: boolean, banDate: string, banReason: string): Promise<boolean> {
     const query = `
-        UPDATE users
-        SET "isBanned"=${isBanned},
-            "banDate"=${banDate ? `'${banDate}'` : null},
-            "banReason"=${banReason ? `'${banReason}'` : null}
-        WHERE "userId" = '${userId}';
-    `;
+        UPDATE "users"
+        SET "isBanned"  = ${isBanned},
+            "banDate"   = ${banDate ? `'${banDate}'` : null},
+            "banReason" = ${banReason ? `'${banReason}'` : null}
+        WHERE "userId" = '${userId}'
+    `
+
     const res = await this.dataSource.query(query);
     if (res[1] === 0) throw new Error("not today");
     return true;
