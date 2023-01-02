@@ -44,9 +44,9 @@ export class PostsController {
   @UseGuards(JwtForGetGuard)
   @Get(`:postId/comments`)
   async findComments(@CurrentUserId() userId: string,
-                     @Param(`postId`, ValidateUuidPipe) id: string,
+                     @Param(`postId`, ValidateUuidPipe) postId: string,
                      @Query() paginationInputModel: PaginationDto): Promise<PaginationViewModel<CommentsViewType[]>> {
-    return await this.postsQueryRepositories.findCommentsByIdPost(id, paginationInputModel, userId);
+    return await this.postsQueryRepositories.findCommentsByIdPost(postId, paginationInputModel, userId);
   }
 
   @UseGuards(JwtAuthGuard)
