@@ -50,7 +50,7 @@ export class CommentsSqlQueryRepositories {
         SELECT count(*)
         FROM "likesComment"
         WHERE "parentId" = '${commentId}'
-          AND "likeStatus" = 'Like'
+          AND "likeStatus" = 'Dislike'
           AND "isBanned" = false
     `;
     const totalCountDislike = await this.dataSource.query(queryDislike);

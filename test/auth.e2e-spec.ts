@@ -7,7 +7,7 @@ import { createdApp } from "../src/helpers/createdApp";
 import { AccessTokenType } from "./types/types";
 
 
-const delay = async (delay: number = 1000) => {
+export const delay = async (delay: number = 1000) => {
   await new Promise((resolve) => {
     setTimeout(() => {
       resolve("");

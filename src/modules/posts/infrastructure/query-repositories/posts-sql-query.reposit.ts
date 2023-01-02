@@ -76,7 +76,7 @@ export class PostsSqlQueryRepositories {
     // });
     const likesInfo = new LikesInfoViewModel(
       +countLikes,
-      countDislikes,
+      +countDislikes,
       myStatus
     );
     return new CommentsViewType(

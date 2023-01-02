@@ -96,20 +96,45 @@ export class PostsSqlRepositories {
   }
 
   async updateLikeStatusPost(id: string, userId: string, likeStatus: string, login: string): Promise<boolean> {
-    const query = `
-        INSERT INTO "likesPost"("parentId", "addedAt", "likeStatus", "userLogin", "userId")
-        VALUES ('${id}', '${new Date().toISOString()}', '${likeStatus}', '${login}', '${userId}')
-    `;
-    const queryUpdate = `
-        UPDATE "likesPost"
-        SET "likeStatus" = '${likeStatus}',
-            "addedAt"    = '${new Date().toISOString()}',
-            "userLogin"  = '${login}'
+    const queryFind = `
+        SELECT *
+        FROM "likesPost"
         WHERE "userId" = '${userId}'
           AND "parentId" = '${id}'
     `;
-    await this.dataSource.query(query);
-    const res = await this.dataSource.query(queryUpdate);
+    const result = await this.dataSource.query(queryFind);
+    if (!result[0]) {
+      const query = `
+          INSERT INTO "likesPost"("parentId", "addedAt", "likeStatus", "userLogin", "userId")
+          VALUES ('${id}', '${new Date().toISOString()}', '${likeStatus}', '${login}', '${userId}')
+      `;
+      await this.dataSource.query(query);
+      const queryUpdate = `
+          UPDATE "likesPost"
+          SET "likeStatus" = '${likeStatus}',
+              "addedAt"    = '${new Date().toISOString()}',
+              "userLogin"  = '${login}'
+          WHERE "userId" = '${userId}'
+            AND "parentId" = '${id}'
+      `;
+
+      const res = await this.dataSource.query(queryUpdate);
+      if (!res[1]) return null;
+      return true;
+    } else {
+      const queryUpdate = `
+          UPDATE "likesPost"
+          SET "likeStatus" = '${likeStatus}',
+              "addedAt"    = '${new Date().toISOString()}',
+              "userLogin"  = '${login}'
+          WHERE "userId" = '${userId}'
+            AND "parentId" = '${id}'
+      `;
+
+      const res = await this.dataSource.query(queryUpdate);
+      if (!res[1]) return null;
+      return true;
+    }
 
     // const like = await this.likesPostsStatusModel.updateOne(
     //   { userId: userId, parentId: id },
@@ -123,8 +148,7 @@ export class PostsSqlRepositories {
     //   },
     //   { upsert: true }
     // );
-    if (!res[1]) return null;
-    return true;
+
   }
 
   async updateStatusBanLikePost(userId: string, isBanned: boolean): Promise<boolean> {
