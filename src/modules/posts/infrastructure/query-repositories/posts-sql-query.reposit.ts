@@ -41,7 +41,7 @@ export class PostsSqlQueryRepositories {
       //   parentId: comment.commentId
       // });
       if (result[0]) {
-        myStatus = result.likeStatus;
+        myStatus = result[0].likeStatus;
       }
     }
     const queryTotalCountLike =
