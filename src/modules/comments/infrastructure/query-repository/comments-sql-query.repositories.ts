@@ -28,7 +28,7 @@ export class CommentsSqlQueryRepositories {
       //   parentId: commentId,
       //   isBanned: false
       // });
-      if (result) {
+      if (!result) {
         myStatus = result[0].likeStatus;
       }
     }

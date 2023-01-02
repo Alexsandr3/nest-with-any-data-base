@@ -15,6 +15,7 @@ import { delay } from "./auth.e2e-spec";
 import { createBlogsAndPostForTest } from "./helpers/create-blog-and-post-for-test";
 import { CommentsViewType } from "../src/modules/comments/infrastructure/query-repository/comments-View-Model";
 import { randomUUID } from "crypto";
+import { createCommentForTest } from "./helpers/create-comment-for-test";
 
 
 jest.setTimeout(120000);
@@ -823,20 +824,6 @@ describe(`Homework 19`, () => {
         .send({ likeStatus: "Dislike" })
         .expect(204);
 
-
-      const responseComments1 = await request(app.getHttpServer())
-        .get(`/comments/${comment.id}`)
-        .auth(accessToken, { type: "bearer" })
-        .expect(200);
-
-      expect(responseComments1.body).toEqual({
-        id: expect.any(String),
-        content: "This is a new comment for post",
-        userId: expect.any(String),
-        userLogin: "asirius-0",
-        createdAt: expect.any(String),
-        likesInfo: { likesCount: 4, dislikesCount: 1, myStatus: "Dislike" }
-      });
     });
     it(`03 - PUT -> "/comments/:commentId/like-status": create comment then: dislike the comment by user 1, user 2; like the comment by user 3; get the comment after each like by user 1; status 204; used additional methods: POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments, GET => /comments/:id;`, async () => {
       await request(app.getHttpServer())
@@ -871,6 +858,237 @@ describe(`Homework 19`, () => {
         createdAt: expect.any(String),
         likesInfo: { likesCount: 2, dislikesCount: 3, myStatus: "None" }
       });
+    });
+  });
+  describe(`Comment likes - 02`, () => {
+    beforeAll(async () => {
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`).expect(204);
+    });
+
+    let post: PostViewModel;
+    let comment: CommentsViewType;
+    let comment1: CommentsViewType;
+    let comment2: CommentsViewType;
+    let comment3: CommentsViewType;
+    let comment4: CommentsViewType;
+    let comment5: CommentsViewType;
+    let accessToken: string;
+    let accessToken1: string;
+    let accessToken2: string;
+    let accessToken3: string;
+    let accessToken4: string;
+    it(`01 - POST -> "/sa/users", "/auth/login": should create and login 4 users; status 201; content: created users;`, async () => {
+      const res = await createUserByLoginEmail(5, app);
+      accessToken = res[0].accessToken;
+      accessToken1 = res[1].accessToken;
+      accessToken2 = res[2].accessToken;
+      accessToken3 = res[3].accessToken;
+      accessToken4 = res[4].accessToken;
+      const response = await createBlogsAndPostForTest(1, accessToken, app);
+      post = response[0].post;
+      const resComment = await request(app.getHttpServer())
+        .post(`/posts/${post.id}/comments`)
+        .auth(accessToken, { type: "bearer" })
+        .send({
+          content: "This is a new comment for post"
+        })
+        .expect(201);
+
+      comment = resComment.body;
+    });
+    it(`02 - PUT -> "/comments/:commentId/like-status": create comment then: like the comment by user 1 then get by user 2; dislike the comment by user 2 then get by the user 1; status 204; used additional methods: POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments, GET => /comments/:id;`, async () => {
+      await request(app.getHttpServer())
+        .put(`/comments/${comment.id}/like-status`)
+        .auth(accessToken1, { type: "bearer" })
+        .send({ likeStatus: "Like" })
+        .expect(204);
+
+      const res = await request(app.getHttpServer())
+        .get(`/comments/${comment.id}`)
+        .auth(accessToken2, { type: "bearer" })
+        .expect(200);
+
+
+      expect(res.body).toEqual({
+        id: expect.any(String),
+        content: "This is a new comment for post",
+        userId: expect.any(String),
+        userLogin: "asirius-0",
+        createdAt: expect.any(String),
+        likesInfo: { likesCount: 1, dislikesCount: 0, myStatus: "None" }
+      });
+
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment.id}/like-status`)
+        .auth(accessToken2, { type: "bearer" })
+        .send({ likeStatus: "Dislike" })
+        .expect(204);
+
+      const res1 = await request(app.getHttpServer())
+        .get(`/comments/${comment.id}`)
+        .auth(accessToken1, { type: "bearer" })
+        .expect(200);
+
+      expect(res1.body).toEqual({
+        id: expect.any(String),
+        content: "This is a new comment for post",
+        userId: expect.any(String),
+        userLogin: "asirius-0",
+        createdAt: expect.any(String),
+        likesInfo: { likesCount: 1, dislikesCount: 1, myStatus: "None" }
+      });
+
+    });
+    it(`03 - GET -> "/posts/:postId/comments": create 6 comments then: like comment 1 by user 1, user 2; like comment 2 by user 2, user 3; dislike comment 3 by user 1; like comment 4 by user 1, user 4, user 2, user 3; like comment 5 by user 2, dislike by user 3; like comment 6 by user 1, dislike by user 2. Get the comments by user 1 after all likes ; status 200; content: comments array for post with pagination; used additional methods: POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments, PUT -> /posts/:postId/like-status;`, async () => {
+      const res = await createCommentForTest(6, accessToken, post.id, app);
+      comment = res[0].comment;
+      comment1 = res[1].comment;
+      comment2 = res[2].comment;
+      comment3 = res[3].comment;
+      comment4 = res[4].comment;
+      comment5 = res[5].comment;
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment.id}/like-status`)
+        .auth(accessToken1, { type: "bearer" })
+        .send({ likeStatus: "Like" })
+        .expect(204);
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment.id}/like-status`)
+        .auth(accessToken2, { type: "bearer" })
+        .send({ likeStatus: "Like" })
+        .expect(204);
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment1.id}/like-status`)
+        .auth(accessToken2, { type: "bearer" })
+        .send({ likeStatus: "Like" })
+        .expect(204);
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment1.id}/like-status`)
+        .auth(accessToken3, { type: "bearer" })
+        .send({ likeStatus: "Like" })
+        .expect(204);
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment2.id}/like-status`)
+        .auth(accessToken1, { type: "bearer" })
+        .send({ likeStatus: "Dislike" })
+        .expect(204);
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment3.id}/like-status`)
+        .auth(accessToken1, { type: "bearer" })
+        .send({ likeStatus: "Like" })
+        .expect(204);
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment3.id}/like-status`)
+        .auth(accessToken2, { type: "bearer" })
+        .send({ likeStatus: "Like" })
+        .expect(204);
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment3.id}/like-status`)
+        .auth(accessToken3, { type: "bearer" })
+        .send({ likeStatus: "Like" })
+        .expect(204);
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment3.id}/like-status`)
+        .auth(accessToken4, { type: "bearer" })
+        .send({ likeStatus: "Like" })
+        .expect(204);
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment4.id}/like-status`)
+        .auth(accessToken2, { type: "bearer" })
+        .send({ likeStatus: "Like" })
+        .expect(204);
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment4.id}/like-status`)
+        .auth(accessToken3, { type: "bearer" })
+        .send({ likeStatus: "Dislike" })
+        .expect(204);
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment5.id}/like-status`)
+        .auth(accessToken1, { type: "bearer" })
+        .send({ likeStatus: "Like" })
+        .expect(204);
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment5.id}/like-status`)
+        .auth(accessToken2, { type: "bearer" })
+        .send({ likeStatus: "Dislike" })
+        .expect(204);
+
+      const res0 = await request(app.getHttpServer())
+        .get(`/comments/${comment.id}`)
+        .auth(accessToken1, { type: "bearer" })
+        .expect(200);
+
+      expect(res0.body.likesInfo).toEqual({ likesCount: 2, dislikesCount: 0, myStatus: "None" });
+
+      const res01 = await request(app.getHttpServer())
+        .get(`/comments/${comment1.id}`)
+        .auth(accessToken1, { type: "bearer" })
+        .expect(200);
+
+      expect(res01.body.likesInfo).toEqual({ likesCount: 2, dislikesCount: 0, myStatus: "None" });
+
+
+      const res02 = await request(app.getHttpServer())
+        .get(`/comments/${comment2.id}`)
+        .auth(accessToken1, { type: "bearer" })
+        .expect(200);
+
+      expect(res02.body.likesInfo).toEqual({ likesCount: 0, dislikesCount: 1, myStatus: "None" });
+
+
+      const res03 = await request(app.getHttpServer())
+        .get(`/comments/${comment3.id}`)
+        .auth(accessToken1, { type: "bearer" })
+        .expect(200);
+
+      expect(res03.body.likesInfo).toEqual({ likesCount: 4, dislikesCount: 0, myStatus: "None" });
+
+
+      const res04 = await request(app.getHttpServer())
+        .get(`/comments/${comment4.id}`)
+        .auth(accessToken1, { type: "bearer" })
+        .expect(200);
+
+      expect(res04.body.likesInfo).toEqual({ likesCount: 1, dislikesCount: 1, myStatus: "None" });
+
+      const res05 = await request(app.getHttpServer())
+        .get(`/comments/${comment5.id}`)
+        .auth(accessToken1, { type: "bearer" })
+        .expect(200);
+
+      expect(res05.body.likesInfo).toEqual({ likesCount: 1, dislikesCount: 1, myStatus: "None" });
+
+
+      const result = await request(app.getHttpServer())
+        .get(`/posts/${post.id}/comments`)
+        .auth(accessToken, { type: "bearer" })
+        .expect(200);
+
+
+      expect(result.body).toEqual({
+        pagesCount: 1,
+        page: 1,
+        pageSize: 10,
+        totalCount: 7,
+        items: expect.any(Array)
+      });
+
+
     });
   });
 });
