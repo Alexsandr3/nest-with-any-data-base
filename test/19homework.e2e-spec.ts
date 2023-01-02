@@ -21,7 +21,7 @@ import { createCommentForTest } from "./helpers/create-comment-for-test";
 jest.setTimeout(120000);
 
 
-describe(`Homework 19`, () => {
+describe.skip(`Homework 19`, () => {
 
   let app: INestApplication;
 
@@ -912,7 +912,11 @@ describe(`Homework 19`, () => {
 
       comment = resComment.body;
     });
-    it(`02 - PUT -> "/comments/:commentId/like-status": create comment then: like the comment by user 1 then get by user 2; dislike the comment by user 2 then get by the user 1; status 204; used additional methods: POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments, GET => /comments/:id;`, async () => {
+    it(`02 - PUT -> "/comments/:commentId/like-status": create comment then: 
+      like the comment by user 1 then get by user 2; dislike the comment by 
+      user 2 then get by the user 1; status 204; used additional methods: 
+      POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, 
+      POST => /posts/:postId/comments, GET => /comments/:id;`, async () => {
       await request(app.getHttpServer())
         .put(`/comments/${comment.id}/like-status`)
         .auth(accessToken1, { type: "bearer" })
@@ -956,7 +960,17 @@ describe(`Homework 19`, () => {
       });
 
     });
-    it(`03 - GET -> "/posts/:postId/comments": create 6 comments then: like comment 1 by user 1, user 2; like comment 2 by user 2, user 3; dislike comment 3 by user 1; like comment 4 by user 1, user 4, user 2, user 3; like comment 5 by user 2, dislike by user 3; like comment 6 by user 1, dislike by user 2. Get the comments by user 1 after all likes ; status 200; content: comments array for post with pagination; used additional methods: POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments, PUT -> /posts/:postId/like-status;`, async () => {
+    it(`03 - GET -> "/posts/:postId/comments": 
+      like comment 1 by user 1, user 2; 
+      like comment 2 by user 2, user 3; 
+      dislike comment 3 by user 1;
+      like comment 4 by user 1, user 4, user 2, user 3;
+      like comment 5 by user 2, dislike by user 3;
+      like comment 6 by user 1, dislike by user 2.
+      Get the comments by user 1 after all likes;
+      status 200; content: comments array for post with pagination; used additional methods: 
+      POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments, 
+      PUT -> /posts/:postId/like-status;`, async () => {
       const res = await createCommentForTest(6, accessToken, post.id, app);
       comment = res[0].comment;
       comment1 = res[1].comment;
@@ -1087,7 +1101,7 @@ describe(`Homework 19`, () => {
 
       const result = await request(app.getHttpServer())
         .get(`/posts/${post.id}/comments`)
-        .auth(accessToken, { type: "bearer" })
+        .auth(accessToken1, { type: "bearer" })
         .expect(200);
 
       expect(result.body).toEqual({

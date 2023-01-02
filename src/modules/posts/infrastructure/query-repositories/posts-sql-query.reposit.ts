@@ -307,24 +307,12 @@ export class PostsSqlQueryRepositories {
 
   async findCommentsByIdPost(postId: string, data: PaginationDto, userId: string | null): Promise<PaginationViewModel<CommentsViewType[]>> {
     const { sortDirection, sortBy, pageSize, pageNumber } = data;
-    let filter = `
+    const queryPost = `
         SELECT *
-        FROM comments
+        FROM posts
         WHERE "postId" = '${postId}'
-          AND "isBanned" = false
-        ORDER BY "${sortBy}" ${sortDirection}
-        LIMIT ${pageSize}
-        OFFSET ${(pageNumber - 1) * pageSize}
     `;
-    let filterCounting = `
-        SELECT count(*)
-        FROM comments
-        WHERE "postId" = '${postId}'
-          AND "isBanned" = false
-    `;
-
-    let queryPost;
-    if (userId) {
+    /*if (userId) {
       queryPost = `
           SELECT *
           FROM posts
@@ -337,10 +325,26 @@ export class PostsSqlQueryRepositories {
           FROM posts
           WHERE "postId" = '${postId}'
       `;
-    }
+    }*/
     //find post by postId and userId
     const post = await this.dataSource.query(queryPost);
     if (!post[0]) throw new NotFoundExceptionMY(`Not found for id: ${postId}`);
+    const filter = `
+        SELECT *
+        FROM comments
+        WHERE "postId" = '${postId}'
+          AND "isBanned" = false
+        ORDER BY "${sortBy}" ${sortDirection}
+        LIMIT ${pageSize}
+        OFFSET ${(pageNumber - 1) * pageSize}
+    `;
+    const filterCounting = `
+        SELECT count(*)
+        FROM comments
+        WHERE "postId" = '${postId}'
+          AND "isBanned" = false
+    `;
+
     //find comment by postId
     const comments = await this.dataSource.query(filter);
 
