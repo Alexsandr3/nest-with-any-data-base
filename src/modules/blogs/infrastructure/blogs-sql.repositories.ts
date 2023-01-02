@@ -1,20 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { BlogDocument, Blog } from "../../blogger/domain/blog-schema-Model";
 import { PreparationBlogForDB } from "../../blogger/domain/blog-preparation-for-DB";
 import { UpdateBlogDto } from "../../blogger/api/input-dtos/update-Blog-Dto-Model";
-import { BlogBanInfo, BlogBanInfoDocument } from "../../blogger/domain/ban-user-for-current-blog-schema-Model";
 import { BanUserForBlogPreparationForDB } from "../../blogger/domain/ban-user-for-blog-preparation-for-DB";
 import { DataSource } from "typeorm";
 import { BlogDBSQLType } from "../../blogger/domain/blog-DB-SQL-Type";
+import { BannedBlogUsersDBSQL } from "../../blogger/domain/banned_blog_users-DB-SQL";
 
 @Injectable()
 export class BlogsSqlRepositories {
   constructor(
-    @InjectModel(Blog.name) private readonly blogsModel: Model<BlogDocument>,
     private readonly dataSource: DataSource,
-    @InjectModel(BlogBanInfo.name) private readonly blogBanInfoModel: Model<BlogBanInfoDocument>
   ) {
   }
 
@@ -88,7 +83,6 @@ export class BlogsSqlRepositories {
             "banDate"  = '${new Date().toISOString()}'
         WHERE "blogId" = '${blogId}'
     `;
-
     await this.dataSource.query(query);
     //
     // const result = await this.blogsModel.updateOne({ _id: new Object(blogId) }, {
@@ -126,15 +120,19 @@ export class BlogsSqlRepositories {
         WHERE "blogId" = '${blogId}'
           AND "userId" = '${userId}'
     `;
-    const res = await this.dataSource.query(query);
-    console.log(res);
-
+    await this.dataSource.query(query);
     return true;
   }
 
-  async findStatusBan(userId: string, blogId: string): Promise<BlogBanInfoDocument> {
-    const statusBan = await this.blogBanInfoModel.findOne({ blogId, userId });
-    if (!statusBan) return null;
-    return statusBan;
+  async findStatusBan(userId: string, blogId: string): Promise<BannedBlogUsersDBSQL> {
+    const query =`
+        SELECT *
+        FROM banned_blog_users
+        WHERE "blogId" = '${blogId}' AND "userId" = '${userId}'
+    `
+    const statusBan = await this.dataSource.query(query)
+    // const statusBan = await this.blogBanInfoModel.findOne({ blogId, userId });
+    if (!statusBan[0]) return null;
+    return statusBan[0];
   }
 }

@@ -33,17 +33,25 @@ import { UpdateLikeStatusHandler } from './application/use-cases/handlers/update
 import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
 import { BlogsRepositories } from "../blogs/infrastructure/blogs.repositories";
 import { PostsSqlQueryRepositories } from "./infrastructure/query-repositories/posts-sql-query.reposit";
+import { PostsSqlRepositories } from "./infrastructure/posts-sql-repositories";
+import { BlogsSqlRepositories } from "../blogs/infrastructure/blogs-sql.repositories";
+import { UsersSqlQueryRepositories } from "../users/infrastructure/query-reposirory/users-sql-query.reposit";
+import { CommentsSqlRepositories } from "../comments/infrastructure/comments-sql.repositories";
 
 const handlers = [CreateCommentHandler, UpdateLikeStatusHandler];
 const adapters = [
   PostsRepositories,
+  PostsSqlRepositories,
   PostsQueryRepositories,
   PostsSqlQueryRepositories,
   BlogsRepositories,
+  BlogsSqlRepositories,
   BlogsQueryRepositories,
   CommentsRepositories,
+  CommentsSqlRepositories,
   CommentsQueryRepositories,
   UsersQueryRepositories,
+  UsersSqlQueryRepositories,
   JwtService,
 ];
 const guards = [JwtAuthGuard, BasicAuthGuard, JwtForGetGuard];

@@ -16,13 +16,15 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { DeleteCommentHandler } from './application/use-cases/handlers/delete-comment-handler';
 import { UpdateCommentHandler } from './application/use-cases/handlers/update-comment-handler';
 import { UpdateLikeStatusCommentHandler } from './application/use-cases/handlers/update-like-status-comment-handler';
+import { CommentsSqlRepositories } from "./infrastructure/comments-sql.repositories";
+import { CommentsSqlQueryRepositories } from "./infrastructure/query-repository/comments-sql-query.repositories";
 
 const handlers = [
   DeleteCommentHandler,
   UpdateCommentHandler,
   UpdateLikeStatusCommentHandler,
 ];
-const adapters = [CommentsQueryRepositories, CommentsRepositories, JwtService];
+const adapters = [CommentsQueryRepositories, CommentsSqlQueryRepositories, CommentsSqlRepositories,  CommentsRepositories, JwtService];
 const guards = [JwtAuthGuard, JwtForGetGuard];
 
 @Module({

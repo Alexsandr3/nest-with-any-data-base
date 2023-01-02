@@ -1,17 +1,17 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
-import { PostsRepositories } from '../../../infrastructure/posts-repositories';
-import { UpdateLikeStatusCommand } from '../update-like-status-command';
-import { UsersQueryRepositories } from '../../../../users/infrastructure/query-reposirory/users-query.reposit';
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { NotFoundExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
+import { UpdateLikeStatusCommand } from "../update-like-status-command";
+import { PostsSqlRepositories } from "../../../infrastructure/posts-sql-repositories";
+import { UsersSqlQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-sql-query.reposit";
 
 @CommandHandler(UpdateLikeStatusCommand)
 export class UpdateLikeStatusHandler
-  implements ICommandHandler<UpdateLikeStatusCommand>
-{
+  implements ICommandHandler<UpdateLikeStatusCommand> {
   constructor(
-    private readonly postsRepositories: PostsRepositories,
-    private readonly usersQueryRepositories: UsersQueryRepositories,
-  ) {}
+    private readonly postsRepositories: PostsSqlRepositories,
+    private readonly usersQueryRepositories: UsersSqlQueryRepositories
+  ) {
+  }
 
   async execute(command: UpdateLikeStatusCommand): Promise<boolean> {
     const { id, userId } = command;
@@ -26,9 +26,9 @@ export class UpdateLikeStatusHandler
       id,
       userId,
       likeStatus,
-      user.login,
+      user.login
     );
     if (!result) throw new NotFoundExceptionMY(`Like doesn't exists`);
-    return result;
+    return true;
   }
 }

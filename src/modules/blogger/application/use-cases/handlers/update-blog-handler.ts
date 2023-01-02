@@ -1,14 +1,15 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import {
   ForbiddenExceptionMY,
-  NotFoundExceptionMY,
-} from '../../../../../helpers/My-HttpExceptionFilter';
-import { UpdateBlogCommand } from '../update-blog-command';
+  NotFoundExceptionMY
+} from "../../../../../helpers/My-HttpExceptionFilter";
+import { UpdateBlogCommand } from "../update-blog-command";
 import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
 
 @CommandHandler(UpdateBlogCommand)
 export class UpdateBlogHandler implements ICommandHandler<UpdateBlogCommand> {
-  constructor(private readonly blogsRepositories: BlogsSqlRepositories) {}
+  constructor(private readonly blogsRepositories: BlogsSqlRepositories) {
+  }
 
   async execute(command: UpdateBlogCommand): Promise<boolean> {
     const { blogInputModel, blogId, userId } = command;
@@ -20,7 +21,7 @@ export class UpdateBlogHandler implements ICommandHandler<UpdateBlogCommand> {
     const result = await this.blogsRepositories.updateBlog(
       blogId,
       userId,
-      blogInputModel,
+      blogInputModel
     );
     if (!result) throw new NotFoundExceptionMY(`Not found for id: ${blogId}`);
     return true;

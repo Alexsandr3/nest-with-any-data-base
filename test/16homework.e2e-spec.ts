@@ -18,7 +18,7 @@ import { MailServiceMock } from "./mock/mailService.mock";
 jest.setTimeout(120000);
 
 
-describe.skip(`Ban blog by super admin`, () => {
+describe(`Ban blog by super admin`, () => {
 
   let app: INestApplication;
 

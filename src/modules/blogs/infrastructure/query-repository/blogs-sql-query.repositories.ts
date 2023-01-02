@@ -1,7 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { BlogDocument, Blog } from "../../../blogger/domain/blog-schema-Model";
 import {
   BanInfoForBlogType,
   BlogOwnerInfoType,
@@ -9,10 +6,8 @@ import {
   BlogViewModel
 } from "./blog-View-Model";
 import { PaginationViewModel } from "./pagination-View-Model";
-import { BlogsDBType } from "../../../blogger/domain/blog-DB-Type";
 import { PaginationDto } from "../../api/input-Dtos/pagination-Dto-Model";
 import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
-import { BlogBanInfo, BlogBanInfoDocument } from "../../../blogger/domain/ban-user-for-current-blog-schema-Model";
 import {
   BanInfoType,
   UsersForBanBlogViewType
@@ -24,26 +19,16 @@ import { BannedBlogUsersDBSQL } from "../../../blogger/domain/banned_blog_users-
 @Injectable()
 export class BlogsSqlQueryRepositories {
   constructor(
-    @InjectModel(Blog.name) private readonly blogsModel: Model<BlogDocument>,
     private readonly dataSource: DataSource,
-    @InjectModel(BlogBanInfo.name) private readonly blogBanInfoModel: Model<BlogBanInfoDocument>
   ) {
   }
 
-  private mapperBlogForView(object: BlogsDBType): BlogViewModel {
-    return new BlogViewModel(
-      object._id.toString(),
-      object.name,
-      object.description,
-      object.websiteUrl,
-      object.createdAt
-    );
-  }
 
-  private mapperBlogForSaView(object: BlogDBSQLType): BlogViewForSaModel {
+  //TODO need a type to join tables! //=> was the type BlogDBType?
+  private mapperBlogForSaView(object: any): BlogViewForSaModel {
     const blogOwnerInfo = new BlogOwnerInfoType(
       object.userId,
-      object.userLogin
+      object.login
     );
     const banInfoForBlog = new BanInfoForBlogType(
       object.isBanned,
@@ -124,21 +109,48 @@ export class BlogsSqlQueryRepositories {
   async findBlogsForSa(data: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     let filter = `
+        SELECT a."blogId",
+               a."name",
+               a."description",
+               a."websiteUrl",
+               a."createdAt",
+               a."userId",
+               b."login",
+               a."isBanned",
+               a."banDate"
+        FROM blogs a
+                 INNER JOIN users b
+                            ON b."userId" = a."userId"
+        ORDER BY "${sortBy}" ${sortDirection}
+         LIMIT ${pageSize}
+        OFFSET ${(pageNumber - 1) * pageSize}
+    `;
+   /* let filter = `
         SELECT *
         FROM blogs
         ORDER BY "${sortBy}" ${sortDirection}
         LIMIT ${pageSize}
         OFFSET ${(pageNumber - 1) * pageSize}
-    `;
+    `;*/
     let filterCounting = `
         SELECT count(*)
         FROM blogs
     `;
     if (searchNameTerm.trim().length > 0) {
       filter = `
-          SELECT *
-          FROM blogs
-          WHERE "name" ILIKE '%${searchNameTerm}%'
+          SELECT a."blogId",
+                 a."name",
+                 a."description",
+                 a."websiteUrl",
+                 a."createdAt",
+                 a."userId",
+                 b."login",
+                 a."isBanned",
+                 a."banDate"
+          FROM blogs a
+                   INNER JOIN users b
+                              ON b."userId" = a."userId"
+          WHERE a."name" ILIKE '%${searchNameTerm}%'
           ORDER BY "${sortBy}" ${sortDirection}
               LIMIT ${pageSize}
           OFFSET ${(pageNumber - 1) * pageSize}
@@ -157,7 +169,6 @@ export class BlogsSqlQueryRepositories {
     const totalCount = await this.dataSource.query(filterCounting);
     const { count } = totalCount[0];
     const pagesCountRes = Math.ceil(+count / pageSize);
-
     /*//search all blogs
     const foundBlogs = await this.blogsModel
       .find(searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" } } : {})

@@ -1,5 +1,4 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { PostsRepositories } from "../../../infrastructure/posts-repositories";
 import { CreateCommentCommand } from "../create-comment-command";
 import { CommentsViewType } from "../../../../comments/infrastructure/query-repository/comments-View-Model";
 import {
@@ -7,18 +6,19 @@ import {
   NotFoundExceptionMY,
 } from "../../../../../helpers/My-HttpExceptionFilter";
 import { PreparationCommentForDB } from "../../../../comments/domain/comment-preparation-for-DB";
-import { UsersQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-query.reposit";
-import { CommentsRepositories } from "../../../../comments/infrastructure/comments.repositories";
-import { BlogsRepositories } from "../../../../blogs/infrastructure/blogs.repositories";
+import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
+import { PostsSqlRepositories } from "../../../infrastructure/posts-sql-repositories";
+import { UsersSqlQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-sql-query.reposit";
+import { CommentsSqlRepositories } from "../../../../comments/infrastructure/comments-sql.repositories";
 
 @CommandHandler(CreateCommentCommand)
 export class CreateCommentHandler
   implements ICommandHandler<CreateCommentCommand> {
   constructor(
-    private readonly postsRepositories: PostsRepositories,
-    private readonly blogsRepositories: BlogsRepositories,
-    private readonly commentsRepositories: CommentsRepositories,
-    private readonly usersQueryRepositories: UsersQueryRepositories
+    private readonly postsRepositories: PostsSqlRepositories,
+    private readonly blogsRepositories: BlogsSqlRepositories,
+    private readonly commentsRepositories: CommentsSqlRepositories,
+    private readonly usersQueryRepositories: UsersSqlQueryRepositories
   ) {
   }
 
@@ -38,7 +38,7 @@ export class CreateCommentHandler
     //preparation comment for save in DB
     const newComment = new PreparationCommentForDB(
       false,
-      post._id.toString(),
+      post.postId,
       post.userId,
       content,
       userId,
