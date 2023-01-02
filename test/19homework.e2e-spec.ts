@@ -41,7 +41,7 @@ describe.skip(`Homework 19`, () => {
     await app.close();
   });
 
-  describe(`public api comments`, () => {
+  describe.skip(`public api comments`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -230,7 +230,7 @@ describe.skip(`Homework 19`, () => {
         .expect(403);
     });
   });
-  describe(`Posts likes - 01`, () => {
+  describe.skip(`Posts likes - 01`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -426,7 +426,7 @@ describe.skip(`Homework 19`, () => {
     });
 
   });
-  describe(`Posts likes - 02`, () => {
+  describe.skip(`Posts likes - 02`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -747,7 +747,7 @@ describe.skip(`Homework 19`, () => {
 
 
   });
-  describe(`Comment likes`, () => {
+  describe.skip(`Comment likes`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -1103,6 +1103,8 @@ describe.skip(`Homework 19`, () => {
         .get(`/posts/${post.id}/comments`)
         .auth(accessToken1, { type: "bearer" })
         .expect(200);
+
+      console.log(result.body.items);
 
       expect(result.body).toEqual({
         pagesCount: 1,
