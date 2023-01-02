@@ -780,6 +780,7 @@ describe(`Homework 19`, () => {
       comment = resComment.body;
     });
     it(`02 - PUT -> "/comments/:commentId/like-status": create comment then: like the comment by user 1, user 2, user 3, user 4. get the comment after each like by user 1. ; status 204; used additional methods: POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments, GET => /comments/:id;`, async () => {
+
       await request(app.getHttpServer())
         .put(`/comments/${comment.id}/like-status`)
         .auth(accessToken1, { type: "bearer" })
@@ -824,6 +825,20 @@ describe(`Homework 19`, () => {
         .send({ likeStatus: "Dislike" })
         .expect(204);
 
+
+      const responseComments1 = await request(app.getHttpServer())
+        .get(`/comments/${comment.id}`)
+        .auth(accessToken, { type: "bearer" })
+        .expect(200);
+
+      expect(responseComments1.body).toEqual({
+        id: expect.any(String),
+        content: "This is a new comment for post",
+        userId: expect.any(String),
+        userLogin: "asirius-0",
+        createdAt: expect.any(String),
+        likesInfo: { likesCount: 4, dislikesCount: 1, myStatus: "Dislike" }
+      });
     });
     it(`03 - PUT -> "/comments/:commentId/like-status": create comment then: dislike the comment by user 1, user 2; like the comment by user 3; get the comment after each like by user 1; status 204; used additional methods: POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments, GET => /comments/:id;`, async () => {
       await request(app.getHttpServer())
@@ -937,7 +952,7 @@ describe(`Homework 19`, () => {
         userId: expect.any(String),
         userLogin: "asirius-0",
         createdAt: expect.any(String),
-        likesInfo: { likesCount: 1, dislikesCount: 1, myStatus: "None" }
+        likesInfo: { likesCount: 1, dislikesCount: 1, myStatus: "Like" }
       });
 
     });
@@ -1033,7 +1048,7 @@ describe(`Homework 19`, () => {
         .auth(accessToken1, { type: "bearer" })
         .expect(200);
 
-      expect(res0.body.likesInfo).toEqual({ likesCount: 2, dislikesCount: 0, myStatus: "None" });
+      expect(res0.body.likesInfo).toEqual({ likesCount: 2, dislikesCount: 0, myStatus: "Like" });
 
       const res01 = await request(app.getHttpServer())
         .get(`/comments/${comment1.id}`)
@@ -1042,22 +1057,19 @@ describe(`Homework 19`, () => {
 
       expect(res01.body.likesInfo).toEqual({ likesCount: 2, dislikesCount: 0, myStatus: "None" });
 
-
       const res02 = await request(app.getHttpServer())
         .get(`/comments/${comment2.id}`)
         .auth(accessToken1, { type: "bearer" })
         .expect(200);
 
-      expect(res02.body.likesInfo).toEqual({ likesCount: 0, dislikesCount: 1, myStatus: "None" });
-
+      expect(res02.body.likesInfo).toEqual({ likesCount: 0, dislikesCount: 1, myStatus: "Dislike" });
 
       const res03 = await request(app.getHttpServer())
         .get(`/comments/${comment3.id}`)
         .auth(accessToken1, { type: "bearer" })
         .expect(200);
 
-      expect(res03.body.likesInfo).toEqual({ likesCount: 4, dislikesCount: 0, myStatus: "None" });
-
+      expect(res03.body.likesInfo).toEqual({ likesCount: 4, dislikesCount: 0, myStatus: "Like" });
 
       const res04 = await request(app.getHttpServer())
         .get(`/comments/${comment4.id}`)
@@ -1071,14 +1083,12 @@ describe(`Homework 19`, () => {
         .auth(accessToken1, { type: "bearer" })
         .expect(200);
 
-      expect(res05.body.likesInfo).toEqual({ likesCount: 1, dislikesCount: 1, myStatus: "None" });
-
+      expect(res05.body.likesInfo).toEqual({ likesCount: 1, dislikesCount: 1, myStatus: "Like" });
 
       const result = await request(app.getHttpServer())
         .get(`/posts/${post.id}/comments`)
         .auth(accessToken, { type: "bearer" })
         .expect(200);
-
 
       expect(result.body).toEqual({
         pagesCount: 1,
@@ -1087,8 +1097,6 @@ describe(`Homework 19`, () => {
         totalCount: 7,
         items: expect.any(Array)
       });
-
-
     });
   });
 });
