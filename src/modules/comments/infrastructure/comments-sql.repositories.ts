@@ -49,7 +49,7 @@ export class CommentsSqlRepositories {
   async deleteCommentsById(id: string): Promise<boolean> {
     const query = `
         DELETE
-        FROM commnets
+        FROM "comments"
         WHERE "commentId" = '${id}'
     `;
     await this.dataSource.query(query);
@@ -62,9 +62,9 @@ export class CommentsSqlRepositories {
 
   async updateCommentsById(id: string, content: string): Promise<boolean> {
     const query = `
-        UPDATE comments
+        UPDATE "comments"
         SET "content" = '${content}'
-        WHERE "commnetId" = '${id}'
+        WHERE "commentId" = '${id}'
     `;
     await this.dataSource.query(query);
     // const result = await this.commentsModel.updateOne(
@@ -92,21 +92,41 @@ export class CommentsSqlRepositories {
   }
 
   async updateLikeStatusForComment(id: string, userId: string, likeStatus: LikeStatusType): Promise<boolean> {
-    const query = `
-        INSERT INTO "likesComment" ("parentId", "likeStatus", "userId")
-        VALUES ('${id}', '${likeStatus}', '${userId}');
-    `;
-    const queryUpdate = `
-        UPDATE "likesComment"
-        SET "likeStatus" = '${likeStatus}',
-            "isBanned"   = false
+    const queryFind = `
+        SELECT *
+        FROM "likesComment"
         WHERE "userId" = '${userId}'
           AND "parentId" = '${id}'
     `;
-
-    await this.dataSource.query(query);
-    await this.dataSource.query(queryUpdate);
-    return true;
+    const result = await this.dataSource.query(queryFind);
+    if (!result[0]) {
+      const query = `
+          INSERT INTO "likesComment" ("parentId", "likeStatus", "userId")
+          VALUES ('${id}', '${likeStatus}', '${userId}');
+      `;
+      await this.dataSource.query(query);
+      const queryUpdate = `
+          UPDATE "likesComment"
+          SET "likeStatus" = '${likeStatus}',
+              "isBanned"   = false
+          WHERE "userId" = '${userId}'
+            AND "parentId" = '${id}'
+      `;
+      const res = await this.dataSource.query(queryUpdate);
+      if (!res[1]) return null;
+      return true;
+    } else {
+      const queryUpdate = `
+          UPDATE "likesComment"
+          SET "likeStatus" = '${likeStatus}',
+              "isBanned"   = false
+          WHERE "userId" = '${userId}'
+            AND "parentId" = '${id}'
+      `;
+      const res = await this.dataSource.query(queryUpdate);
+      if (!res[1]) return null;
+      return true;
+    }
 
     // try {
     //   await this.likesStatusModel.updateOne(
