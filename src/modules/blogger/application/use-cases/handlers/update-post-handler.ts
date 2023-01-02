@@ -1,9 +1,9 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import {
   ForbiddenExceptionMY,
-  NotFoundExceptionMY,
-} from '../../../../../helpers/My-HttpExceptionFilter';
-import { UpdatePostCommand } from '../update-post-command';
+  NotFoundExceptionMY
+} from "../../../../../helpers/My-HttpExceptionFilter";
+import { UpdatePostCommand } from "../update-post-command";
 import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
 import { PostsSqlRepositories } from "../../../../posts/infrastructure/posts-sql-repositories";
 
@@ -11,8 +11,9 @@ import { PostsSqlRepositories } from "../../../../posts/infrastructure/posts-sql
 export class UpdatePostHandler implements ICommandHandler<UpdatePostCommand> {
   constructor(
     private readonly postsRepositories: PostsSqlRepositories,
-    private readonly blogsRepositories: BlogsSqlRepositories,
-  ) {}
+    private readonly blogsRepositories: BlogsSqlRepositories
+  ) {
+  }
 
   async execute(command: UpdatePostCommand): Promise<boolean> {
     const { postId, blogId, userId, postInputModel } = command;
@@ -25,7 +26,7 @@ export class UpdatePostHandler implements ICommandHandler<UpdatePostCommand> {
       postId,
       postInputModel,
       blogId,
-      userId,
+      userId
     );
     if (!result) throw new NotFoundExceptionMY(`Not found for id:${postId}`);
     return true;

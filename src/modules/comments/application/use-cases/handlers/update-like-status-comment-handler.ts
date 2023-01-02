@@ -1,13 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { CommentsRepositories } from '../../../infrastructure/comments.repositories';
 import { NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
 import { UpdateLikeStatusCommentCommand } from '../update-like-status-comment-command';
+import { CommentsSqlRepositories } from "../../../infrastructure/comments-sql.repositories";
 
 @CommandHandler(UpdateLikeStatusCommentCommand)
 export class UpdateLikeStatusCommentHandler
   implements ICommandHandler<UpdateLikeStatusCommentCommand>
 {
-  constructor(private readonly commentsRepositories: CommentsRepositories) {}
+  constructor(private readonly commentsRepositories: CommentsSqlRepositories) {}
 
   async execute(command: UpdateLikeStatusCommentCommand): Promise<boolean> {
     const { id, userId } = command;

@@ -1,24 +1,20 @@
-import { UsersRepositories } from '../../../infrastructure/users-repositories';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UpdateBanInfoCommand } from '../updateBanInfoCommand';
-import { UsersQueryRepositories } from '../../../infrastructure/query-reposirory/users-query.reposit';
-import { CommentsRepositories } from '../../../../comments/infrastructure/comments.repositories';
 import { UsersSqlQueryRepositories } from "../../../infrastructure/query-reposirory/users-sql-query.reposit";
 import { UsersSqlRepositories } from "../../../infrastructure/users-sql-repositories";
 import { BadRequestExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
 import { PostsSqlRepositories } from "../../../../posts/infrastructure/posts-sql-repositories";
+import { CommentsSqlRepositories } from "../../../../comments/infrastructure/comments-sql.repositories";
 
 @CommandHandler(UpdateBanInfoCommand)
 export class UpdateBanInfoHandler
   implements ICommandHandler<UpdateBanInfoCommand>
 {
   constructor(
-    private readonly usersRepositories: UsersRepositories,
-    private readonly usersQueryRepositories: UsersQueryRepositories,
     private readonly usersSqlQueryRepositories: UsersSqlQueryRepositories,
     private readonly usersSqlRepositories: UsersSqlRepositories,
     private readonly postsRepositories: PostsSqlRepositories,
-    private readonly commentsRepositories: CommentsRepositories,
+    private readonly commentsRepositories: CommentsSqlRepositories,
   ) {}
 
   async execute(command: UpdateBanInfoCommand): Promise<boolean> {
@@ -44,11 +40,11 @@ export class UpdateBanInfoHandler
       //update status ban posts for User
       await this.postsRepositories.updateStatusBanPostForUser(userId, isBanned);
       //update status ban likes post
-      // await this.postsRepositories.updateStatusBanLikePost(userId, isBanned);
-      // //update status ban comments
-      // await this.commentsRepositories.updateStatusBanComments(userId, isBanned);
-      // //update status ban likes comments
-      // await this.commentsRepositories.updateStatusBanLike(userId, isBanned);
+      await this.postsRepositories.updateStatusBanLikePost(userId, isBanned);
+      //update status ban comments
+      await this.commentsRepositories.updateStatusBanComments(userId, isBanned);
+      //update status ban likes comments
+      await this.commentsRepositories.updateStatusBanLike(userId, isBanned);
     } else {
       const banDate = new Date().toISOString();
       //update status ban posts
@@ -66,11 +62,11 @@ export class UpdateBanInfoHandler
       //update status ban likes post
       await this.postsRepositories.updateStatusBanPostForUser(userId, isBanned);
       //update status ban likes post
-      // await this.postsRepositories.updateStatusBanLikePost(userId, isBanned);
-      // //update status ban comments
-      // await this.commentsRepositories.updateStatusBanComments(userId, isBanned);
-      // //update status ban likes comments
-      // await this.commentsRepositories.updateStatusBanLike(userId, isBanned);
+      await this.postsRepositories.updateStatusBanLikePost(userId, isBanned);
+      //update status ban comments
+      await this.commentsRepositories.updateStatusBanComments(userId, isBanned);
+      //update status ban likes comments
+      await this.commentsRepositories.updateStatusBanLike(userId, isBanned);
     }
     return true;
   }

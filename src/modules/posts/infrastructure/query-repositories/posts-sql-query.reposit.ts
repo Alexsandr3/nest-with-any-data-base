@@ -1,86 +1,86 @@
 import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { LeanDocument, Model } from "mongoose";
-import { Post, PostDocument } from "../../domain/post-schema-Model";
 import { PaginationDto } from "../../../blogs/api/input-Dtos/pagination-Dto-Model";
 import { PostViewModel } from "./post-View-Model";
 import {
-  LikesPostsStatus,
-  LikesPostsStatusDocument,
   LikeStatusType
 } from "../../domain/likesPost-schema-Model";
 import {
-  ExtendedLikesInfoViewModel,
-  LikeDetailsViewModel
+  ExtendedLikesInfoViewModel
 } from "./likes-Info-View-Model";
 import { PaginationViewModel } from "../../../blogs/infrastructure/query-repository/pagination-View-Model";
 import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
-import {
-  Comment,
-  CommentDocument
-} from "../../../comments/domain/comments-schema-Model";
-import { CommentsDBType } from "../../../comments/domain/comment-DB-Type";
-import {
-  LikesStatus,
-  LikesStatusDocument
-} from "../../../comments/domain/likesStatus-schema-Model";
 import {
   BloggerCommentsViewType, CommentatorInfoModel,
   CommentsViewType,
   LikesInfoViewModel, PostInfoModel
 } from "../../../comments/infrastructure/query-repository/comments-View-Model";
-import { BlogBanInfo, BlogBanInfoDocument } from "../../../blogger/domain/ban-user-for-current-blog-schema-Model";
 import { DataSource } from "typeorm";
-import { PostDBSQLType } from "../../domain/post-DB-SQL-Type";
+import { CommentDBSQLType } from "../../../comments/domain/comment-DB-SQL-Type";
 
 @Injectable()
 export class PostsSqlQueryRepositories {
   constructor(
-    @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
-    private readonly dataSource: DataSource,
-    @InjectModel(Comment.name) private readonly commentModel: Model<CommentDocument>,
-    @InjectModel(LikesStatus.name) private readonly likesStatusModel: Model<LikesStatusDocument>,
-    @InjectModel(LikesPostsStatus.name) private readonly likesPostsStatusModel: Model<LikesPostsStatusDocument>,
-    @InjectModel(BlogBanInfo.name) private readonly blogBanInfoModel: Model<BlogBanInfoDocument>
+    private readonly dataSource: DataSource
   ) {
   }
 
-  private LikeDetailsView(object: LeanDocument<LikesPostsStatusDocument>): LikeDetailsViewModel {
-    return new LikeDetailsViewModel(
-      object.addedAt,
-      object.userId,
-      object.login
-    );
-  }
 
-  private async commentWithNewId(comment: CommentsDBType, userId: string | null): Promise<CommentsViewType> {
+  private async commentWithNewId(comment: CommentDBSQLType, userId: string | null): Promise<CommentsViewType> {
     let myStatus: string = LikeStatusType.None;
     if (userId) {
-      const result = await this.likesStatusModel.findOne({
-        userId: userId,
-        parentId: comment._id
-      });
-      if (result) {
+      const query =
+        `
+            SELECT *
+            FROM "likesComment"
+            WHERE "userId" = '${userId}'
+              AND "parentId" = '${comment.commentId}'
+        `;
+      const result = await this.dataSource.query(query);
+      // const result = await this.likesStatusModel.findOne({
+      //   userId: userId,
+      //   parentId: comment.commentId
+      // });
+      if (result[0]) {
         myStatus = result.likeStatus;
       }
     }
-    const totalCountLike = await this.likesStatusModel.countDocuments({
-      parentId: comment._id,
-      likeStatus: "Like",
-      isBanned: false
-    });
-    const totalCountDislike = await this.likesStatusModel.countDocuments({
-      parentId: comment._id,
-      likeStatus: "Dislike",
-      isBanned: false
-    });
+    const queryTotalCountLike =
+      `
+          SELECT count(*)
+          FROM "likesComment"
+          WHERE "parentId" = '${comment.commentId}'
+            AND "likeStatus" = 'Like'
+            AND "isBanned" = false
+      `;
+    const totalCountLike = await this.dataSource.query(queryTotalCountLike);
+    const countLikes = totalCountLike[0]["count"];
+    // const totalCountLike = await this.likesStatusModel.countDocuments({
+    //   parentId: comment._id,
+    //   likeStatus: "Like",
+    //   isBanned: false
+    // });
+    const queryTotalCountDislike =
+      `
+          SELECT count(*)
+          FROM "likesComment"
+          WHERE "parentId" = '${comment.commentId}'
+            AND "likeStatus" = 'Dislike'
+            AND "isBanned" = false
+      `;
+    const totalCountDislike = await this.dataSource.query(queryTotalCountDislike);
+    const countDislikes = totalCountDislike[0]["count"];
+    // const totalCountDislike = await this.likesStatusModel.countDocuments({
+    //   parentId: comment._id,
+    //   likeStatus: "Dislike",
+    //   isBanned: false
+    // });
     const likesInfo = new LikesInfoViewModel(
-      totalCountLike,
-      totalCountDislike,
+      +countLikes,
+      countDislikes,
       myStatus
     );
     return new CommentsViewType(
-      comment._id.toString(),
+      comment.commentId,
       comment.content,
       comment.userId,
       comment.userLogin,
@@ -89,10 +89,51 @@ export class PostsSqlQueryRepositories {
     );
   }
 
-  private async postForView(post: PostDBSQLType, userId: string | null): Promise<PostViewModel> {
-    console.log(post);
+  private async postForView(post: any, userId: string | null): Promise<PostViewModel> {
     //find likes status
     let myStatus: string = LikeStatusType.None;
+    if (userId) {
+      const query = `
+          SELECT *
+          FROM "likesPost"
+          WHERE "userId" = '${userId}'
+            AND "parentId" = '${post.postId}'
+            AND "isBanned" = false
+      `;
+      const result = await this.dataSource.query(query);
+      if (result[0]) {
+        myStatus = result[0].likeStatus;
+      }
+    }
+    const queryCountLike = `
+        SELECT count(*)
+        FROM "likesPost"
+        WHERE "likeStatus" = 'Like'
+          AND "parentId" = '${post.postId}'
+          AND "isBanned" = false
+    `;
+    const countLike = await this.dataSource.query(queryCountLike);
+    const totalCountLike = +countLike[0][`count`];
+    const queryCountDislike = `
+        SELECT count(*)
+        FROM "likesPost"
+        WHERE "likeStatus" = 'Dislike'
+          AND "parentId" = '${post.postId}'
+          AND "isBanned" = false
+    `;
+    const countDislike = await this.dataSource.query(queryCountDislike);
+    const totalCountDislike = +countDislike[0]["count"];
+    const queryNewestLikes = `
+        SELECT "addedAt", "userId", "userLogin" AS "login"
+        FROM "likesPost"
+        WHERE "likeStatus" = 'Like'
+          AND "parentId" = '${post.postId}'
+          AND "isBanned" = false
+        ORDER BY "addedAt" DESC LIMIT 3
+    `;
+    //finding the newest likes
+    const newestLikes = await this.dataSource.query(queryNewestLikes);
+
     /* if (userId) {
        const result = await this.likesPostsStatusModel.findOne({
          userId: userId,
@@ -129,10 +170,10 @@ export class PostsSqlQueryRepositories {
      );*/
     //const itemsLikes = await Promise.all(mappedNewestLikes);
     const extendedLikesInfo = new ExtendedLikesInfoViewModel(
-      0, //totalCountLike,
-      0, //totalCountDislike,
+      totalCountLike,
+      totalCountDislike,
       myStatus,
-      [] //mappedNewestLikes
+      newestLikes
     );
     return new PostViewModel(
       post.postId,
@@ -140,7 +181,7 @@ export class PostsSqlQueryRepositories {
       post.shortDescription,
       post.content,
       post.blogId,
-      post.blogName,
+      post.name,
       post.createdAt,
       extendedLikesInfo
     );
@@ -148,20 +189,55 @@ export class PostsSqlQueryRepositories {
 
   async findPosts(data: PaginationDto, userId: string | null, blogId?: string): Promise<PaginationViewModel<PostViewModel[]>> {
     const { sortDirection, sortBy, pageSize, pageNumber } = data;
-    // let query = blogId ? { "blogId" = `${blogId}` AND "isBanned" =  false } : { "isBanned" = false };
-    let filter = `
-        SELECT *
-        FROM posts
-        WHERE "isBanned" = false
-        ORDER BY "${sortBy}" ${sortDirection}
+    let filter;
+    let filterCounting;
+    if (blogId) {
+      filter = `
+          SELECT a."postId",
+                 a."title",
+                 a."shortDescription",
+                 a."content",
+                 a."blogId",
+                 b."name",
+                 a."createdAt"
+          FROM posts a
+                   INNER JOIN blogs b
+                              ON a."blogId" = b."blogId"
+          WHERE a."isBanned" = false
+            AND a."blogId" = '${blogId}'
+          ORDER BY "${sortBy}" ${sortDirection}
         LIMIT ${pageSize}
-        OFFSET ${(pageNumber - 1) * pageSize}
-    `;
-    let filterCounting = `
-        SELECT count(*)
-        FROM posts
-        WHERE "isBanned" = false
-    `;
+          OFFSET ${(pageNumber - 1) * pageSize}
+      `;
+      filterCounting = `
+          SELECT count(*)
+          FROM posts
+          WHERE "isBanned" = false
+            AND "blogId" = '${blogId}'
+      `;
+    } else {
+      filter = `
+          SELECT a."postId",
+                 a."title",
+                 a."shortDescription",
+                 a."content",
+                 a."blogId",
+                 b."name",
+                 a."createdAt"
+          FROM posts a
+                   INNER JOIN blogs b
+                              ON a."blogId" = b."blogId"
+          WHERE a."isBanned" = false
+          ORDER BY "${sortBy}" ${sortDirection}
+        LIMIT ${pageSize}
+          OFFSET ${(pageNumber - 1) * pageSize}
+      `;
+      filterCounting = `
+          SELECT count(*)
+          FROM posts
+          WHERE "isBanned" = false
+      `;
+    }
     const foundPosts = await this.dataSource.query(filter);
     //mapped posts for view
     const mappedPosts = foundPosts.map((post) =>
@@ -211,7 +287,7 @@ export class PostsSqlQueryRepositories {
   async findPost(id: string, userId: string | null): Promise<PostViewModel> {
     const query =
       `
-          SELECT *
+          SELECT "postId", "title", "shortDescription", "content", "blogId", "blogName" AS "name", "createdAt"
           FROM posts
           WHERE "postId" = '${id}'
             AND "isBanned" = false
@@ -230,35 +306,90 @@ export class PostsSqlQueryRepositories {
   }
 
   async findCommentsByIdPost(postId: string, data: PaginationDto, userId: string | null): Promise<PaginationViewModel<CommentsViewType[]>> {
-    const filter = { postId: postId, isBanned: false };
+    const { sortDirection, sortBy, pageSize, pageNumber } = data;
+    let filter = `
+        SELECT *
+        FROM comments
+        WHERE "postId" = '${postId}'
+          AND "isBanned" = false
+        ORDER BY "${sortBy}" ${sortDirection}
+        LIMIT ${pageSize}
+        OFFSET ${(pageNumber - 1) * pageSize}
+    `;
+    let filterCounting = `
+        SELECT count(*)
+        FROM comments
+        WHERE "postId" = '${postId}'
+          AND "isBanned" = false
+    `;
+
+    let queryPost;
+    if (userId) {
+      queryPost = `
+          SELECT *
+          FROM posts
+          WHERE "postId" = '${postId}'
+            AND "userId" = '${userId}'
+      `;
+    } else {
+      queryPost = `
+          SELECT *
+          FROM posts
+          WHERE "postId" = '${postId}'
+      `;
+    }
     //find post by postId and userId
-    const post = await this.findPost(postId, userId);
-    if (!post) throw new NotFoundExceptionMY(`Not found for id: ${postId}`);
+    const post = await this.dataSource.query(queryPost);
+    if (!post[0]) throw new NotFoundExceptionMY(`Not found for id: ${postId}`);
     //find comment by postId
-    const comments = await this.commentModel
-      .find(filter)
-      .skip((data.pageNumber - 1) * data.pageSize)
-      .limit(data.pageSize)
-      .sort({ [data.sortBy]: data.sortDirection })
-      .lean();
+    const comments = await this.dataSource.query(filter);
 
     const mappedComments = comments.map((comment) =>
       this.commentWithNewId(comment, userId)
     );
     const itemsComments = await Promise.all(mappedComments);
     //counting comments
-    const totalCountComments = await this.commentModel.countDocuments(
-      postId ? { postId, isBanned: false } : { isBanned: false }
-    );
-    const pagesCountRes = Math.ceil(totalCountComments / data.pageSize);
+    const totalCountComments = await this.dataSource.query(filterCounting);
+    const { count } = totalCountComments[0];
+    const pagesCountRes = Math.ceil(+count / data.pageSize);
     //returning comment with pagination
     return new PaginationViewModel(
       pagesCountRes,
       data.pageNumber,
       data.pageSize,
-      totalCountComments,
+      +count,
       itemsComments
     );
+
+    /* const filter = { postId: postId, isBanned: false };
+     //find post by postId and userId
+     const post = await this.findPost(postId, userId);
+     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${postId}`);
+     //find comment by postId
+     const comments = await this.commentModel
+       .find(filter)
+       .skip((data.pageNumber - 1) * data.pageSize)
+       .limit(data.pageSize)
+       .sort({ [data.sortBy]: data.sortDirection })
+       .lean();
+
+     const mappedComments = comments.map((comment) =>
+       this.commentWithNewId(comment, userId)
+     );
+     const itemsComments = await Promise.all(mappedComments);
+     //counting comments
+     const totalCountComments = await this.commentModel.countDocuments(
+       postId ? { postId, isBanned: false } : { isBanned: false }
+     );
+     const pagesCountRes = Math.ceil(totalCountComments / data.pageSize);
+     //returning comment with pagination
+     return new PaginationViewModel(
+       pagesCountRes,
+       data.pageNumber,
+       data.pageSize,
+       totalCountComments,
+       itemsComments
+     );*/
   }
 
   async createPostForView(id: string): Promise<PostViewModel> {
@@ -315,17 +446,41 @@ export class PostsSqlQueryRepositories {
   async findCommentsBloggerForPosts(userId: string, paginationInputModel: PaginationDto) {
     const { sortDirection, sortBy, pageSize, pageNumber } = paginationInputModel;
     //search all comments with pagination
-    const foundComments = await this.commentModel.find({ ownerId: userId })
-      .skip((pageNumber - 1) * pageSize)
-      .limit(pageSize)
-      .sort({ [sortBy]: sortDirection })
-      .lean();
+    const query = `
+        SELECT *
+        FROM "comments"
+        WHERE "ownerId" = '${userId}'
+        ORDER BY "${sortBy}" ${sortDirection}
+              LIMIT ${pageSize}
+        OFFSET ${(pageNumber - 1) * pageSize}
+    `;
+    const queryCount = `
+        SELECT count(*)
+        FROM "comments"
+        WHERE "ownerId" = '${userId}'
+    `;
+    const foundComments = await this.dataSource.query(query);
+    const commentsCount = await this.dataSource.query(queryCount);
+    const totalCount = +commentsCount[0]["count"];
     //mapped posts for view
     const mappedPosts = foundComments.map((comment) => this.bloggerCommentViewModel(comment, userId));
     const items = await Promise.all(mappedPosts);
-    const totalCount = await this.commentModel.countDocuments({ ownerId: userId });
-    //pages count
+    // pages count
     const pagesCountRes = Math.ceil(totalCount / pageSize);
+    // Found posts with pagination
+
+    //
+    // const foundComments = await this.commentModel.find({ ownerId: userId })
+    //   .skip((pageNumber - 1) * pageSize)
+    //   .limit(pageSize)
+    //   .sort({ [sortBy]: sortDirection })
+    //   .lean();
+    // //mapped posts for view
+    // const mappedPosts = foundComments.map((comment) => this.bloggerCommentViewModel(comment, userId));
+    // const items = await Promise.all(mappedPosts);
+    // const totalCount = await this.commentModel.countDocuments({ ownerId: userId });
+    //pages count
+    // const pagesCountRes = Math.ceil(totalCount / pageSize);
     // Found posts with pagination
     return new PaginationViewModel(
       pagesCountRes,
@@ -336,43 +491,76 @@ export class PostsSqlQueryRepositories {
     );
   }
 
-  private async bloggerCommentViewModel(comment: CommentsDBType, userId: string | null) {
+  private async bloggerCommentViewModel(comment: CommentDBSQLType, userId: string | null) {
     let myStatus: string = LikeStatusType.None;
     if (userId) {
-      const result = await this.likesStatusModel.findOne({ userId: userId, parentId: comment._id.toString() });
-      if (result) {
-        myStatus = result.likeStatus;
+      const query = `
+          SELECT *
+          FROM "likesComment"
+          WHERE "userId" = '${userId}'
+            AND "parentId" = '${comment.commentId}'
+      `;
+      const result = await this.dataSource.query(query);
+
+      // const result = await this.likesStatusModel.findOne({ userId: userId, parentId: comment._id.toString() });
+      if (result[0]) {
+        myStatus = result[0].likeStatus;
       }
     }
-    const totalCountLike = await this.likesStatusModel.countDocuments({
-      parentId: comment._id.toString(),
-      likeStatus: "Like",
-      isBanned: false
-    });
-    const totalCountDislike = await this.likesStatusModel.countDocuments({
-      parentId: comment._id.toString(),
-      likeStatus: "Dislike",
-      isBanned: false
-    });
+    const queryCountLike = `
+        SELECT count(*)
+        FROM "likesComment"
+        WHERE "parentId" = '${comment.commentId}'
+          AND "likeStatus" = 'Like'
+          AND "isBanned" = false
+    `;
+    const countLike = await this.dataSource.query(queryCountLike);
+    const totalCountLike = +countLike[0]["count"];
+    // const totalCountLike = await this.likesStatusModel.countDocuments({
+    //   parentId: comment._id.toString(),
+    //   likeStatus: "Like",
+    //   isBanned: false
+    // });
+    const queryCountDislike = `
+        SELECT count(*)
+        FROM "likesComment"
+        WHERE "parentId" = '${comment.commentId}'
+          AND "likeStatus" = 'Dislike'
+          AND "isBanned" = false
+    `;
+    const countDislike = await this.dataSource.query(queryCountDislike);
+    const totalCountDislike = +countDislike[0]["count"];
+    // const totalCountDislike = await this.likesStatusModel.countDocuments({
+    //   parentId: comment._id.toString(),
+    //   likeStatus: "Dislike",
+    //   isBanned: false
+    // });
     const likesInfo = new LikesInfoViewModel(
       totalCountLike,
       totalCountDislike,
       myStatus
     );
 
-    const post = await this.postModel.findOne({ _id: new Object(comment.postId) });
+    const queryPost = `
+        SELECT *
+        FROM "posts"
+        WHERE "postId" = '${comment.postId}'
+    `;
+    const post = await this.dataSource.query(queryPost);
+
+    // const post = await this.postModel.findOne({ _id: new Object(comment.postId) });
     const commentatorInfo = new CommentatorInfoModel(
       comment.userId,
       comment.userLogin
     );
     const postInfo = new PostInfoModel(
-      post._id.toString(),
-      post.title,
-      post.blogId,
-      post.blogName
+      post[0].postId,
+      post[0].title,
+      post[0].blogId,
+      post[0].blogName
     );
     return new BloggerCommentsViewType(
-      comment._id.toString(),
+      comment.commentId,
       comment.content,
       comment.createdAt,
       likesInfo,

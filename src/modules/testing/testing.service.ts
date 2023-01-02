@@ -54,6 +54,12 @@ export class TestingService {
         DELETE
         FROM devices;
         DELETE
+        FROM "likesPost";
+        DELETE
+        FROM "likesComment";
+        DELETE
+        FROM comments;
+        DELETE
         FROM banned_blog_users;
         DELETE
         FROM posts;

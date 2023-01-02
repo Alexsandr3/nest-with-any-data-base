@@ -19,7 +19,6 @@ import { CurrentUserId } from "../../../decorators/current-user-id.param.decorat
 import { CreateCommentDto } from "./input-Dtos/create-Comment-Dto-Model";
 import { JwtForGetGuard } from "../../../guards/jwt-auth-bearer-for-get.guard";
 import { CommandBus } from "@nestjs/cqrs";
-import { BlogsQueryRepositories } from "../../blogs/infrastructure/query-repository/blogs-query.repositories";
 import { CreateCommentCommand } from "../application/use-cases/create-comment-command";
 import { UpdateLikeStatusCommand } from "../application/use-cases/update-like-status-command";
 import { SkipThrottle } from "@nestjs/throttler";
@@ -30,7 +29,6 @@ import { PostsSqlQueryRepositories } from "../infrastructure/query-repositories/
 @Controller(`posts`)
 export class PostsController {
   constructor(private readonly postsQueryRepositories: PostsSqlQueryRepositories,
-              private readonly blogsQueryRepositories: BlogsQueryRepositories,
               private commandBus: CommandBus) {
   }
 
@@ -39,7 +37,7 @@ export class PostsController {
   @Put(`:postId/like-status`)
   async updateLikeStatus(@CurrentUserId() userId: string,
                          @Param(`postId`, ValidateUuidPipe) id: string,
-                         @Body() updateLikeStatusInputModel: UpdateLikeStatusDto) {
+                         @Body() updateLikeStatusInputModel: UpdateLikeStatusDto): Promise<boolean> {
     return await this.commandBus.execute(new UpdateLikeStatusCommand(id, updateLikeStatusInputModel, userId));
   }
 

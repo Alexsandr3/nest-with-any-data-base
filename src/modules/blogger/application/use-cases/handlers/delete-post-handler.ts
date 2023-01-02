@@ -1,9 +1,9 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import {
   ForbiddenExceptionMY,
-  NotFoundExceptionMY,
-} from '../../../../../helpers/My-HttpExceptionFilter';
-import { DeletePostCommand } from '../delete-post-command';
+  NotFoundExceptionMY
+} from "../../../../../helpers/My-HttpExceptionFilter";
+import { DeletePostCommand } from "../delete-post-command";
 import { PostsSqlRepositories } from "../../../../posts/infrastructure/posts-sql-repositories";
 import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
 
@@ -11,8 +11,9 @@ import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql
 export class DeletePostHandler implements ICommandHandler<DeletePostCommand> {
   constructor(
     private readonly postsRepositories: PostsSqlRepositories,
-    private readonly blogsRepositories: BlogsSqlRepositories,
-  ) {}
+    private readonly blogsRepositories: BlogsSqlRepositories
+  ) {
+  }
 
   async execute(command: DeletePostCommand): Promise<boolean> {
     const { postId, blogId, userId } = command;

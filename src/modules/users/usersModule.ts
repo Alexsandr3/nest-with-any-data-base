@@ -34,6 +34,7 @@ import { CreateUserSaHandler } from "./application/use-cases/handlers/create-use
 import { UsersSqlRepositories } from "./infrastructure/users-sql-repositories";
 import { UsersSqlQueryRepositories } from "./infrastructure/query-reposirory/users-sql-query.reposit";
 import { PostsSqlRepositories } from "../posts/infrastructure/posts-sql-repositories";
+import { CommentsSqlRepositories } from "../comments/infrastructure/comments-sql.repositories";
 
 const handlers = [CreateUserHandler, CreateUserSaHandler, DeleteUserHandler, UpdateBanInfoHandler];
 const adapters = [
@@ -45,6 +46,7 @@ const adapters = [
   UsersQueryRepositories,
   DeviceRepositories,
   CommentsRepositories,
+  CommentsSqlRepositories,
   UsersSqlRepositories,
   UsersSqlQueryRepositories,
 ];

@@ -1,16 +1,16 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { DeleteCommentCommand } from '../delete-comment-command';
-import { CommentsRepositories } from '../../../infrastructure/comments.repositories';
-import { CommentsService } from '../../../domain/comments.service';
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { DeleteCommentCommand } from "../delete-comment-command";
+import { CommentsService } from "../../../domain/comments.service";
+import { CommentsSqlRepositories } from "../../../infrastructure/comments-sql.repositories";
 
 @CommandHandler(DeleteCommentCommand)
 export class DeleteCommentHandler
-  implements ICommandHandler<DeleteCommentCommand>
-{
+  implements ICommandHandler<DeleteCommentCommand> {
   constructor(
-    private readonly commentsRepositories: CommentsRepositories,
-    private readonly commentsService: CommentsService,
-  ) {}
+    private readonly commentsRepositories: CommentsSqlRepositories,
+    private readonly commentsService: CommentsService
+  ) {
+  }
 
   async execute(command: DeleteCommentCommand): Promise<boolean> {
     const { id } = command;

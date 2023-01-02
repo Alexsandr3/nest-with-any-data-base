@@ -16,6 +16,7 @@ export class CommentsQueryRepositories {
   constructor(
     @InjectModel(Comment.name)
     private readonly commentsModel: Model<CommentDocument>,
+
     @InjectModel(LikesStatus.name)
     private readonly likesStatusModel: Model<LikesStatusDocument>,
   ) {}

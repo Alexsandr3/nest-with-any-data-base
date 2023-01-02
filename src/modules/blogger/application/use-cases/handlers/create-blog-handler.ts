@@ -18,7 +18,7 @@ export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
     const { userId } = command;
     //finding the user for check ex
     const user = await this.usersRepositories.findUserByIdWithMapped(userId);
-    if (user.userId !== userId) throw new UnauthorizedExceptionMY(`user with id: ${userId} Unauthorized`)
+    if (user.userId !== userId) throw new UnauthorizedExceptionMY(`user with id: ${userId} Unauthorized`);
     //preparation Blog for save in DB
     const newBlog = new PreparationBlogForDB(
       userId,
