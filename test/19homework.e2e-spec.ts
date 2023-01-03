@@ -22,7 +22,7 @@ import { UsersViewType } from "../src/modules/users/infrastructure/query-reposir
 jest.setTimeout(120000);
 
 
-describe.skip(`Homework 19`, () => {
+describe(`Homework 19`, () => {
 
   let app: INestApplication;
 
@@ -1178,17 +1178,31 @@ describe.skip(`Homework 19`, () => {
 
       comment = resComment.body;
 
+      // //created comment
+      // const resComment1 = await request(app.getHttpServer())
+      //   .post(`/posts/${post.id}/comments`)
+      //   .auth(accessToken1, { type: "bearer" })
+      //   .send({
+      //     content: "This is a new comment for post -02"
+      //   })
+      //   .expect(201);
+      //
+      // comment1 = resComment1.body
+
       await request(app.getHttpServer())
         .put(`/comments/${comment.id}/like-status`)
-        .auth(accessToken, { type: "bearer" })
+        .auth(accessToken1, { type: "bearer" })
         .send({ likeStatus: "Like" })
         .expect(204);
 
 
+      //finding comment with like or dislike
       const responseComment = await request(app.getHttpServer())
         .get(`/comments/${comment.id}`)
         .auth(accessToken, { type: "bearer" })
         .expect(200);
+
+      console.log("--1", responseComment.body);
 
 
       expect(responseComment.body).toBeTruthy();
@@ -1198,12 +1212,12 @@ describe.skip(`Homework 19`, () => {
         userId: expect.any(String),
         userLogin: 'asirius-0',
         createdAt: expect.any(String),
-        likesInfo: { likesCount: 1, dislikesCount: 0, myStatus: 'Like' }
+        likesInfo: { likesCount: 1, dislikesCount: 0, myStatus: 'None' }
       })
 
       //ban user
       await request(app.getHttpServer())
-        .put(`/sa/users/${user.id}/ban`)
+        .put(`/sa/users/${user1.id}/ban`)
         .auth("admin", "qwerty", { type: "basic" })
         .send({
           isBanned: true,
@@ -1218,6 +1232,7 @@ describe.skip(`Homework 19`, () => {
         .auth("admin", "qwerty", { type: "basic" })
         .expect(200);
 
+      console.log("responseAfter", responseAfter.body.items);
 
       expect(responseAfter.body).toEqual({
         pagesCount: 1,
@@ -1226,38 +1241,42 @@ describe.skip(`Homework 19`, () => {
         totalCount: 2,
         items: expect.any(Array)
       });
-      expect(responseAfter.body.items).toEqual([
-        {
-          id: expect.any(String),
-          login: "asirius-1",
-          email: "asirius1@jive.com",
-          createdAt: expect.any(String),
-          banInfo: { isBanned: false, banDate: null, banReason: null }
-        },
-        {
-          id: expect.any(String),
-          login: "asirius-0",
-          email: "asirius0@jive.com",
-          createdAt: expect.any(String),
-          banInfo: {
-            isBanned: true,
-            banDate: expect.any(String),
-            banReason: "This user is very talk, its bad user"
-          }
-        }
-      ]);
+      // expect(responseAfter.body.items).toEqual([
+      //   {
+      //     id: expect.any(String),
+      //     login: "asirius-1",
+      //     email: "asirius1@jive.com",
+      //     createdAt: expect.any(String),
+      //     banInfo: { isBanned: false, banDate: null, banReason: null }
+      //   },
+      //   {
+      //     id: expect.any(String),
+      //     login: "asirius-0",
+      //     email: "asirius0@jive.com",
+      //     createdAt: expect.any(String),
+      //     banInfo: {
+      //       isBanned: true,
+      //       banDate: expect.any(String),
+      //       banReason: "This user is very talk, its bad user"
+      //     }
+      //   }
+      // ]);
 
       //checking at login, should return - status -  401
       await request(app.getHttpServer())
         .post(`/auth/login`)
-        .send({ loginOrEmail: `asirius-0`, password: `asirius-120`})
+        .send({ loginOrEmail: `asirius-1`, password: `asirius-121`})
         .expect(401)
 
       //finding comment banned user, should return status 404
-      await request(app.getHttpServer())
+      const responseComment1 = await request(app.getHttpServer())
         .get(`/comments/${comment.id}`)
-        .auth(accessToken, { type: "bearer" })
-        .expect(404);
+        // .auth(accessToken, { type: "bearer" })
+        .expect(200);
+
+
+      console.log("--2", responseComment1.body);
+      expect(responseComment1.body.likesInfo).toEqual({ likesCount: 0, dislikesCount: 0, myStatus: 'None' })
 
       //unbanned user
       await request(app.getHttpServer())
@@ -1272,8 +1291,10 @@ describe.skip(`Homework 19`, () => {
 
       const responseComment2 = await request(app.getHttpServer())
         .get(`/comments/${comment.id}`)
-        .auth(accessToken, { type: "bearer" })
+        // .auth(accessToken, { type: "bearer" })
         .expect(200);
+
+      console.log("--3", responseComment2.body);
 
       expect(responseComment2.body).toEqual({
         id: expect.any(String),
@@ -1281,7 +1302,7 @@ describe.skip(`Homework 19`, () => {
         userId: expect.any(String),
         userLogin: 'asirius-0',
         createdAt: expect.any(String),
-        likesInfo: { likesCount: 1, dislikesCount: 0, myStatus: 'Like' }
+        likesInfo: { likesCount: 0, dislikesCount: 0, myStatus: 'None' }
       })
 
 

@@ -142,7 +142,7 @@ export class CommentsSqlRepositories {
 
   async updateStatusBanLike(userId: string, isBanned: boolean): Promise<boolean> {
     const query = `
-        UPDATE "likesPost"
+        UPDATE "likesComment"
         SET "isBanned" = ${isBanned}
         WHERE "userId" = '${userId}'
     `;
