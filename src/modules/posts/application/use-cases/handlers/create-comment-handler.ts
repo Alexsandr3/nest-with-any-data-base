@@ -39,9 +39,9 @@ export class CreateCommentHandler
     const newComment = new PreparationCommentForDB(
       false,
       post.postId,
-      post.userId,
+      post.userId, //user owner post
       content,
-      userId,
+      userId, //user owner comment
       user.login,
       new Date().toISOString()
     );

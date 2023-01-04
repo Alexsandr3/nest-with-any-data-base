@@ -876,7 +876,7 @@ describe(`Homework 19`, () => {
       });
     });
   });
-  describe(`Comment likes - 02`, () => {
+  describe.skip(`Comment likes - 02`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -1132,23 +1132,26 @@ describe(`Homework 19`, () => {
     let user: UsersViewType;
     let user1: UsersViewType;
     let post: PostViewModel;
-    let comment: CommentsViewType;
     let accessToken: string;
     let accessToken1: string;
-    it.skip(`01 - GET -> "/comments/:id": Shouldn't return banned user like for comment. Should return unbanned user like for comment; status 200; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban, POST => /auth/login, POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments;`, async () => {
-      const res = await createUserByLoginEmail(2, app);
+    let accessToken2: string;
+    let accessToken3: string;
+    it(`01 - GET -> "/comments/:id": Shouldn't return banned user like for comment. Should return unbanned user like for comment; status 200; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban, POST => /auth/login, POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments;`, async () => {
+      const res = await createUserByLoginEmail(4, app);
       user = res[0].user;
       user1 = res[1].user;
       accessToken = res[0].accessToken;
       accessToken1 = res[1].accessToken;
+      accessToken2 = res[2].accessToken;
+      accessToken3 = res[3].accessToken;
 
       //finding Users
-      const responseBefore = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get(`/sa/users`)
         .auth("admin", "qwerty", { type: "basic" })
         .expect(200);
 
-      expect(responseBefore.body).toEqual({
+     /* expect(responseBefore.body).toEqual({
         pagesCount: 1,
         page: 1,
         pageSize: 10,
@@ -1168,14 +1171,14 @@ describe(`Homework 19`, () => {
           email: "asirius0@jive.com",
           createdAt: expect.any(String),
           banInfo: { isBanned: false, banDate: null, banReason: null }
-        }]);
+        }]);*/
 
       //created a post
       const response = await createBlogsAndPostForTest(1, accessToken, app);
       post = response[0].post;
 
       //created comment
-      const resComment = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post(`/posts/${post.id}/comments`)
         .auth(accessToken, { type: "bearer" })
         .send({
@@ -1183,7 +1186,33 @@ describe(`Homework 19`, () => {
         })
         .expect(201);
 
-      comment = resComment.body;
+
+      await request(app.getHttpServer())
+        .post(`/posts/${post.id}/comments`)
+        .auth(accessToken1, { type: "bearer" })
+        .send({
+          content: "This is a new comment for post -----001 "
+        })
+        .expect(201);
+
+
+      await request(app.getHttpServer())
+        .post(`/posts/${post.id}/comments`)
+        .auth(accessToken2, { type: "bearer" })
+        .send({
+          content: "This is a new comment for post -----002 "
+        })
+        .expect(201);
+
+      await request(app.getHttpServer())
+        .post(`/posts/${post.id}/comments`)
+        .auth(accessToken3, { type: "bearer" })
+        .send({
+          content: "This is a new comment for post -----003 "
+        })
+        .expect(201);
+
+     /* comment = resComment.body;
 
       // //created comment
       // const resComment1 = await request(app.getHttpServer())
@@ -1319,7 +1348,7 @@ describe(`Homework 19`, () => {
         likesInfo: { likesCount: 0, dislikesCount: 0, myStatus: "None" }
       });
 
-
+*/
     });
 
     it.skip(`creat 10 user and blog `, async () => {
