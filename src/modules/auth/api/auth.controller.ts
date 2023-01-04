@@ -20,7 +20,7 @@ import { RefreshGuard } from "../../../guards/jwt-auth-refresh.guard";
 import { Response } from "express";
 import { PayloadRefresh } from "../../../decorators/payload-refresh.param.decorator";
 import { JwtAuthGuard } from "../../../guards/jwt-auth-bearer.guard";
-import { MeViewModel } from "../infrastructure/me-View-Model";
+import { MeViewModel } from "../infrastructure/types-view/me-View-Model";
 import { CurrentUserId } from "../../../decorators/current-user-id.param.decorator";
 import { SkipThrottle } from "@nestjs/throttler";
 import { CommandBus } from "@nestjs/cqrs";

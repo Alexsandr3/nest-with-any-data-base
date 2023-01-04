@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { PreparationUserForDB } from "../domain/user-preparation-for-DB";
+import { PreparationUserForDB } from "../domain/types/user-preparation-for-DB";
 import { DataSource } from "typeorm";
-import { EmailConfirmationSQLType, EmailRecoverySQLType, UserDBSQLType } from "./user-DB-SQL-Type";
+import { EmailConfirmationSQLType, EmailRecoverySQLType, UserDBSQLType } from "../domain/types/user-DB-SQL-Type";
 
 @Injectable()
 export class UsersSqlRepositories {
@@ -16,7 +16,7 @@ export class UsersSqlRepositories {
     const { isConfirmation, confirmationCode, expirationDate } = newUser.emailConfirmation;
     const isConfirmationRecovery = newUser.emailRecovery.isConfirmation;
     const expirationDateRecovery = newUser.emailRecovery.expirationDate;
-    const recoveryCodeRecovery = newUser.emailRecovery.recoveryCode;
+    const { recoveryCode } = newUser.emailRecovery;
 
     const query = `
         WITH ins1 AS (
@@ -33,7 +33,7 @@ export class UsersSqlRepositories {
         INSERT
         INTO user_email_recovery("userId", "recoveryCode", "expirationDate", "isConfirmation")
         SELECT ins1."userId",
-               '${recoveryCodeRecovery}',
+               '${recoveryCode}',
                '${expirationDateRecovery.toISOString()}',
                '${isConfirmationRecovery}'
         FROM ins1 RETURNING "userId";
@@ -58,7 +58,6 @@ export class UsersSqlRepositories {
     await this.dataSource.query(query);
     return true;
   }
-
 
   async findByLoginOrEmail(loginOrEmail: string): Promise<UserDBSQLType> {
     const query = `
@@ -158,18 +157,12 @@ export class UsersSqlRepositories {
             "banDate"   = ${banDate ? `'${banDate}'` : null},
             "banReason" = ${banReason ? `'${banReason}'` : null}
         WHERE "userId" = '${userId}'
-    `
+    `;
 
     const res = await this.dataSource.query(query);
     if (res[1] === 0) throw new Error("not today");
     return true;
   }
-
-  // async findBanStatusUser(userId: string): Promise<UserDocument> {
-  //   const banStatus = await this.userModel.findOne({ userId: userId });
-  //   if (!banStatus) return null;
-  //   return banStatus;
-  // }
 
   async findUserByIdWithMapped(userId: string): Promise<UserDBSQLType> {
     const query = `

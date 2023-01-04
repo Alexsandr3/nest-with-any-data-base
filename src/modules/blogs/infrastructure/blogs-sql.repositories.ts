@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { PreparationBlogForDB } from "../../blogger/domain/blog-preparation-for-DB";
+import { PreparationBlogForDB } from "../../blogger/domain/types/blog-preparation-for-DB";
 import { UpdateBlogDto } from "../../blogger/api/input-dtos/update-Blog-Dto-Model";
-import { BanUserForBlogPreparationForDB } from "../../blogger/domain/ban-user-for-blog-preparation-for-DB";
+import { BanUserForBlogPreparationForDB } from "../../blogger/domain/types/ban-user-for-blog-preparation-for-DB";
 import { DataSource } from "typeorm";
-import { BlogDBSQLType } from "../../blogger/domain/blog-DB-SQL-Type";
-import { BannedBlogUsersDBSQL } from "../../blogger/domain/banned_blog_users-DB-SQL";
+import { BlogDBSQLType } from "../../blogger/domain/types/blog-DB-SQL-Type";
+import { BannedBlogUsersDBSQL } from "../../blogger/domain/types/banned_blog_users-DB-SQL";
 
 @Injectable()
 export class BlogsSqlRepositories {
@@ -34,7 +34,7 @@ export class BlogsSqlRepositories {
     `;
     await this.dataSource.query(query);
     //if (res[1] === 0) throw new Error(`not today`);
-    return true;
+    return true; //res[1] === 1
   }
 
   async updateBlog(id: string, userId: string, data: UpdateBlogDto): Promise<boolean> {
@@ -69,11 +69,6 @@ export class BlogsSqlRepositories {
     `;
     await this.dataSource.query(query);
     return true;
-    // const result = await this.blogsModel.updateOne(
-    //   { id },
-    //   { $set: { userId: userId } }
-    // );
-    // return result.matchedCount === 1;
   }
 
   async updateBanStatusForBlog(blogId: string, isBanned: boolean): Promise<boolean> {
@@ -84,14 +79,6 @@ export class BlogsSqlRepositories {
         WHERE "blogId" = '${blogId}'
     `;
     await this.dataSource.query(query);
-    //
-    // const result = await this.blogsModel.updateOne({ _id: new Object(blogId) }, {
-    //   $set: {
-    //     isBanned,
-    //     banDate: new Date().toISOString()
-    //   }
-    // });
-    // return result.matchedCount === 1;
     return true;
   }
 

@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { BanInfoType, UsersViewType } from "./user-View-Model";
+import { BanInfoType, UsersViewType } from "./types-view/user-View-Model";
 import { PaginationUsersDto } from "../../api/input-Dto/pagination-Users-Dto-Model";
 import { PaginationViewModel } from "../../../blogs/infrastructure/query-repository/pagination-View-Model";
 import {
   NotFoundExceptionMY,
   UnauthorizedExceptionMY
 } from "../../../../helpers/My-HttpExceptionFilter";
-import { MeViewModel } from "../../../auth/infrastructure/me-View-Model";
+import { MeViewModel } from "../../../auth/infrastructure/types-view/me-View-Model";
 import { DataSource } from "typeorm";
-import { UserDBSQLType } from "../user-DB-SQL-Type";
+import { UserDBSQLType } from "../../domain/types/user-DB-SQL-Type";
 
 
 @Injectable()

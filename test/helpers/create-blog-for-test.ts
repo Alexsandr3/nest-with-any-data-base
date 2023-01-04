@@ -1,6 +1,6 @@
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
-import { BlogViewModel } from "../../src/modules/blogs/infrastructure/query-repository/blog-View-Model";
+import { BlogViewModel } from "../../src/modules/blogs/infrastructure/query-repository/types-view/blog-View-Model";
 
 export const createBlogsForTest = async (count: number, accessToken: string, app: INestApplication) => {
   const result: { blog: BlogViewModel }[] = [];

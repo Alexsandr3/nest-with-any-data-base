@@ -11,8 +11,8 @@ import {
 } from "@nestjs/common";
 import { PaginationDto } from "../../blogs/api/input-Dtos/pagination-Dto-Model";
 import { PaginationViewModel } from "../../blogs/infrastructure/query-repository/pagination-View-Model";
-import { PostViewModel } from "../infrastructure/query-repositories/post-View-Model";
-import { CommentsViewType } from "../../comments/infrastructure/query-repository/comments-View-Model";
+import { PostViewModel } from "../infrastructure/query-repositories/types-view/post-View-Model";
+import { CommentsViewType } from "../../comments/infrastructure/query-repository/types-view/comments-View-Model";
 import { JwtAuthGuard } from "../../../guards/jwt-auth-bearer.guard";
 import { UpdateLikeStatusDto } from "./input-Dtos/update-Like-Status-Model";
 import { CurrentUserId } from "../../../decorators/current-user-id.param.decorator";
@@ -46,7 +46,7 @@ export class PostsController {
   async findComments(@CurrentUserId() userId: string,
                      @Param(`postId`, ValidateUuidPipe) postId: string,
                      @Query() paginationInputModel: PaginationDto): Promise<PaginationViewModel<CommentsViewType[]>> {
-    return await this.postsQueryRepositories.findCommentsByIdPost(postId, paginationInputModel, userId);
+    return await this.postsQueryRepositories.getCommentsByIdPost(postId, paginationInputModel, userId);
   }
 
   @UseGuards(JwtAuthGuard)

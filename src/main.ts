@@ -2,7 +2,7 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ConfigService } from "@nestjs/config";
 import { ConfigType } from "./config/configuration";
-import { createdApp } from "./helpers/createdApp";
+import { createdApp } from "./createdApp";
 
 
 async function bootstrap() {

@@ -5,7 +5,7 @@ import {
   ForbiddenExceptionMY,
   NotFoundExceptionMY
 } from "../../../../../helpers/My-HttpExceptionFilter";
-import { BanUserForBlogPreparationForDB } from "../../../domain/ban-user-for-blog-preparation-for-DB";
+import { BanUserForBlogPreparationForDB } from "../../../domain/types/ban-user-for-blog-preparation-for-DB";
 import { UsersSqlQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-sql-query.reposit";
 import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
 

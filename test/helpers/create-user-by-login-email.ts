@@ -1,7 +1,7 @@
 import { INestApplication } from "@nestjs/common";
-import { UsersViewType } from "../../src/modules/users/infrastructure/query-reposirory/user-View-Model";
+import { UsersViewType } from "../../src/modules/users/infrastructure/query-reposirory/types-view/user-View-Model";
 import request from "supertest";
-import { LikeStatusType } from "../../src/modules/posts/domain/likesPost-schema-Model";
+import { LikeStatusType } from "../../src/modules/posts/domain/mongo-schemas/likesPost-schema-Model";
 
 let randomText = (Math.random() + 1).toString(36).substring(7);
 export const createUserByLoginEmail = async (count: number, app: INestApplication) => {

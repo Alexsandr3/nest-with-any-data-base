@@ -12,7 +12,7 @@ import {
 } from "@nestjs/common";
 import { CreateUserDto } from "./input-Dto/create-User-Dto-Model";
 import { UsersService } from "../domain/users.service";
-import { UsersViewType } from "../infrastructure/query-reposirory/user-View-Model";
+import { UsersViewType } from "../infrastructure/query-reposirory/types-view/user-View-Model";
 import { PaginationUsersDto } from "./input-Dto/pagination-Users-Dto-Model";
 import { BasicAuthGuard } from "../../../guards/basic-auth.guard";
 import { CommandBus } from "@nestjs/cqrs";

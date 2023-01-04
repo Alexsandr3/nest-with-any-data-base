@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { DeviceViewModel } from "./device-View-Model";
+import { DeviceViewModel } from "./types-view/device-View-Model";
 import { DataSource } from "typeorm";
 
 @Injectable()

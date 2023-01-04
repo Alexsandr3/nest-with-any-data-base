@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { BlogDocument, Blog } from "../../blogger/domain/blog-schema-Model";
-import { PreparationBlogForDB } from "../../blogger/domain/blog-preparation-for-DB";
-import { BlogsDBType } from "../../blogger/domain/blog-DB-Type";
+import { BlogDocument, Blog } from "../../blogger/domain/mongo-schemas/blog-schema-Model";
+import { PreparationBlogForDB } from "../../blogger/domain/types/blog-preparation-for-DB";
+import { BlogsDBType } from "../../blogger/domain/types/blog-DB-Type";
 import { UpdateBlogDto } from "../../blogger/api/input-dtos/update-Blog-Dto-Model";
-import { BlogBanInfo, BlogBanInfoDocument } from "../../blogger/domain/ban-user-for-current-blog-schema-Model";
-import { BanUserForBlogPreparationForDB } from "../../blogger/domain/ban-user-for-blog-preparation-for-DB";
+import { BlogBanInfo, BlogBanInfoDocument } from "../../blogger/domain/mongo-schemas/ban-user-for-current-blog-schema-Model";
+import { BanUserForBlogPreparationForDB } from "../../blogger/domain/types/ban-user-for-blog-preparation-for-DB";
 
 @Injectable()
 export class BlogsRepositories {

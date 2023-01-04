@@ -6,9 +6,9 @@ import { JwtService, TokensType } from '../../jwt.service';
 import { LoginDto } from '../../../api/input-dtos/login-Dto-Model';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
-import { PreparationDeviceForDB } from '../../../../security/domain/device-preparation-for-DB';
+import { PreparationDeviceForDB } from '../../../../security/domain/types/device-preparation-for-DB';
 import { UsersSqlRepositories } from "../../../../users/infrastructure/users-sql-repositories";
-import { UserDBSQLType } from "../../../../users/infrastructure/user-DB-SQL-Type";
+import { UserDBSQLType } from "../../../../users/domain/types/user-DB-SQL-Type";
 import { DeviceSqlRepositories } from "../../../../security/infrastructure/device-sql-repositories";
 
 @CommandHandler(LoginCommand)

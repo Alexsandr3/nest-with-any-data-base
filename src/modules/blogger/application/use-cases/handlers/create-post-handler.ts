@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreatePostCommand } from "../create-post-command";
-import { PostViewModel } from "../../../../posts/infrastructure/query-repositories/post-View-Model";
-import { PreparationPostForDB } from "../../../../posts/domain/post-preparation-for-DB";
+import { PostViewModel } from "../../../../posts/infrastructure/query-repositories/types-view/post-View-Model";
+import { PreparationPostForDB } from "../../../../posts/domain/types/post-preparation-for-DB";
 import {
   ForbiddenExceptionMY,
   NotFoundExceptionMY

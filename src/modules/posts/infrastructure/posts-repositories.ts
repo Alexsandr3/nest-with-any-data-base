@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Post, PostDocument } from '../domain/post-schema-Model';
-import { PreparationPostForDB } from '../domain/post-preparation-for-DB';
+import { Post, PostDocument } from '../domain/mongo-schemas/post-schema-Model';
+import { PreparationPostForDB } from '../domain/types/post-preparation-for-DB';
 import {
   LikesPostsStatus,
   LikesPostsStatusDocument,
-} from '../domain/likesPost-schema-Model';
+} from '../domain/mongo-schemas/likesPost-schema-Model';
 import { ObjectId } from 'mongodb';
-import { PostDBType } from '../domain/post-DB-Type';
+import { PostDBType } from '../domain/types/post-DB-Type';
 import { CreatePostDto } from '../api/input-Dtos/create-Post-Dto-Model';
 
 @Injectable()

@@ -1,12 +1,12 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { PostsRepositories } from "../posts/infrastructure/posts-repositories";
-import { Post, PostSchema } from "../posts/domain/post-schema-Model";
+import { Post, PostSchema } from "../posts/domain/mongo-schemas/post-schema-Model";
 import { PostsQueryRepositories } from "../posts/infrastructure/query-repositories/posts-query.reposit";
 import {
   LikesPostsStatus,
   LikesPostsStatusSchema
-} from "../posts/domain/likesPost-schema-Model";
+} from "../posts/domain/mongo-schemas/likesPost-schema-Model";
 import { JwtService } from "../auth/application/jwt.service";
 import { CreateBlogHandler } from "./application/use-cases/handlers/create-blog-handler";
 import { CqrsModule } from "@nestjs/cqrs";
@@ -18,14 +18,14 @@ import { BloggersService } from "./domain/bloggers.service";
 import { JwtAuthGuard } from "../../guards/jwt-auth-bearer.guard";
 import { BlogsRepositories } from "../blogs/infrastructure/blogs.repositories";
 import { BlogsQueryRepositories } from "../blogs/infrastructure/query-repository/blogs-query.repositories";
-import { Blog, BlogSchema } from "./domain/blog-schema-Model";
-import { Comment, CommentSchema } from "../comments/domain/comments-schema-Model";
-import { LikesStatus, LikesStatusSchema } from "../comments/domain/likesStatus-schema-Model";
+import { Blog, BlogSchema } from "./domain/mongo-schemas/blog-schema-Model";
+import { Comment, CommentSchema } from "../comments/domain/mongo-schemas/comments-schema-Model";
+import { LikesStatus, LikesStatusSchema } from "../comments/domain/mongo-schemas/likesStatus-schema-Model";
 import { DeletePostHandler } from "./application/use-cases/handlers/delete-post-handler";
 import { UpdatePostHandler } from "./application/use-cases/handlers/update-post-handler";
 import { UsersQueryRepositories } from "../users/infrastructure/query-reposirory/users-query.reposit";
-import { User, UserSchema } from "../users/domain/users-schema-Model";
-import { BlogBanInfo, BlogBanInfoSchema } from "./domain/ban-user-for-current-blog-schema-Model";
+import { User, UserSchema } from "../users/domain/mongo-schemas/users-schema-Model";
+import { BlogBanInfo, BlogBanInfoSchema } from "./domain/mongo-schemas/ban-user-for-current-blog-schema-Model";
 import {
   UpdateBanUserForCurrentBlogHandler
 } from "./application/use-cases/handlers/update-ban-user-for-current-blog-handler";
@@ -48,18 +48,18 @@ const handlers = [
   UpdateBanUserForCurrentBlogHandler
 ];
 const adapters = [
-  BlogsRepositories,
   BlogsSqlRepositories,
-  BlogsQueryRepositories,
   BlogsSqlQueryRepositories,
-  PostsRepositories,
   PostsSqlRepositories,
-  PostsQueryRepositories,
   PostsSqlQueryRepositories,
-  UsersRepositories,
   UsersSqlRepositories,
-  UsersQueryRepositories,
   UsersSqlQueryRepositories,
+  BlogsRepositories, //
+  BlogsQueryRepositories, //
+  PostsRepositories, //
+  PostsQueryRepositories, //
+  UsersRepositories, //
+  UsersQueryRepositories, //
   JwtService
 ];
 const guards = [JwtAuthGuard];

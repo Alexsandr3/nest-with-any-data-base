@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards, UsePipes } from "@nestjs/common";
 import { CreatePostDto } from "../../posts/api/input-Dtos/create-Post-Dto-Model";
-import { PostViewModel } from "../../posts/infrastructure/query-repositories/post-View-Model";
+import { PostViewModel } from "../../posts/infrastructure/query-repositories/types-view/post-View-Model";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateBlogCommand } from "../application/use-cases/create-blog-command";
 import { DeleteBlogCommand } from "../application/use-cases/delete-blog-command";
@@ -8,7 +8,7 @@ import { UpdateBlogCommand } from "../application/use-cases/update-blog-command"
 import { CreatePostCommand } from "../application/use-cases/create-post-command";
 import { JwtAuthGuard } from "../../../guards/jwt-auth-bearer.guard";
 import { PaginationDto } from "../../blogs/api/input-Dtos/pagination-Dto-Model";
-import { BlogViewModel } from "../../blogs/infrastructure/query-repository/blog-View-Model";
+import { BlogViewModel } from "../../blogs/infrastructure/query-repository/types-view/blog-View-Model";
 import { PaginationViewModel } from "../../blogs/infrastructure/query-repository/pagination-View-Model";
 import { UpdatePostCommand } from "../application/use-cases/update-post-command";
 import { DeletePostCommand } from "../application/use-cases/delete-post-command";
@@ -22,6 +22,7 @@ import { SkipThrottle } from "@nestjs/throttler";
 import { BlogsSqlQueryRepositories } from "../../blogs/infrastructure/query-repository/blogs-sql-query.repositories";
 import { ValidateUuidPipe } from "../../../validators/validate-uuid-pipe";
 import { PostsSqlQueryRepositories } from "../../posts/infrastructure/query-repositories/posts-sql-query.reposit";
+import { UsersForBanBlogViewType } from "../../users/infrastructure/query-reposirory/types-view/user-View-Model";
 
 @SkipThrottle()
 @UseGuards(JwtAuthGuard)
@@ -35,7 +36,7 @@ export class BloggersController {
   @Get(`blogs/comments`)
   async getComments(@CurrentUserIdBlogger() userId: string,
                     @Query() paginationInputModel: PaginationDto) {
-    return await this.postsQueryRepositories.findCommentsBloggerForPosts(userId, paginationInputModel);
+    return await this.postsQueryRepositories.getCommentsBloggerForPosts(userId, paginationInputModel);
   }
 
   @UsePipes(new ValidateUuidPipe())
@@ -103,7 +104,7 @@ export class BloggersController {
   @Get(`users/blog/:id`)
   async getBanedUser(@CurrentUserIdBlogger() userId: string,
                      @Param(`id`, ValidateUuidPipe) id: string,
-                     @Query() paginationInputModel: PaginationDto) {
+                     @Query() paginationInputModel: PaginationDto): Promise<PaginationViewModel<UsersForBanBlogViewType[]>> {
     const blog = await this.blogsQueryRepositories.findBlogWithMap(id);
     if (blog.userId !== userId) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
     return await this.blogsQueryRepositories.getBannedUsersForBlog(id, paginationInputModel);

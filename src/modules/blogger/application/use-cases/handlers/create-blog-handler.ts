@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { PreparationBlogForDB } from "../../../domain/blog-preparation-for-DB";
+import { PreparationBlogForDB } from "../../../domain/types/blog-preparation-for-DB";
 import { CreateBlogCommand } from "../create-blog-command";
 import { UnauthorizedExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
 import { UsersSqlRepositories } from "../../../../users/infrastructure/users-sql-repositories";

@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { Device, DeviceDocument } from "../domain/device-schema-Model";
-import { PreparationDeviceForDB } from "../domain/device-preparation-for-DB";
-import { DeviceDBType } from "../domain/device-DB-Type";
+import { Device, DeviceDocument } from "../domain/mongo-schemas/device-schema-Model";
+import { PreparationDeviceForDB } from "../domain/types/device-preparation-for-DB";
+import { DeviceDBType } from "../domain/types/device-DB-Type";
 
 @Injectable()
 export class DeviceRepositories {

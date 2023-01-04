@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Comment, CommentDocument } from '../../domain/comments-schema-Model';
+import { Comment, CommentDocument } from '../../domain/mongo-schemas/comments-schema-Model';
 import { ObjectId } from 'mongodb';
-import { CommentsViewType, LikesInfoViewModel } from './comments-View-Model';
-import { LikeStatusType } from '../../../posts/domain/likesPost-schema-Model';
+import { CommentsViewType, LikesInfoViewModel } from './types-view/comments-View-Model';
+import { LikeStatusType } from '../../../posts/domain/mongo-schemas/likesPost-schema-Model';
 import { NotFoundExceptionMY } from '../../../../helpers/My-HttpExceptionFilter';
 import {
   LikesStatus,
   LikesStatusDocument,
-} from '../../domain/likesStatus-schema-Model';
+} from '../../domain/mongo-schemas/likesStatus-schema-Model';
 
 @Injectable()
 export class CommentsQueryRepositories {

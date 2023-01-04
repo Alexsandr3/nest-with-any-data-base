@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 import { BadRequestExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
-import { UsersDBType } from "../infrastructure/user-DB-Type";
+import { UsersDBType } from "./types/user-DB-Type";
 
 @Injectable()
 export class UsersService {

@@ -1,15 +1,16 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId } from "mongodb";
 import {
   AccountDataType,
   EmailConfirmationType,
-  EmailRecoveryType,
-} from '../domain/user-preparation-for-DB';
+  EmailRecoveryType
+} from "./user-preparation-for-DB";
 
 export class UsersDBType {
   constructor(
     public _id: ObjectId,
     public accountData: AccountDataType,
     public emailConfirmation: EmailConfirmationType,
-    public emailRecovery: EmailRecoveryType,
-  ) {}
+    public emailRecovery: EmailRecoveryType
+  ) {
+  }
 }

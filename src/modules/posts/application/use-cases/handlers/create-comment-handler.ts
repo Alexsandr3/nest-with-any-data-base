@@ -1,11 +1,11 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateCommentCommand } from "../create-comment-command";
-import { CommentsViewType } from "../../../../comments/infrastructure/query-repository/comments-View-Model";
+import { CommentsViewType } from "../../../../comments/infrastructure/query-repository/types-view/comments-View-Model";
 import {
   ForbiddenExceptionMY,
   NotFoundExceptionMY,
 } from "../../../../../helpers/My-HttpExceptionFilter";
-import { PreparationCommentForDB } from "../../../../comments/domain/comment-preparation-for-DB";
+import { PreparationCommentForDB } from "../../../../comments/domain/types/comment-preparation-for-DB";
 import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
 import { PostsSqlRepositories } from "../../../infrastructure/posts-sql-repositories";
 import { UsersSqlQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-sql-query.reposit";
