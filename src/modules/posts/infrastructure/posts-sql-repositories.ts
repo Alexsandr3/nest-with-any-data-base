@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { PreparationPostForDB } from "../domain/post-preparation-for-DB";
+import { PreparationPostForDB } from "../domain/types/post-preparation-for-DB";
 import { CreatePostDto } from "../api/input-Dtos/create-Post-Dto-Model";
 import { DataSource } from "typeorm";
 import { NotFoundExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
-import { PostDBSQLType } from "../domain/post-DB-SQL-Type";
+import { PostDBSQLType } from "../domain/types/post-DB-SQL-Type";
 
 @Injectable()
 export class PostsSqlRepositories {
@@ -88,11 +88,6 @@ export class PostsSqlRepositories {
     `;
     await this.dataSource.query(query);
     return true;
-    // const result = await this.postModel.updateMany(
-    //   { blogId },
-    //   { $set: { isBanned: isBanned } }
-    // );
-    // return result.matchedCount === 1;
   }
 
   async updateLikeStatusPost(id: string, userId: string, likeStatus: string, login: string): Promise<boolean> {
@@ -135,20 +130,6 @@ export class PostsSqlRepositories {
       if (!res[1]) return null;
       return true;
     }
-
-    // const like = await this.likesPostsStatusModel.updateOne(
-    //   { userId: userId, parentId: id },
-    //   {
-    //     $set: {
-    //       likeStatus: likeStatus,
-    //       addedAt: new Date().toISOString(),
-    //       login: login,
-    //       isBanned: false
-    //     }
-    //   },
-    //   { upsert: true }
-    // );
-
   }
 
   async updateStatusBanLikePost(userId: string, isBanned: boolean): Promise<boolean> {
@@ -159,11 +140,5 @@ export class PostsSqlRepositories {
     `;
     await this.dataSource.query(query);
     return true;
-    //
-    // const result = await this.likesPostsStatusModel.updateMany(
-    //   { userId: userId },
-    //   { $set: { isBanned: isBanned } }
-    // );
-    // return result.matchedCount === 1;
   }
 }

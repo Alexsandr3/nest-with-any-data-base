@@ -1,5 +1,3 @@
-
-
 export interface BlogDBSQLType {
   blogId: string;
   userId: string;

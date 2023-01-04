@@ -2,21 +2,21 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { AppModule } from "../src/app.module";
-import { createdApp } from "../src/helpers/createdApp";
+import { createdApp } from "../src/createdApp";
 import {
   createUniqeUserByLoginEmail,
   createUserByLoginEmail
 } from "./helpers/create-user-by-login-email";
-import { BlogViewModel } from "../src/modules/blogs/infrastructure/query-repository/blog-View-Model";
-import { PostViewModel } from "../src/modules/posts/infrastructure/query-repositories/post-View-Model";
+import { BlogViewModel } from "../src/modules/blogs/infrastructure/query-repository/types-view/blog-View-Model";
+import { PostViewModel } from "../src/modules/posts/infrastructure/query-repositories/types-view/post-View-Model";
 import { MailService } from "../src/modules/mail/mail.service";
 import { MailServiceMock } from "./mock/mailService.mock";
 import { delay } from "./auth.e2e-spec";
 import { createBlogsAndPostForTest } from "./helpers/create-blog-and-post-for-test";
-import { CommentsViewType } from "../src/modules/comments/infrastructure/query-repository/comments-View-Model";
+import { CommentsViewType } from "../src/modules/comments/infrastructure/query-repository/types-view/comments-View-Model";
 import { randomUUID } from "crypto";
 import { createCommentForTest } from "./helpers/create-comment-for-test";
-import { UsersViewType } from "../src/modules/users/infrastructure/query-reposirory/user-View-Model";
+import { UsersViewType } from "../src/modules/users/infrastructure/query-reposirory/types-view/user-View-Model";
 
 
 jest.setTimeout(120000);
@@ -876,7 +876,7 @@ describe(`Homework 19`, () => {
       });
     });
   });
-  describe.skip(`Comment likes - 02`, () => {
+  describe(`Comment likes - 02`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -980,6 +980,13 @@ describe(`Homework 19`, () => {
       comment4 = res[4].comment;
       comment5 = res[5].comment;
 
+
+      await request(app.getHttpServer())
+        .put(`/comments/${comment.id}/like-status`)
+        .auth(accessToken, { type: "bearer" })
+        .send({ likeStatus: "Like" })
+        .expect(204);
+
       await request(app.getHttpServer())
         .put(`/comments/${comment.id}/like-status`)
         .auth(accessToken1, { type: "bearer" })
@@ -1063,7 +1070,7 @@ describe(`Homework 19`, () => {
         .auth(accessToken1, { type: "bearer" })
         .expect(200);
 
-      expect(res0.body.likesInfo).toEqual({ likesCount: 2, dislikesCount: 0, myStatus: "Like" });
+      expect(res0.body.likesInfo).toEqual({ likesCount: 3, dislikesCount: 0, myStatus: "Like" });
 
       const res01 = await request(app.getHttpServer())
         .get(`/comments/${comment1.id}`)
@@ -1128,7 +1135,7 @@ describe(`Homework 19`, () => {
     let comment: CommentsViewType;
     let accessToken: string;
     let accessToken1: string;
-    it(`01 - GET -> "/comments/:id": Shouldn't return banned user like for comment. Should return unbanned user like for comment; status 200; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban, POST => /auth/login, POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments;`, async () => {
+    it.skip(`01 - GET -> "/comments/:id": Shouldn't return banned user like for comment. Should return unbanned user like for comment; status 200; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban, POST => /auth/login, POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments;`, async () => {
       const res = await createUserByLoginEmail(2, app);
       user = res[0].user;
       user1 = res[1].user;
@@ -1206,14 +1213,21 @@ describe(`Homework 19`, () => {
 
 
       expect(responseComment.body).toBeTruthy();
+      expect(responseComment.body).toEqual(expect.objectContaining({
+        likesInfo: {
+          likesCount: 1,
+          dislikesCount: 0,
+          myStatus: "None"
+        }
+      }));
       expect(responseComment.body).toEqual({
         id: expect.any(String),
-        content: 'This is a new comment for post',
+        content: "This is a new comment for post",
         userId: expect.any(String),
-        userLogin: 'asirius-0',
+        userLogin: "asirius-0",
         createdAt: expect.any(String),
-        likesInfo: { likesCount: 1, dislikesCount: 0, myStatus: 'None' }
-      })
+        likesInfo: { likesCount: 1, dislikesCount: 0, myStatus: "None" }
+      });
 
       //ban user
       await request(app.getHttpServer())
@@ -1265,8 +1279,8 @@ describe(`Homework 19`, () => {
       //checking at login, should return - status -  401
       await request(app.getHttpServer())
         .post(`/auth/login`)
-        .send({ loginOrEmail: `asirius-1`, password: `asirius-121`})
-        .expect(401)
+        .send({ loginOrEmail: `asirius-1`, password: `asirius-121` })
+        .expect(401);
 
       //finding comment banned user, should return status 404
       const responseComment1 = await request(app.getHttpServer())
@@ -1276,7 +1290,7 @@ describe(`Homework 19`, () => {
 
 
       console.log("--2", responseComment1.body);
-      expect(responseComment1.body.likesInfo).toEqual({ likesCount: 0, dislikesCount: 0, myStatus: 'None' })
+      expect(responseComment1.body.likesInfo).toEqual({ likesCount: 0, dislikesCount: 0, myStatus: "None" });
 
       //unbanned user
       await request(app.getHttpServer())
@@ -1298,16 +1312,20 @@ describe(`Homework 19`, () => {
 
       expect(responseComment2.body).toEqual({
         id: expect.any(String),
-        content: 'This is a new comment for post',
+        content: "This is a new comment for post",
         userId: expect.any(String),
-        userLogin: 'asirius-0',
+        userLogin: "asirius-0",
         createdAt: expect.any(String),
-        likesInfo: { likesCount: 0, dislikesCount: 0, myStatus: 'None' }
-      })
+        likesInfo: { likesCount: 0, dislikesCount: 0, myStatus: "None" }
+      });
 
 
     });
 
+    it.skip(`creat 10 user and blog `, async () => {
+      const res = await createUserByLoginEmail(2, app);
+      await createBlogsAndPostForTest(13, res[0].accessToken, app)
+    });
   });
 });
 

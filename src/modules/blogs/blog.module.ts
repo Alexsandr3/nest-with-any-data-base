@@ -1,28 +1,28 @@
-import { Module } from '@nestjs/common';
-import { BlogsController } from './api/blogs.controller';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from '../blogger/domain/blog-schema-Model';
-import { BlogsQueryRepositories } from './infrastructure/query-repository/blogs-query.repositories';
-import { Post, PostSchema } from '../posts/domain/post-schema-Model';
-import { PostsQueryRepositories } from '../posts/infrastructure/query-repositories/posts-query.reposit';
+import { Module } from "@nestjs/common";
+import { BlogsController } from "./api/blogs.controller";
+import { MongooseModule } from "@nestjs/mongoose";
+import { Blog, BlogSchema } from "../blogger/domain/mongo-schemas/blog-schema-Model";
+import { BlogsQueryRepositories } from "./infrastructure/query-repository/blogs-query.repositories";
+import { Post, PostSchema } from "../posts/domain/mongo-schemas/post-schema-Model";
+import { PostsQueryRepositories } from "../posts/infrastructure/query-repositories/posts-query.reposit";
 import {
   LikesPostsStatus,
-  LikesPostsStatusSchema,
-} from '../posts/domain/likesPost-schema-Model';
-import { BasicStrategy } from '../../strategies/basic.strategy';
-import { JwtForGetGuard } from '../../guards/jwt-auth-bearer-for-get.guard';
-import { JwtService } from '../auth/application/jwt.service';
-import { CqrsModule } from '@nestjs/cqrs';
-import { BlogsService } from './domain/blogs.service';
+  LikesPostsStatusSchema
+} from "../posts/domain/mongo-schemas/likesPost-schema-Model";
+import { BasicStrategy } from "../../strategies/basic.strategy";
+import { JwtForGetGuard } from "../../guards/jwt-auth-bearer-for-get.guard";
+import { JwtService } from "../auth/application/jwt.service";
+import { CqrsModule } from "@nestjs/cqrs";
+import { BlogsService } from "./domain/blogs.service";
 import {
   Comment,
-  CommentSchema,
-} from '../comments/domain/comments-schema-Model';
+  CommentSchema
+} from "../comments/domain/mongo-schemas/comments-schema-Model";
 import {
   LikesStatus,
-  LikesStatusSchema,
-} from '../comments/domain/likesStatus-schema-Model';
-import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
+  LikesStatusSchema
+} from "../comments/domain/mongo-schemas/likesStatus-schema-Model";
+import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/mongo-schemas/ban-user-for-current-blog-schema-Model";
 import { BlogsSqlQueryRepositories } from "./infrastructure/query-repository/blogs-sql-query.repositories";
 import { PostsSqlQueryRepositories } from "../posts/infrastructure/query-repositories/posts-sql-query.reposit";
 
@@ -37,9 +37,9 @@ const adapters = [BlogsQueryRepositories, BlogsSqlQueryRepositories, PostsQueryR
       { name: Comment.name, schema: CommentSchema },
       { name: LikesStatus.name, schema: LikesStatusSchema },
       { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema },
-      { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
+      { name: BlogBanInfo.name, schema: BlogBanInfoSchema }
     ]),
-    CqrsModule,
+    CqrsModule
   ],
   controllers: [BlogsController],
   providers: [
@@ -47,7 +47,8 @@ const adapters = [BlogsQueryRepositories, BlogsSqlQueryRepositories, PostsQueryR
     BasicStrategy,
     JwtForGetGuard,
     ...handlers,
-    ...adapters,
-  ],
+    ...adapters
+  ]
 })
-export class BlogModule {}
+export class BlogModule {
+}

@@ -2,14 +2,14 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { AppModule } from "../src/app.module";
-import { createdApp } from "../src/helpers/createdApp";
+import { createdApp } from "../src/createdApp";
 import {
   createUniqeUserByLoginEmail,
   createUserByLoginEmail
 } from "./helpers/create-user-by-login-email";
-import { UsersViewType } from "../src/modules/users/infrastructure/query-reposirory/user-View-Model";
-import { BlogViewModel } from "../src/modules/blogs/infrastructure/query-repository/blog-View-Model";
-import { PostViewModel } from "../src/modules/posts/infrastructure/query-repositories/post-View-Model";
+import { UsersViewType } from "../src/modules/users/infrastructure/query-reposirory/types-view/user-View-Model";
+import { BlogViewModel } from "../src/modules/blogs/infrastructure/query-repository/types-view/blog-View-Model";
+import { PostViewModel } from "../src/modules/posts/infrastructure/query-repositories/types-view/post-View-Model";
 import { createBlogsForTest } from "./helpers/create-blog-for-test";
 
 
@@ -112,9 +112,7 @@ describe.skip(`Ban blog by super admin`, () => {
     let user: UsersViewType;
     let user1: UsersViewType;
     let blog: BlogViewModel;
-    let post: PostViewModel;
     let accessToken: string;
-    let refreshToken: string;
 
     it(`01 - POST -> "/auth/login": Shouldn't login banned user. Should login unbanned user; status 401; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban;`, async () => {
       const res = await createUserByLoginEmail(2, app);

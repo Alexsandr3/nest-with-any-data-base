@@ -8,8 +8,8 @@ import { UsersService } from "../users/domain/users.service";
 import { DeviceRepositories } from "../security/infrastructure/device-repositories";
 import { UsersQueryRepositories } from "../users/infrastructure/query-reposirory/users-query.reposit";
 import { MongooseModule } from "@nestjs/mongoose";
-import { User, UserSchema } from "../users/domain/users-schema-Model";
-import { Device, DeviceSchema } from "../security/domain/device-schema-Model";
+import { User, UserSchema } from "../users/domain/mongo-schemas/users-schema-Model";
+import { Device, DeviceSchema } from "../security/domain/mongo-schemas/device-schema-Model";
 import { RefreshGuard } from "../../guards/jwt-auth-refresh.guard";
 import { JwtAuthGuard } from "../../guards/jwt-auth-bearer.guard";
 import { UsersRepositories } from "../users/infrastructure/users-repositories";
@@ -22,10 +22,11 @@ import { NewPasswordHandler } from "./application/use-cases/handlers/new-passwor
 import { RecoveryHandler } from "./application/use-cases/handlers/recovery-handler";
 import { LoginHandler } from "./application/use-cases/handlers/login-handler";
 import { RefreshHandler } from "./application/use-cases/handlers/refresh-handler";
-import { ThrottlerModule } from "@nestjs/throttler";
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { UsersSqlRepositories } from "../users/infrastructure/users-sql-repositories";
 import { UsersSqlQueryRepositories } from "../users/infrastructure/query-reposirory/users-sql-query.reposit";
 import { DeviceSqlRepositories } from "../security/infrastructure/device-sql-repositories";
+import { APP_GUARD } from "@nestjs/core";
 
 const handlers = [
   CreateUserHandler,
@@ -39,12 +40,12 @@ const handlers = [
 ];
 const adapters = [
   JwtService,
-  DeviceRepositories,
-  UsersRepositories,
-  UsersQueryRepositories,
+  DeviceSqlRepositories,
   UsersSqlRepositories,
   UsersSqlQueryRepositories,
-  DeviceSqlRepositories
+  DeviceRepositories, //
+  UsersRepositories, //
+  UsersQueryRepositories //
 ];
 const guards = [RefreshGuard, JwtAuthGuard];
 
@@ -69,10 +70,10 @@ const guards = [RefreshGuard, JwtAuthGuard];
   ],
   controllers: [AuthController],
   providers: [UsersService, AuthService, ...adapters, ...guards, ...handlers,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerGuard
-    // }
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
   ],
   exports: [JwtService]
 })

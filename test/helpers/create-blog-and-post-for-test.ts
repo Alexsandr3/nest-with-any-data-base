@@ -1,7 +1,7 @@
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
-import { BlogViewModel } from "../../src/modules/blogs/infrastructure/query-repository/blog-View-Model";
-import { PostViewModel } from "../../src/modules/posts/infrastructure/query-repositories/post-View-Model";
+import { BlogViewModel } from "../../src/modules/blogs/infrastructure/query-repository/types-view/blog-View-Model";
+import { PostViewModel } from "../../src/modules/posts/infrastructure/query-repositories/types-view/post-View-Model";
 
 export const createBlogsAndPostForTest = async (count: number, accessToken: string, app: INestApplication) => {
   const result: { blog: BlogViewModel, post: PostViewModel }[] = [];

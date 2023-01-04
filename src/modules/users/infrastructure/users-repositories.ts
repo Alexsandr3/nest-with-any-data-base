@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { User, UserDocument } from "../domain/users-schema-Model";
-import { PreparationUserForDB } from "../domain/user-preparation-for-DB";
+import { User, UserDocument } from "../domain/mongo-schemas/users-schema-Model";
+import { PreparationUserForDB } from "../domain/types/user-preparation-for-DB";
 import { ObjectId } from "mongodb";
-import { UsersDBType } from "./user-DB-Type";
+import { UsersDBType } from "../domain/types/user-DB-Type";
 
 @Injectable()
 export class UsersRepositories {

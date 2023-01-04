@@ -1,30 +1,24 @@
 import { Injectable } from "@nestjs/common";
 import {
-  BanInfoForBlogType,
-  BlogOwnerInfoType,
-  BlogViewForSaModel,
-  BlogViewModel
-} from "./blog-View-Model";
+  BanInfoForBlogType, BlogOwnerInfoType,
+  BlogViewForSaModel, BlogViewModel
+} from "./types-view/blog-View-Model";
 import { PaginationViewModel } from "./pagination-View-Model";
 import { PaginationDto } from "../../api/input-Dtos/pagination-Dto-Model";
 import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
 import {
-  BanInfoType,
-  UsersForBanBlogViewType
-} from "../../../users/infrastructure/query-reposirory/user-View-Model";
+  BanInfoType, UsersForBanBlogViewType
+} from "../../../users/infrastructure/query-reposirory/types-view/user-View-Model";
 import { DataSource } from "typeorm";
-import { BlogDBSQLType } from "../../../blogger/domain/blog-DB-SQL-Type";
-import { BannedBlogUsersDBSQL } from "../../../blogger/domain/banned_blog_users-DB-SQL";
+import { BlogDBSQLType } from "../../../blogger/domain/types/blog-DB-SQL-Type";
+import { BannedBlogUsersDBSQL } from "../../../blogger/domain/types/banned_blog_users-DB-SQL";
 
 @Injectable()
 export class BlogsSqlQueryRepositories {
-  constructor(
-    private readonly dataSource: DataSource,
-  ) {
+  constructor(private readonly dataSource: DataSource) {
   }
 
 
-  //TODO need a type to join tables! //=> was the type BlogDBType?
   private mapperBlogForSaView(object: any): BlogViewForSaModel {
     const blogOwnerInfo = new BlogOwnerInfoType(
       object.userId,
@@ -60,7 +54,7 @@ export class BlogsSqlQueryRepositories {
 
   async findBlogs(data: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
-    let filter = `
+    let queryFilter = `
         SELECT "blogId" AS "id", "name", "description", "websiteUrl", "createdAt"
         FROM blogs
         WHERE "isBanned" = false
@@ -68,13 +62,13 @@ export class BlogsSqlQueryRepositories {
         LIMIT ${pageSize}
         OFFSET ${(pageNumber - 1) * pageSize}
     `;
-    let filterCounting = `
+    let requestCount = `
         SELECT count(*)
         FROM blogs
         WHERE "isBanned" = false
     `;
     if (searchNameTerm.trim().length > 0) {
-      filter = `
+      queryFilter = `
           SELECT "blogId" AS "id", "name", "description", "websiteUrl", "createdAt"
           FROM blogs
           WHERE "isBanned" = false
@@ -83,7 +77,7 @@ export class BlogsSqlQueryRepositories {
               LIMIT ${pageSize}
           OFFSET ${(pageNumber - 1) * pageSize}
       `;
-      filterCounting = `
+      requestCount = `
           SELECT count(*)
           FROM blogs
           WHERE "isBanned" = false
@@ -91,10 +85,10 @@ export class BlogsSqlQueryRepositories {
       `;
     }
     //search all blogs for current user
-    const blogs = await this.dataSource.query(filter);
+    const blogs = await this.dataSource.query(queryFilter);
     //counting blogs user
-    const totalCount = await this.dataSource.query(filterCounting);
-    const { count } = totalCount[0];
+    const totalCount = await this.dataSource.query(requestCount);
+    const { count } = totalCount[0]; //const count = +totalCount[0]['count']
     const pagesCountRes = Math.ceil(+count / pageSize);
     // Found Blogs with pagination!
     return new PaginationViewModel(
@@ -108,7 +102,7 @@ export class BlogsSqlQueryRepositories {
 
   async findBlogsForSa(data: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
-    let filter = `
+    let queryFilter = `
         SELECT a."blogId",
                a."name",
                a."description",
@@ -125,19 +119,12 @@ export class BlogsSqlQueryRepositories {
          LIMIT ${pageSize}
         OFFSET ${(pageNumber - 1) * pageSize}
     `;
-   /* let filter = `
-        SELECT *
-        FROM blogs
-        ORDER BY "${sortBy}" ${sortDirection}
-        LIMIT ${pageSize}
-        OFFSET ${(pageNumber - 1) * pageSize}
-    `;*/
-    let filterCounting = `
+    let requestCount = `
         SELECT count(*)
         FROM blogs
     `;
     if (searchNameTerm.trim().length > 0) {
-      filter = `
+      queryFilter = `
           SELECT a."blogId",
                  a."name",
                  a."description",
@@ -155,33 +142,20 @@ export class BlogsSqlQueryRepositories {
               LIMIT ${pageSize}
           OFFSET ${(pageNumber - 1) * pageSize}
       `;
-      filterCounting = `
+      requestCount = `
           SELECT count(*)
           FROM blogs
           WHERE "name" ILIKE '%${searchNameTerm}%'
       `;
     }
     //search all blogs for current user
-    const foundBlogs = await this.dataSource.query(filter);
+    const foundBlogs = await this.dataSource.query(queryFilter);
     //mapped for View
     const mappedBlogs = foundBlogs.map((blog) => this.mapperBlogForSaView(blog));
     //counting blogs user
-    const totalCount = await this.dataSource.query(filterCounting);
+    const totalCount = await this.dataSource.query(requestCount);
     const { count } = totalCount[0];
     const pagesCountRes = Math.ceil(+count / pageSize);
-    /*//search all blogs
-    const foundBlogs = await this.blogsModel
-      .find(searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" } } : {})
-      .skip((pageNumber - 1) * pageSize)
-      .limit(pageSize)
-      .sort({ [sortBy]: sortDirection })
-      .lean();
-    //mapped for View
-    const mappedBlogs = foundBlogs.map((blog) => this.mapperBlogForSaView(blog));
-    //counting blogs
-    const totalCount = await this.blogsModel.countDocuments(
-      searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" } } : {});
-    const pagesCountRes = Math.ceil(totalCount / pageSize);*/
     // Found Blogs with pagination!
     return new PaginationViewModel(
       pagesCountRes,
@@ -194,7 +168,7 @@ export class BlogsSqlQueryRepositories {
 
   async findBlogsForCurrentBlogger(data: PaginationDto, userId: string): Promise<PaginationViewModel<BlogViewModel[]>> {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
-    let filter = `
+    let queryFilter = `
         SELECT "blogId" AS "id", "name", "description", "websiteUrl", "createdAt"
         FROM blogs
         WHERE "userId" = '${userId}'
@@ -203,14 +177,14 @@ export class BlogsSqlQueryRepositories {
         LIMIT ${pageSize}
         OFFSET ${(pageNumber - 1) * pageSize}
     `;
-    let filterCounting = `
+    let requestCount = `
         SELECT count(*)
         FROM blogs
         WHERE "userId" = '${userId}'
           AND "isBanned" = false
     `;
     if (searchNameTerm.trim().length > 0) {
-      filter = `
+      queryFilter = `
           SELECT "blogId" AS "id", "name", "description", "websiteUrl", "createdAt"
           FROM blogs
           WHERE "userId" = '${userId}'
@@ -220,7 +194,7 @@ export class BlogsSqlQueryRepositories {
               LIMIT ${pageSize}
           OFFSET ${(pageNumber - 1) * pageSize}
       `;
-      filterCounting = `
+      requestCount = `
           SELECT count(*)
           FROM blogs
           WHERE "userId" = '${userId}'
@@ -229,9 +203,9 @@ export class BlogsSqlQueryRepositories {
       `;
     }
     //search all blogs for current user
-    const blogs = await this.dataSource.query(filter);
+    const blogs = await this.dataSource.query(queryFilter);
     //counting blogs user
-    const totalCount = await this.dataSource.query(filterCounting);
+    const totalCount = await this.dataSource.query(requestCount);
     const { count } = totalCount[0];
     const pagesCountRes = Math.ceil(+count / pageSize);
     // Found Blogs with pagination!
@@ -242,32 +216,6 @@ export class BlogsSqlQueryRepositories {
       +count,
       blogs
     );
-
-    /*
-    const filter: FilterQuery<Blog> = { userId: userId, isBanned: false };
-    if (searchNameTerm) {
-      filter.name = { $regex: searchNameTerm, $options: "i" };
-    }
-    //search all blogs for current user
-    const foundBlogs = await this.blogsModel
-      .find(filter)
-      .skip((pageNumber - 1) * pageSize)
-      .limit(pageSize)
-      .sort({ [sortBy]: sortDirection })
-      .lean();
-    //mapped for View
-    const mappedBlogs = foundBlogs.map((blog) => this.mapperBlogForView(blog));
-    //counting blogs user
-    const totalCount = await this.blogsModel.countDocuments(filter);
-    const pagesCountRes = Math.ceil(totalCount / pageSize);
-    // Found Blogs with pagination!
-    return new PaginationViewModel(
-      pagesCountRes,
-      pageNumber,
-      pageSize,
-      totalCount,
-      mappedBlogs
-    );*/
   }
 
   async findBlog(id: string): Promise<BlogViewModel> {
@@ -275,10 +223,11 @@ export class BlogsSqlQueryRepositories {
       `
           SELECT "blogId" AS "id", "name", "description", "websiteUrl", "createdAt"
           FROM blogs
-          WHERE "blogId" = '${id}' AND "isBanned" = false
+          WHERE "blogId" = '${id}'
+            AND "isBanned" = false
       `;
     const blog = await this.dataSource.query(query);
-    if (!blog[0]) throw new NotFoundExceptionMY("not found");
+    if (!blog[0]) throw new NotFoundExceptionMY(`Not found current blog with id: ${id}`);
     return blog[0];
   }
 
@@ -290,15 +239,14 @@ export class BlogsSqlQueryRepositories {
           AND "isBanned" = false
     `;
     const blog = await this.dataSource.query(query);
-    // const blog = await this.blogsModel.findOne({ _id: new Object(id), isBanned: false });
-     if (!blog[0]) throw new NotFoundExceptionMY(`Not found for id:${id}`);
+    if (!blog[0]) throw new NotFoundExceptionMY(`Not found current blog with id: ${id}`);
     //returning Blog with View
     return blog[0];
   }
 
-  async getBannedUsersForBlog(blogId: string, paginationInputModel: PaginationDto) {
+  async getBannedUsersForBlog(blogId: string, paginationInputModel: PaginationDto): Promise<PaginationViewModel<UsersForBanBlogViewType[]>> {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
-    let filter = `
+    let queryFilter = `
         SELECT *
         FROM banned_blog_users
         WHERE "blogId" = '${blogId}'
@@ -307,14 +255,14 @@ export class BlogsSqlQueryRepositories {
         LIMIT ${pageSize}
         OFFSET ${(pageNumber - 1) * pageSize}
     `;
-    let filterCounting = `
+    let requestCount = `
         SELECT count(*)
         FROM banned_blog_users
         WHERE "blogId" = '${blogId}'
           AND "isBanned" = true
     `;
     if (searchNameTerm.trim().length > 0) {
-      filter = `
+      queryFilter = `
           SELECT *
           FROM banned_blog_users
           WHERE "blogId" = '${blogId}'
@@ -324,7 +272,7 @@ export class BlogsSqlQueryRepositories {
               LIMIT ${pageSize}
           OFFSET ${(pageNumber - 1) * pageSize}
       `;
-      filterCounting = `
+      requestCount = `
           SELECT count(*)
           FROM banned_blog_users
           WHERE "blogId" = '${blogId}'
@@ -333,11 +281,11 @@ export class BlogsSqlQueryRepositories {
       `;
     }
     //search all blogs for current user
-    const foundBanStatusForBlog = await this.dataSource.query(filter);
+    const foundBanStatusForBlog = await this.dataSource.query(queryFilter);
     //mapped for View
     const mappedBlogs = foundBanStatusForBlog.map((blog) => this.mapperBanInfo(blog));
     //counting blogs user
-    const totalCount = await this.dataSource.query(filterCounting);
+    const totalCount = await this.dataSource.query(requestCount);
     const { count } = totalCount[0];
     const pagesCountRes = Math.ceil(+count / pageSize);
     // Found Blogs with pagination!
@@ -348,28 +296,5 @@ export class BlogsSqlQueryRepositories {
       +count,
       mappedBlogs
     );
-    /* const filter: FilterQuery<BlogBanInfo> = { blogId, isBanned: true };
-     if (searchNameTerm) {
-       filter.name = { $regex: searchNameTerm, $options: "i" };
-     }
-     const foundBanStatusForBlog = await this.blogBanInfoModel
-       .find(filter)
-       .skip((pageNumber - 1) * pageSize)
-       .limit(pageSize)
-       .sort({ [sortBy]: sortDirection })
-       .lean();
-     //mapped for View
-     const mappedBlogs = foundBanStatusForBlog.map((blog) => this.mapperBanInfo(blog));
-     //counting blogs user
-     const totalCount = await this.blogBanInfoModel.countDocuments(filter);
-     const pagesCountRes = Math.ceil(totalCount / pageSize);
-     // Found Blogs with pagination!
-     return new PaginationViewModel(
-       pagesCountRes,
-       pageNumber,
-       pageSize,
-       totalCount,
-       mappedBlogs
-     );*/
   }
 }

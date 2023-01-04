@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument } from '../blogger/domain/blog-schema-Model';
+import { Blog, BlogDocument } from '../blogger/domain/mongo-schemas/blog-schema-Model';
 import { Model } from 'mongoose';
 import {
   Comment,
   CommentDocument,
-} from '../comments/domain/comments-schema-Model';
-import { Post, PostDocument } from '../posts/domain/post-schema-Model';
-import { User, UserDocument } from '../users/domain/users-schema-Model';
-import { Device, DeviceDocument } from '../security/domain/device-schema-Model';
+} from '../comments/domain/mongo-schemas/comments-schema-Model';
+import { Post, PostDocument } from '../posts/domain/mongo-schemas/post-schema-Model';
+import { User, UserDocument } from '../users/domain/mongo-schemas/users-schema-Model';
+import { Device, DeviceDocument } from '../security/domain/mongo-schemas/device-schema-Model';
 import {
   LikesPostsStatus,
   LikesPostsStatusDocument,
-} from '../posts/domain/likesPost-schema-Model';
+} from '../posts/domain/mongo-schemas/likesPost-schema-Model';
 import {
   LikesStatus,
   LikesStatusDocument,
-} from '../comments/domain/likesStatus-schema-Model';
-import { BlogBanInfo, BlogBanInfoDocument } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
+} from '../comments/domain/mongo-schemas/likesStatus-schema-Model';
+import { BlogBanInfo, BlogBanInfoDocument } from "../blogger/domain/mongo-schemas/ban-user-for-current-blog-schema-Model";
 import { DataSource } from "typeorm";
 
 @Injectable()

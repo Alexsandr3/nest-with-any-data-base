@@ -1,24 +1,24 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from '../blogger/domain/blog-schema-Model';
-import { Post, PostSchema } from '../posts/domain/post-schema-Model';
-import { User, UserSchema } from '../users/domain/users-schema-Model';
+import { Blog, BlogSchema } from '../blogger/domain/mongo-schemas/blog-schema-Model';
+import { Post, PostSchema } from '../posts/domain/mongo-schemas/post-schema-Model';
+import { User, UserSchema } from '../users/domain/mongo-schemas/users-schema-Model';
 import { TestingController } from './testins.controller';
 import {
   Comment,
   CommentSchema,
-} from '../comments/domain/comments-schema-Model';
+} from '../comments/domain/mongo-schemas/comments-schema-Model';
 import { TestingService } from './testing.service';
-import { Device, DeviceSchema } from '../security/domain/device-schema-Model';
+import { Device, DeviceSchema } from '../security/domain/mongo-schemas/device-schema-Model';
 import {
   LikesStatus,
   LikesStatusSchema,
-} from '../comments/domain/likesStatus-schema-Model';
+} from '../comments/domain/mongo-schemas/likesStatus-schema-Model';
 import {
   LikesPostsStatus,
   LikesPostsStatusSchema,
-} from '../posts/domain/likesPost-schema-Model';
-import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
+} from '../posts/domain/mongo-schemas/likesPost-schema-Model';
+import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/mongo-schemas/ban-user-for-current-blog-schema-Model";
 
 @Module({
   imports: [

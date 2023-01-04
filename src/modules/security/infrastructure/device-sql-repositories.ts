@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { PreparationDeviceForDB } from "../domain/device-preparation-for-DB";
-import { DeviceDBType } from "../domain/device-DB-Type";
+import { PreparationDeviceForDB } from "../domain/types/device-preparation-for-DB";
+import { DeviceDBType } from "../domain/types/device-DB-Type";
 import { DataSource } from "typeorm";
 
 @Injectable()

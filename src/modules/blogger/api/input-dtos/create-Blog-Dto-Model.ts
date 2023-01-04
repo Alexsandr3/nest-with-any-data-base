@@ -25,3 +25,13 @@ export class CreateBlogDto {
   @IsString()
   websiteUrl: string;
 }
+
+
+export class CreateBlogDto2 {
+
+  name: string;
+
+  description: string;
+
+  websiteUrl: string;
+}

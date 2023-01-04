@@ -5,8 +5,9 @@ export class PreparationUserForDB {
     public accountData: AccountDataType,
     public emailConfirmation: EmailConfirmationType,
     public emailRecovery: EmailRecoveryType,
-    public banInfo: PreparationUserBanInfoForDB,
-  ) {}
+    public banInfo: PreparationUserBanInfoForDB
+  ) {
+  }
 }
 
 export class AccountDataType {
@@ -14,22 +15,25 @@ export class AccountDataType {
     public login: string,
     public email: string,
     public passwordHash: string,
-    public createdAt: string,
-  ) {}
+    public createdAt: string
+  ) {
+  }
 }
 
 export class EmailConfirmationType {
   constructor(
     public confirmationCode: string,
     public expirationDate: Date,
-    public isConfirmation: boolean,
-  ) {}
+    public isConfirmation: boolean
+  ) {
+  }
 }
 
 export class EmailRecoveryType {
   constructor(
     public recoveryCode: string,
     public expirationDate: Date,
-    public isConfirmation: boolean,
-  ) {}
+    public isConfirmation: boolean
+  ) {
+  }
 }

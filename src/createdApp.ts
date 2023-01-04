@@ -1,8 +1,8 @@
 import { BadRequestException, INestApplication, ValidationPipe } from "@nestjs/common";
 import cookieParser from "cookie-parser";
-import { ErrorExceptionFilter, HttpExceptionFilter } from "../filters/exception.filter";
+import { ErrorExceptionFilter, HttpExceptionFilter } from "./filters/exception.filter";
 import { useContainer } from "class-validator";
-import { AppModule } from "../app.module";
+import { AppModule } from "./app.module";
 
 export const createdApp = (app: INestApplication) => {
   app.useGlobalPipes(new ValidationPipe({
@@ -10,7 +10,7 @@ export const createdApp = (app: INestApplication) => {
     //forbidNonWhitelisted: true, //stopping create data
     transform: true, //transform data to correct
     stopAtFirstError: true,
-    transformOptions: {enableImplicitConversion: true},
+    transformOptions: { enableImplicitConversion: true },
     exceptionFactory: (errors) => {
       const errorsForRes = [];
       errors.forEach((e) => {

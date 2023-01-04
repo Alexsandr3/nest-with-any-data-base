@@ -7,7 +7,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { RefreshGuard } from "../../../guards/jwt-auth-refresh.guard";
-import { DeviceViewModel } from "../infrastructure/query-repository/device-View-Model";
+import { DeviceViewModel } from "../infrastructure/query-repository/types-view/device-View-Model";
 import { PayloadRefresh } from "../../../decorators/payload-refresh.param.decorator";
 import { PayloadType } from "../../auth/application/payloadType";
 import { CurrentUserIdDevice } from "../../../decorators/current-device.param.decorator";

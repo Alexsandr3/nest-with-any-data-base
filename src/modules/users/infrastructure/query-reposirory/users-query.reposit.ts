@@ -1,16 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { FilterQuery, LeanDocument, Model } from "mongoose";
-import { User, UserDocument } from "../../domain/users-schema-Model";
+import { User, UserDocument } from "../../domain/mongo-schemas/users-schema-Model";
 import { ObjectId } from "mongodb";
-import { BanInfoType, UsersViewType } from "./user-View-Model";
+import { BanInfoType, UsersViewType } from "./types-view/user-View-Model";
 import { PaginationUsersDto } from "../../api/input-Dto/pagination-Users-Dto-Model";
 import { PaginationViewModel } from "../../../blogs/infrastructure/query-repository/pagination-View-Model";
 import {
   NotFoundExceptionMY,
   UnauthorizedExceptionMY
 } from "../../../../helpers/My-HttpExceptionFilter";
-import { MeViewModel } from "../../../auth/infrastructure/me-View-Model";
+import { MeViewModel } from "../../../auth/infrastructure/types-view/me-View-Model";
 
 
 @Injectable()

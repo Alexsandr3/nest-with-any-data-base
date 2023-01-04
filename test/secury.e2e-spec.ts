@@ -2,10 +2,10 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { AppModule } from "../src/app.module";
-import { UsersViewType } from "../src/modules/users/infrastructure/query-reposirory/user-View-Model";
-import { createdApp } from "../src/helpers/createdApp";
+import { UsersViewType } from "../src/modules/users/infrastructure/query-reposirory/types-view/user-View-Model";
+import { createdApp } from "../src/createdApp";
 import { AccessTokenType } from "./types/types";
-import { DeviceViewModel } from "../src/modules/security/infrastructure/query-repository/device-View-Model";
+import { DeviceViewModel } from "../src/modules/security/infrastructure/query-repository/types-view/device-View-Model";
 
 
 const delay = async (delay: number = 1000) => {

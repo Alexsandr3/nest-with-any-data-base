@@ -16,6 +16,19 @@ import { SaModule } from "./modules/sa/sa.module";
 import { ConfigType, getConfiguration } from "./config/configuration";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
+const modules = [
+  UsersModule,
+  DeviceModule,
+  BlogModule,
+  BloggerModule,
+  PostModule,
+  CommentModule,
+  AuthModule,
+  MailModule,
+  TestingModule,
+  SaModule
+];
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [getConfiguration] }),
@@ -27,27 +40,18 @@ import { TypeOrmModule } from "@nestjs/typeorm";
       }
     }),
     TypeOrmModule.forRoot({
-      type: 'postgres',
-     // host: 'db.thin.dev',
+      type: "postgres",
+      // host: 'db.thin.dev',
       port: 5432,
       //username: 'wjAwVIGcCYqsGKcanuhfSWRmvFKeXUmK',
       //password: 'dltVsYUJmQJxMcYwmTzLoWMmOvfZNqhj',
       //database: '3efec63b-8094-4fa8-8583-2adf1954a134',
-      url: 'postgresql://wLjoUVUEoGPesZQZWUfFpbGlgALmADiw:sTyvDcUdHXBjVNIkrVmwLUFskrexHxEX@db.thin.dev/b76168db-7f53-4e42-8393-63c227017d05',
-      //entities: [],
+      url: "postgresql://wLjoUVUEoGPesZQZWUfFpbGlgALmADiw:sTyvDcUdHXBjVNIkrVmwLUFskrexHxEX@db.thin.dev/b76168db-7f53-4e42-8393-63c227017d05",
+      // entities: [],
       synchronize: false,
       autoLoadEntities: false
     }),
-    BlogModule,
-    PostModule,
-    CommentModule,
-    UsersModule,
-    MailModule,
-    AuthModule,
-    DeviceModule,
-    TestingModule,
-    BloggerModule,
-    SaModule
+    ...modules
   ],
   controllers: [AppController],
   providers: [AppService]

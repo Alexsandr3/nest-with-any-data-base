@@ -1,37 +1,37 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { LeanDocument, Model } from "mongoose";
-import { Post, PostDocument } from "../../domain/post-schema-Model";
+import { Post, PostDocument } from "../../domain/mongo-schemas/post-schema-Model";
 import { PaginationDto } from "../../../blogs/api/input-Dtos/pagination-Dto-Model";
-import { PostDBType } from "../../domain/post-DB-Type";
-import { PostViewModel } from "./post-View-Model";
+import { PostDBType } from "../../domain/types/post-DB-Type";
+import { PostViewModel } from "./types-view/post-View-Model";
 import {
   LikesPostsStatus,
   LikesPostsStatusDocument,
   LikeStatusType
-} from "../../domain/likesPost-schema-Model";
+} from "../../domain/mongo-schemas/likesPost-schema-Model";
 import {
   ExtendedLikesInfoViewModel,
   LikeDetailsViewModel
-} from "./likes-Info-View-Model";
+} from "./types-view/likes-Info-View-Model";
 import { PaginationViewModel } from "../../../blogs/infrastructure/query-repository/pagination-View-Model";
 import { ObjectId } from "mongodb";
 import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
 import {
   Comment,
   CommentDocument
-} from "../../../comments/domain/comments-schema-Model";
-import { CommentsDBType } from "../../../comments/domain/comment-DB-Type";
+} from "../../../comments/domain/mongo-schemas/comments-schema-Model";
+import { CommentsDBType } from "../../../comments/domain/types/comment-DB-Type";
 import {
   LikesStatus,
   LikesStatusDocument
-} from "../../../comments/domain/likesStatus-schema-Model";
+} from "../../../comments/domain/mongo-schemas/likesStatus-schema-Model";
 import {
   BloggerCommentsViewType, CommentatorInfoModel,
   CommentsViewType,
   LikesInfoViewModel, PostInfoModel
-} from "../../../comments/infrastructure/query-repository/comments-View-Model";
-import { BlogBanInfo, BlogBanInfoDocument } from "../../../blogger/domain/ban-user-for-current-blog-schema-Model";
+} from "../../../comments/infrastructure/query-repository/types-view/comments-View-Model";
+import { BlogBanInfo, BlogBanInfoDocument } from "../../../blogger/domain/mongo-schemas/ban-user-for-current-blog-schema-Model";
 
 @Injectable()
 export class PostsQueryRepositories {

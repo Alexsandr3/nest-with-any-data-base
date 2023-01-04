@@ -1,4 +1,4 @@
-import { ExtendedLikesInfoViewModel } from './likes-Info-View-Model';
+import { ExtendedLikesInfoViewModel } from "./likes-Info-View-Model";
 
 export class PostViewModel {
   constructor(
@@ -9,6 +9,7 @@ export class PostViewModel {
     public blogId: string,
     public blogName: string,
     public createdAt: string,
-    public extendedLikesInfo: ExtendedLikesInfoViewModel,
-  ) {}
+    public extendedLikesInfo: ExtendedLikesInfoViewModel
+  ) {
+  }
 }

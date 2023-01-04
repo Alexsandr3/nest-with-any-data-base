@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { LikeStatusType } from "../../posts/domain/likesPost-schema-Model";
-import { PreparationCommentForDB } from "../domain/comment-preparation-for-DB";
-import { CommentsViewType, LikesInfoViewModel } from "./query-repository/comments-View-Model";
+import { LikeStatusType } from "../../posts/domain/mongo-schemas/likesPost-schema-Model";
+import { PreparationCommentForDB } from "../domain/types/comment-preparation-for-DB";
+import { CommentsViewType, LikesInfoViewModel } from "./query-repository/types-view/comments-View-Model";
 import { DataSource } from "typeorm";
-import { CommentDBSQLType } from "../domain/comment-DB-SQL-Type";
+import { CommentDBSQLType } from "../domain/types/comment-DB-SQL-Type";
 
 @Injectable()
 export class CommentsSqlRepositories {
@@ -54,10 +54,6 @@ export class CommentsSqlRepositories {
     `;
     await this.dataSource.query(query);
     return true;
-    // const result = await this.commentsModel.deleteOne({
-    //   _id: new ObjectId(id)
-    // });
-    // return result.deletedCount === 1;
   }
 
   async updateCommentsById(id: string, content: string): Promise<boolean> {
@@ -67,11 +63,6 @@ export class CommentsSqlRepositories {
         WHERE "commentId" = '${id}'
     `;
     await this.dataSource.query(query);
-    // const result = await this.commentsModel.updateOne(
-    //   { _id: new ObjectId(id) },
-    //   { $set: { content: content } }
-    // );
-    // return result.matchedCount === 1;
     return true;
   }
 
@@ -83,12 +74,6 @@ export class CommentsSqlRepositories {
     `;
     await this.dataSource.query(query);
     return true;
-    //
-    // const result = await this.commentsModel.updateMany(
-    //   { userId: userId },
-    //   { $set: { isBanned: isBanned } }
-    // );
-    // return result.matchedCount === 1;
   }
 
   async updateLikeStatusForComment(id: string, userId: string, likeStatus: LikeStatusType): Promise<boolean> {
@@ -127,17 +112,6 @@ export class CommentsSqlRepositories {
       if (!res[1]) return null;
       return true;
     }
-
-    // try {
-    //   await this.likesStatusModel.updateOne(
-    //     { userId: userId, parentId: id },
-    //     { $set: { likeStatus, isBanned: false } },
-    //     { upsert: true }
-    //   );
-    //   return true;
-    // } catch (error) {
-    //   throw new Error(`not today - ! :-(`);
-    // }
   }
 
   async updateStatusBanLike(userId: string, isBanned: boolean): Promise<boolean> {
@@ -148,10 +122,5 @@ export class CommentsSqlRepositories {
     `;
     await this.dataSource.query(query);
     return true;
-    // const result = await this.likesStatusModel.updateMany(
-    //   { userId: userId },
-    //   { $set: { isBanned: isBanned } }
-    // );
-    // return result.matchedCount === 1;
   }
 }

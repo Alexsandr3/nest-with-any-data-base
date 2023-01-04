@@ -1,23 +1,23 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { FilterQuery, Model } from "mongoose";
-import { BlogDocument, Blog } from "../../../blogger/domain/blog-schema-Model";
+import { BlogDocument, Blog } from "../../../blogger/domain/mongo-schemas/blog-schema-Model";
 import {
   BanInfoForBlogType,
   BlogOwnerInfoType,
   BlogViewForSaModel,
   BlogViewModel
-} from "./blog-View-Model";
+} from "./types-view/blog-View-Model";
 import { PaginationViewModel } from "./pagination-View-Model";
-import { BlogsDBType } from "../../../blogger/domain/blog-DB-Type";
+import { BlogsDBType } from "../../../blogger/domain/types/blog-DB-Type";
 import { PaginationDto } from "../../api/input-Dtos/pagination-Dto-Model";
 import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
-import { BlogBanInfo, BlogBanInfoDocument } from "../../../blogger/domain/ban-user-for-current-blog-schema-Model";
+import { BlogBanInfo, BlogBanInfoDocument } from "../../../blogger/domain/mongo-schemas/ban-user-for-current-blog-schema-Model";
 import {
   BanInfoType,
   UsersForBanBlogViewType
-} from "../../../users/infrastructure/query-reposirory/user-View-Model";
-import { BanStatusBlogDBType } from "../../../blogger/domain/ban-user-for-blog-preparation-for-DB";
+} from "../../../users/infrastructure/query-reposirory/types-view/user-View-Model";
+import { BanStatusBlogDBType } from "../../../blogger/domain/types/ban-user-for-blog-preparation-for-DB";
 
 @Injectable()
 export class BlogsQueryRepositories {

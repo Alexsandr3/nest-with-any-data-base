@@ -1,11 +1,11 @@
 import { HttpException } from "@nestjs/common";
 import { CreateUserDto } from "../../../api/input-Dto/create-User-Dto-Model";
-import { UsersViewType } from "../../../infrastructure/query-reposirory/user-View-Model";
+import { UsersViewType } from "../../../infrastructure/query-reposirory/types-view/user-View-Model";
 import { MailService } from "../../../../mail/mail.service";
 import { randomUUID } from "crypto";
 import { BadRequestExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
 import { add } from "date-fns";
-import { PreparationUserForDB } from "../../../domain/user-preparation-for-DB";
+import { PreparationUserForDB } from "../../../domain/types/user-preparation-for-DB";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateUserCommand } from "../create-user-command";
 import { UsersService } from "../../../domain/users.service";

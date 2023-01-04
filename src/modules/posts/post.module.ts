@@ -2,19 +2,19 @@ import { Module } from '@nestjs/common';
 import { PostsService } from './domain/posts.service';
 import { PostsRepositories } from './infrastructure/posts-repositories';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Post, PostSchema } from './domain/post-schema-Model';
+import { Post, PostSchema } from './domain/mongo-schemas/post-schema-Model';
 import { PostsController } from './api/posts.controller';
 import { PostsQueryRepositories } from './infrastructure/query-repositories/posts-query.reposit';
 import {
   LikesPostsStatus,
   LikesPostsStatusSchema,
-} from './domain/likesPost-schema-Model';
+} from './domain/mongo-schemas/likesPost-schema-Model';
 import { BlogsQueryRepositories } from '../blogs/infrastructure/query-repository/blogs-query.repositories';
-import { Blog, BlogSchema } from '../blogger/domain/blog-schema-Model';
+import { Blog, BlogSchema } from '../blogger/domain/mongo-schemas/blog-schema-Model';
 import {
   Comment,
   CommentSchema,
-} from '../comments/domain/comments-schema-Model';
+} from '../comments/domain/mongo-schemas/comments-schema-Model';
 import { CommentsQueryRepositories } from '../comments/infrastructure/query-repository/comments-query.repositories';
 import { JwtAuthGuard } from '../../guards/jwt-auth-bearer.guard';
 import { CommentsRepositories } from '../comments/infrastructure/comments.repositories';
@@ -22,15 +22,15 @@ import { UsersQueryRepositories } from '../users/infrastructure/query-reposirory
 import {
   LikesStatus,
   LikesStatusSchema,
-} from '../comments/domain/likesStatus-schema-Model';
-import { User, UserSchema } from '../users/domain/users-schema-Model';
+} from '../comments/domain/mongo-schemas/likesStatus-schema-Model';
+import { User, UserSchema } from '../users/domain/mongo-schemas/users-schema-Model';
 import { JwtService } from '../auth/application/jwt.service';
 import { BasicAuthGuard } from '../../guards/basic-auth.guard';
 import { JwtForGetGuard } from '../../guards/jwt-auth-bearer-for-get.guard';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CreateCommentHandler } from './application/use-cases/handlers/create-comment-handler';
 import { UpdateLikeStatusHandler } from './application/use-cases/handlers/update-like-status-handler';
-import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
+import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/mongo-schemas/ban-user-for-current-blog-schema-Model";
 import { BlogsRepositories } from "../blogs/infrastructure/blogs.repositories";
 import { PostsSqlQueryRepositories } from "./infrastructure/query-repositories/posts-sql-query.reposit";
 import { PostsSqlRepositories } from "./infrastructure/posts-sql-repositories";

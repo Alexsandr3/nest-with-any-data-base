@@ -1,6 +1,6 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import { LikeStatusType } from '../../posts/domain/likesPost-schema-Model';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { HydratedDocument } from "mongoose";
+import { LikeStatusType } from "../../../posts/domain/mongo-schemas/likesPost-schema-Model";
 
 export type LikesStatusDocument = HydratedDocument<LikesStatus>;
 
@@ -12,7 +12,8 @@ export class LikesStatus {
   userId: string;
   @Prop({ type: String, required: true })
   parentId: string;
-  @Prop({ type: String, default: 'None', enum: LikeStatusType })
+  @Prop({ type: String, default: "None", enum: LikeStatusType })
   likeStatus: string;
 }
+
 export const LikesStatusSchema = SchemaFactory.createForClass(LikesStatus);

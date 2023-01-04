@@ -8,7 +8,7 @@ import {
   Put,
   UseGuards
 } from "@nestjs/common";
-import { CommentsViewType } from "../infrastructure/query-repository/comments-View-Model";
+import { CommentsViewType } from "../infrastructure/query-repository/types-view/comments-View-Model";
 import { UpdateLikeStatusDto } from "../../posts/api/input-Dtos/update-Like-Status-Model";
 import { CommentsService } from "../domain/comments.service";
 import { CurrentUserId } from "../../../decorators/current-user-id.param.decorator";
@@ -63,6 +63,6 @@ export class CommentsController {
   @Get(`/:id`)
   async findOne(@CurrentUserId() userId: string,
                 @Param(`id`, ValidateUuidPipe) id: string): Promise<CommentsViewType> {
-    return this.commentsQueryRepositories.findComment(id, userId);
+    return this.commentsQueryRepositories.getComment(id, userId);
   }
 }

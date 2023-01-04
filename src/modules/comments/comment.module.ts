@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Comment, CommentSchema } from './domain/comments-schema-Model';
+import { Comment, CommentSchema } from './domain/mongo-schemas/comments-schema-Model';
 import { CommentsQueryRepositories } from './infrastructure/query-repository/comments-query.repositories';
 import { CommentsController } from './api/comments.controller';
 import {
   LikesStatus,
   LikesStatusSchema,
-} from './domain/likesStatus-schema-Model';
+} from './domain/mongo-schemas/likesStatus-schema-Model';
 import { CommentsService } from './domain/comments.service';
 import { CommentsRepositories } from './infrastructure/comments.repositories';
 import { JwtAuthGuard } from '../../guards/jwt-auth-bearer.guard';

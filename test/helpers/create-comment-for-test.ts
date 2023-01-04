@@ -1,6 +1,6 @@
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
-import { CommentsViewType } from "../../src/modules/comments/infrastructure/query-repository/comments-View-Model";
+import { CommentsViewType } from "../../src/modules/comments/infrastructure/query-repository/types-view/comments-View-Model";
 
 export const createCommentForTest = async (count: number, accessToken: string, id: string, app: INestApplication) => {
   const result: { comment: CommentsViewType }[] = [];

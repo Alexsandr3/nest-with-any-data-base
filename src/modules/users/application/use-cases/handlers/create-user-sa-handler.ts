@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateUserSaCommand } from "../create-user-sa-command";
 import { UsersService } from "../../../domain/users.service";
-import { UsersViewType } from "../../../infrastructure/query-reposirory/user-View-Model";
-import { PreparationUserForDB } from "../../../domain/user-preparation-for-DB";
+import { UsersViewType } from "../../../infrastructure/query-reposirory/types-view/user-View-Model";
+import { PreparationUserForDB } from "../../../domain/types/user-preparation-for-DB";
 import { randomUUID } from "crypto";
 import { add } from "date-fns";
 import { CreateUserDto } from "../../../api/input-Dto/create-User-Dto-Model";
