@@ -155,41 +155,6 @@ export class PostsSqlQueryRepositories {
     //finding the newest likes
     const newestLikes = await this.dataSource.query(queryNewestLikes);
 
-    /* if (userId) {
-       const result = await this.likesPostsStatusModel.findOne({
-         userId: userId,
-         parentId: post._id,
-         isBanned: false
-       });
-       if (result) {
-         myStatus = result.likeStatus;
-       }
-     }
-     const totalCountLike = await this.likesPostsStatusModel.countDocuments({
-       parentId: post._id,
-       likeStatus: "Like",
-       isBanned: false
-     });
-     const totalCountDislike = await this.likesPostsStatusModel.countDocuments({
-       parentId: post._id,
-       likeStatus: "Dislike",
-       isBanned: false
-     });
-     //finding the newest likes
-     const newestLikes = await this.likesPostsStatusModel
-       .find({
-         parentId: post._id.toString(),
-         likeStatus: "Like",
-         isBanned: false
-       })
-       .sort({ addedAt: "desc" })
-       .limit(3)
-       .lean();
-     //mapped the newest likes for View
-     const mappedNewestLikes = newestLikes.map((like) =>
-       this.LikeDetailsView(like)
-     );*/
-    //const itemsLikes = await Promise.all(mappedNewestLikes);
     const extendedLikesInfo = new ExtendedLikesInfoViewModel(
       totalCountLike,
       totalCountDislike,
@@ -327,7 +292,6 @@ export class PostsSqlQueryRepositories {
                c."content",
                c."createdAt",
                c."userId",
-               u."userId",
                u."login"                                          AS "userLogin",
                p."postId",
                p."title",
@@ -351,7 +315,7 @@ export class PostsSqlQueryRepositories {
                  LEFT JOIN posts p on c."postId" = p."postId"
                  LEFT JOIN blogs b on b."blogId" = p."blogId"
                  LEFT JOIN users u on u."userId" = c."ownerId"
-        WHERE "ownerId" = '${userId}'
+        WHERE c."ownerId" = '${userId}'
         ORDER BY "${sortBy}" ${sortDirection}
               LIMIT ${pageSize}
         OFFSET ${(pageNumber - 1) * pageSize}
