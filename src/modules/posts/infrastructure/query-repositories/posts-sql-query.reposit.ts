@@ -313,8 +313,8 @@ export class PostsSqlQueryRepositories {
                            AND l."userId" = '${userId}'), 'None') AS "myStatus"
         FROM "comments" c
                  LEFT JOIN posts p on c."postId" = p."postId"
-                 LEFT JOIN blogs b on b."blogId" = p."blogId"
-                 LEFT JOIN users u on u."userId" = c."ownerId"
+                 LEFT JOIN blogs b on p."blogId" = b."blogId"
+                 LEFT JOIN users u on c."userId" = u."userId"
         WHERE c."ownerId" = '${userId}'
         ORDER BY "${sortBy}" ${sortDirection}
               LIMIT ${pageSize}
