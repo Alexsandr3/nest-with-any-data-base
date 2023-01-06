@@ -35,7 +35,7 @@ export class CommentsSqlQueryRepositories implements ICommentQueryRepository {
                            AND l."userId" = ${userId ? `'${userId}'` : null}), 'None') AS "myStatus"
 
         FROM comments c
-                 LEFT JOIN users u on u."userId" = c."ownerId"
+                 LEFT JOIN users u on c."userId" = u."userId"
         WHERE c."commentId" = '${commentId}'
           AND c."isBanned" = false
     `;
