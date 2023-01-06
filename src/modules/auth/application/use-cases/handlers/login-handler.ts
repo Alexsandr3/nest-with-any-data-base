@@ -7,31 +7,21 @@ import { LoginDto } from '../../../api/input-dtos/login-Dto-Model';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { PreparationDeviceForDB } from '../../../../security/domain/types/device-preparation-for-DB';
-import { UsersSqlRepositories } from "../../../../users/infrastructure/users-sql-repositories";
 import { UserDBSQLType } from "../../../../users/domain/types/user-DB-SQL-Type";
-import { DeviceSqlRepositories } from "../../../../security/infrastructure/device-sql-repositories";
+import { Inject } from "@nestjs/common";
+import { IDeviceRepository, IDeviceRepositoryKey } from "../../../../security/interfaces/IDeviceRepository";
+import { IUserRepository, IUserRepositoryKey } from "../../../../users/interfaces/IUserRepository";
 
 @CommandHandler(LoginCommand)
 export class LoginHandler implements ICommandHandler<LoginCommand> {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly deviceSqlRepositories: DeviceSqlRepositories,
-    private readonly usersSqlRepositories: UsersSqlRepositories,
+    @Inject(IDeviceRepositoryKey)
+    private readonly deviceRepositories: IDeviceRepository,
+    @Inject(IUserRepositoryKey)
+    private readonly usersRepositories: IUserRepository,
   ) {}
-
-  private async validateUser(loginInputModel: LoginDto): Promise<UserDBSQLType> {
-    //find user by login or email
-    const user = await this.usersSqlRepositories.findByLoginOrEmail(loginInputModel.loginOrEmail,);
-    if (!user) throw new UnauthorizedExceptionMY(`User '${loginInputModel.loginOrEmail}' is not authorized `);
-    //check passwordHash
-    const result = await bcrypt.compare(
-      loginInputModel.password,
-      user.passwordHash,
-    );
-    if (!result) throw new UnauthorizedExceptionMY(`Incorrect password`);
-    return user;
-  }
 
   async execute(command: LoginCommand): Promise<TokensType> {
     const { loginInputModel } = command;
@@ -42,7 +32,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     //finding user and check ban status
     if (user.isBanned === true) {
       //deleting a devices-sessions if the user is banned
-      await this.deviceSqlRepositories.deleteDevicesForBannedUser(user.userId);
+      await this.deviceRepositories.deleteDevicesForBannedUser(user.userId);
       throw new UnauthorizedExceptionMY(`Did you get a ban!`);
     }
     //preparation data for token
@@ -64,7 +54,20 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
       dateExpiredToken,
       deviceId,
     );
-    await this.deviceSqlRepositories.createDevice(device);
+    await this.deviceRepositories.createDevice(device);
     return token;
+  }
+
+  private async validateUser(loginInputModel: LoginDto): Promise<UserDBSQLType> {
+    //find user by login or email
+    const user = await this.usersRepositories.findByLoginOrEmail(loginInputModel.loginOrEmail);
+    if (!user) throw new UnauthorizedExceptionMY(`User '${loginInputModel.loginOrEmail}' is not authorized `);
+    //check passwordHash
+    const result = await bcrypt.compare(
+      loginInputModel.password,
+      user.passwordHash,
+    );
+    if (!result) throw new UnauthorizedExceptionMY(`Incorrect password`);
+    return user;
   }
 }

@@ -30,7 +30,7 @@ import { IUserQueryRepository, IUserQueryRepositoryKey } from "../interfaces/IUs
 export class UsersController {
   constructor(private readonly usersService: UsersService,
               @Inject(IUserQueryRepositoryKey)
-              private readonly usersSqlQueryRepositories: IUserQueryRepository,
+              private readonly usersQueryRepositories: IUserQueryRepository,
               private commandBus: CommandBus
   ) {
   }
@@ -52,7 +52,7 @@ export class UsersController {
   @UseGuards(BasicAuthGuard)
   @Get()
   async findUsers(@Query() paginationInputModel: PaginationUsersDto): Promise<PaginationViewModel<UsersViewType[]>> {
-    return this.usersSqlQueryRepositories.findUsers(paginationInputModel);
+    return this.usersQueryRepositories.findUsers(paginationInputModel);
   }
 
   @UseGuards(BasicAuthGuard)

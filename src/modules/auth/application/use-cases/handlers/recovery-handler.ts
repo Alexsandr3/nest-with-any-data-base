@@ -1,61 +1,61 @@
-import { BadRequestExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { randomUUID } from 'crypto';
-import { add } from 'date-fns';
-import { HttpException } from '@nestjs/common';
-import { UsersRepositories } from '../../../../users/infrastructure/users-repositories';
-import { UsersService } from '../../../../users/domain/users.service';
-import { MailService } from '../../../../mail/mail.service';
-import { RecoveryCommand } from '../recovery-command';
-import { UsersSqlRepositories } from "../../../../users/infrastructure/users-sql-repositories";
+import { BadRequestExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { randomUUID } from "crypto";
+import { add } from "date-fns";
+import { HttpException, Inject } from "@nestjs/common";
+import { UsersService } from "../../../../users/domain/users.service";
+import { MailService } from "../../../../mail/mail.service";
+import { RecoveryCommand } from "../recovery-command";
+import { IUserRepository, IUserRepositoryKey } from "../../../../users/interfaces/IUserRepository";
 
 @CommandHandler(RecoveryCommand)
 export class RecoveryHandler implements ICommandHandler<RecoveryCommand> {
   constructor(
-    private readonly usersRepositories: UsersRepositories,
-    private readonly usersSqlRepositories: UsersSqlRepositories,
+    @Inject(IUserRepositoryKey)
+    private readonly usersRepositories: IUserRepository,
     private readonly userService: UsersService,
-    private readonly mailService: MailService,
-  ) {}
+    private readonly mailService: MailService
+  ) {
+  }
 
   async execute(command: RecoveryCommand): Promise<boolean> {
     const { email } = command.emailInputModel;
     //search user by login or email
-    const user = await this.usersSqlRepositories.findByLoginOrEmail(email);
+    const user = await this.usersRepositories.findByLoginOrEmail(email);
     if (!user)
       throw new BadRequestExceptionMY({
         message: `${email} has invalid`,
-        field: 'email',
+        field: "email"
       });
-    const foundData = await this.usersSqlRepositories.findUserByUserId(user.userId)
+    const foundData = await this.usersRepositories.findUserByUserId(user.userId);
     //check code confirmation
     await this.userService.checkUser(
       foundData.isConfirmation,
-      foundData.expirationDate,
+      foundData.expirationDate
     );
     //generate new code
     const code: any = {
       emailRecovery: {
         recoveryCode: randomUUID(),
-        expirationDate: add(new Date(), { hours: 1 }),
-      },
+        expirationDate: add(new Date(), { hours: 1 })
+      }
     };
     //updating new code in DB
-    await this.usersSqlRepositories.updateCodeRecovery(
+    await this.usersRepositories.updateCodeRecovery(
       user.userId,
       code.emailRecovery.recoveryCode,
-      code.emailRecovery.expirationDate,
+      code.emailRecovery.expirationDate
     );
     try {
       await this.mailService.sendPasswordRecoveryMessage(
         user.email,
-        code.emailRecovery.recoveryCode,
+        code.emailRecovery.recoveryCode
       );
     } catch (error) {
       console.error(error);
       throw new HttpException(
-        'Service is unavailable. Please try again later. We need saved User',
-        421,
+        "Service is unavailable. Please try again later. We need saved User",
+        421
       );
     }
     return true;

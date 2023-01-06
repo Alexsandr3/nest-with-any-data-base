@@ -42,7 +42,7 @@ describe(`Homework 19`, () => {
     await app.close();
   });
 
-  describe.skip(`public api comments`, () => {
+  describe(`public api comments`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -92,7 +92,6 @@ describe(`Homework 19`, () => {
         .expect(201);
 
       comment = resComment.body;
-
 
       const resComments = await request(app.getHttpServer())
         .get(`/comments/${comment.id}`)
@@ -231,7 +230,7 @@ describe(`Homework 19`, () => {
         .expect(403);
     });
   });
-  describe.skip(`Posts likes - 01`, () => {
+  describe(`Posts likes - 01`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -427,7 +426,7 @@ describe(`Homework 19`, () => {
     });
 
   });
-  describe.skip(`Posts likes - 02`, () => {
+  describe(`Posts likes - 02`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -748,7 +747,7 @@ describe(`Homework 19`, () => {
 
 
   });
-  describe.skip(`Comment likes`, () => {
+  describe(`Comment likes`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -876,7 +875,7 @@ describe(`Homework 19`, () => {
       });
     });
   });
-  describe.skip(`Comment likes - 02`, () => {
+  describe(`Comment likes - 02`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -1112,7 +1111,6 @@ describe(`Homework 19`, () => {
         .auth(accessToken1, { type: "bearer" })
         .expect(200);
 
-      console.log(result.body.items);
 
       expect(result.body).toEqual({
         pagesCount: 1,

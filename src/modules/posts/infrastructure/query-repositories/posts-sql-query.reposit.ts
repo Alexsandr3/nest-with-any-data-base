@@ -205,7 +205,7 @@ export class PostsSqlQueryRepositories implements IPostQueryRepository {
                          WHERE l."parentId" = c."commentId"
                            AND l."userId" = ${userId ? `'${userId}'` : null}), 'None') AS "myStatus"
         FROM comments c
-                 LEFT JOIN users u on u."userId" = c."ownerId"
+                 LEFT JOIN users u on u."userId" = c."userId"
         WHERE c."postId" = '${postId}'
           AND c."isBanned" = false
         ORDER BY "${sortBy}" ${sortDirection}

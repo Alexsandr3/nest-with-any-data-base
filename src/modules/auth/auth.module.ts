@@ -5,7 +5,6 @@ import { AuthController } from "./api/auth.controller";
 import { AuthService } from "./domain/auth.service";
 import { JwtService } from "./application/jwt.service";
 import { UsersService } from "../users/domain/users.service";
-import { DeviceRepositories } from "../security/infrastructure/device-repositories";
 import { MongooseModule } from "@nestjs/mongoose";
 import { User, UserSchema } from "../users/domain/mongo-schemas/users-schema-Model";
 import { Device, DeviceSchema } from "../security/domain/mongo-schemas/device-schema-Model";
@@ -22,8 +21,6 @@ import { RecoveryHandler } from "./application/use-cases/handlers/recovery-handl
 import { LoginHandler } from "./application/use-cases/handlers/login-handler";
 import { RefreshHandler } from "./application/use-cases/handlers/refresh-handler";
 import { ThrottlerModule } from "@nestjs/throttler";
-import { UsersSqlRepositories } from "../users/infrastructure/users-sql-repositories";
-import { DeviceSqlRepositories } from "../security/infrastructure/device-sql-repositories";
 import { DeviceRepository } from "../security/interfaces/IDeviceRepository";
 import { UserRepository } from "../users/interfaces/IUserRepository";
 import { UserQueryRepository } from "../users/interfaces/IUserQueryRepository";
@@ -43,10 +40,10 @@ const adapters = [
   DeviceRepository(),
   UserRepository(),
   UserQueryRepository(),
-  DeviceSqlRepositories, // sql
-  UsersSqlRepositories, // sql
+  // DeviceSqlRepositories, // sql
+  // UsersSqlRepositories, // sql
   // UsersSqlQueryRepositories, // sql
-  DeviceRepositories, // mongo
+  // DeviceRepositories, // mongo
   UsersRepositories, // mongo
   // UsersQueryRepositories // mongo
 ];

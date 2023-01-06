@@ -2,13 +2,15 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { RefreshCommand } from "../refresh-command";
 import { PayloadType } from "../../payloadType";
 import { JwtService, TokensType } from "../../jwt.service";
-import { DeviceSqlRepositories } from "../../../../security/infrastructure/device-sql-repositories";
+import { Inject } from "@nestjs/common";
+import { IDeviceRepository, IDeviceRepositoryKey } from "../../../../security/interfaces/IDeviceRepository";
 
 @CommandHandler(RefreshCommand)
 export class RefreshHandler implements ICommandHandler<RefreshCommand> {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly deviceSqlRepositories: DeviceSqlRepositories
+    @Inject(IDeviceRepositoryKey)
+    private readonly deviceRepositories: IDeviceRepository
   ) {
   }
 
@@ -26,7 +28,7 @@ export class RefreshHandler implements ICommandHandler<RefreshCommand> {
     const dateCreatedOldToken = new Date(iat * 1000).toISOString();
     const dateCreateToken = new Date(payloadNew.iat * 1000).toISOString();
     const dateExpiredToken = new Date(payloadNew.exp * 1000).toISOString();
-    await this.deviceSqlRepositories.updateDateDevice(
+    await this.deviceRepositories.updateDateDevice(
       userId,
       deviceId,
       dateCreateToken,
