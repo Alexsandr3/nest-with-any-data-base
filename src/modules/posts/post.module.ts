@@ -15,10 +15,8 @@ import {
   Comment,
   CommentSchema,
 } from '../comments/domain/mongo-schemas/comments-schema-Model';
-import { CommentsQueryRepositories } from '../comments/infrastructure/query-repository/comments-query.repositories';
 import { JwtAuthGuard } from '../../guards/jwt-auth-bearer.guard';
 import { CommentsRepositories } from '../comments/infrastructure/comments.repositories';
-import { UsersQueryRepositories } from '../users/infrastructure/query-reposirory/users-query.reposit';
 import {
   LikesStatus,
   LikesStatusSchema,
@@ -32,26 +30,29 @@ import { CreateCommentHandler } from './application/use-cases/handlers/create-co
 import { UpdateLikeStatusHandler } from './application/use-cases/handlers/update-like-status-handler';
 import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/mongo-schemas/ban-user-for-current-blog-schema-Model";
 import { BlogsRepositories } from "../blogs/infrastructure/blogs.repositories";
-import { PostsSqlQueryRepositories } from "./infrastructure/query-repositories/posts-sql-query.reposit";
-import { PostsSqlRepositories } from "./infrastructure/posts-sql-repositories";
-import { BlogsSqlRepositories } from "../blogs/infrastructure/blogs-sql.repositories";
-import { UsersSqlQueryRepositories } from "../users/infrastructure/query-reposirory/users-sql-query.reposit";
-import { CommentsSqlRepositories } from "../comments/infrastructure/comments-sql.repositories";
+import { PostRepository } from "./interfaces/IPostRepository";
+import { PostQueryRepository } from "./interfaces/IPostQueryRepository";
+import { BlogRepository } from "../blogs/interfaces/IBlogRepository";
+import { CommentRepository } from "../comments/interfaces/ICommentRepository";
+import { UserQueryRepository } from "../users/interfaces/IUserQueryRepository";
 
 const handlers = [CreateCommentHandler, UpdateLikeStatusHandler];
 const adapters = [
-  PostsRepositories,
-  PostsSqlRepositories,
-  PostsQueryRepositories,
-  PostsSqlQueryRepositories,
-  BlogsRepositories,
-  BlogsSqlRepositories,
-  BlogsQueryRepositories,
-  CommentsRepositories,
-  CommentsSqlRepositories,
-  CommentsQueryRepositories,
-  UsersQueryRepositories,
-  UsersSqlQueryRepositories,
+  BlogRepository(),
+  PostRepository(),
+  CommentRepository(),
+  PostQueryRepository(),
+  UserQueryRepository(),
+  BlogsRepositories, // mongo
+  BlogsQueryRepositories, // mongo
+  PostsRepositories, // mongo
+  PostsQueryRepositories, // mongo
+  CommentsRepositories, // mongo
+  // PostsSqlRepositories, // sql
+  // PostsSqlQueryRepositories, // sql
+  // BlogsSqlRepositories, // sql
+  // CommentsSqlRepositories, // sql
+  // UsersSqlQueryRepositories, // sql
   JwtService,
 ];
 const guards = [JwtAuthGuard, BasicAuthGuard, JwtForGetGuard];

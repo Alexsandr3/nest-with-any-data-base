@@ -3,9 +3,10 @@ import { CommentsViewType, LikesInfoViewModel } from "./types-view/comments-View
 import { LikeStatusType } from "../../../posts/domain/mongo-schemas/likesPost-schema-Model";
 import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
 import { DataSource } from "typeorm";
+import { ICommentQueryRepository } from "../../interfaces/ICommentQueryRepository";
 
 @Injectable()
-export class CommentsSqlQueryRepositories {
+export class CommentsSqlQueryRepositories implements ICommentQueryRepository {
   constructor(
     private readonly dataSource: DataSource
   ) {

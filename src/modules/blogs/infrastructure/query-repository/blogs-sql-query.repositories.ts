@@ -12,9 +12,10 @@ import {
 import { DataSource } from "typeorm";
 import { BlogDBSQLType } from "../../../blogger/domain/types/blog-DB-SQL-Type";
 import { BannedBlogUsersDBSQL } from "../../../blogger/domain/types/banned_blog_users-DB-SQL";
+import { IBlogQueryRepository } from "../../interfaces/IBlogQueryRepository";
 
 @Injectable()
-export class BlogsSqlQueryRepositories {
+export class BlogsSqlQueryRepositories implements IBlogQueryRepository {
   constructor(private readonly dataSource: DataSource) {
   }
 

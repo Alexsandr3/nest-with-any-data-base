@@ -4,9 +4,10 @@ import { CreatePostDto } from "../api/input-Dtos/create-Post-Dto-Model";
 import { DataSource } from "typeorm";
 import { NotFoundExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
 import { PostDBSQLType } from "../domain/types/post-DB-SQL-Type";
+import { IPostRepository } from "../interfaces/IPostRepository";
 
 @Injectable()
-export class PostsSqlRepositories {
+export class PostsSqlRepositories implements IPostRepository {
   constructor(
     private readonly dataSource: DataSource
   ) {

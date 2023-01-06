@@ -2,9 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { PreparationDeviceForDB } from "../domain/types/device-preparation-for-DB";
 import { DeviceDBType } from "../domain/types/device-DB-Type";
 import { DataSource } from "typeorm";
+import { IDeviceRepository } from "../interfaces/IDeviceRepository";
 
 @Injectable()
-export class DeviceSqlRepositories {
+export class DeviceSqlRepositories implements IDeviceRepository {
   constructor(
     private readonly dataSource: DataSource
   ) {

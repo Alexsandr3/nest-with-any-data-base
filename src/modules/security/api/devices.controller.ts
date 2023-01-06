@@ -2,9 +2,9 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
+  HttpCode, Inject,
   Param,
-  UseGuards,
+  UseGuards
 } from "@nestjs/common";
 import { RefreshGuard } from "../../../guards/jwt-auth-refresh.guard";
 import { DeviceViewModel } from "../infrastructure/query-repository/types-view/device-View-Model";
@@ -14,14 +14,15 @@ import { CurrentUserIdDevice } from "../../../decorators/current-device.param.de
 import { CommandBus } from "@nestjs/cqrs";
 import { DeleteDevicesCommand } from "../application/use-cases/delete-devices-command";
 import { DeleteDeviceByIdCommand } from "../application/use-cases/delete-device-by-id-command";
-import { DeviceSqlQueryRepositories } from "../infrastructure/query-repository/device-sql-query.repositories";
 import { SkipThrottle } from "@nestjs/throttler";
+import { IDeviceQueryRepository, IDeviceQueryRepositoryKey } from "../interfaces/IDeviceQueryRepository";
 
 @SkipThrottle()
 @Controller(`security`)
 export class DevicesController {
   constructor(private commandBus: CommandBus,
-              private readonly deviceQueryRepositories: DeviceSqlQueryRepositories) {
+              @Inject(IDeviceQueryRepositoryKey)
+              private readonly deviceQueryRepositories: IDeviceQueryRepository) {
   }
 
   @UseGuards(RefreshGuard)

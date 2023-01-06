@@ -6,14 +6,17 @@ import {
   NotFoundExceptionMY
 } from "../../../../../helpers/My-HttpExceptionFilter";
 import { BanUserForBlogPreparationForDB } from "../../../domain/types/ban-user-for-blog-preparation-for-DB";
-import { UsersSqlQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-sql-query.reposit";
-import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
+import { Inject } from "@nestjs/common";
+import { IUserQueryRepository, IUserQueryRepositoryKey } from "../../../../users/interfaces/IUserQueryRepository";
+import { IBlogRepository, IBlogRepositoryKey } from "../../../../blogs/interfaces/IBlogRepository";
 
 @CommandHandler(UpdateBanUserForCurrentBlogCommand)
 export class UpdateBanUserForCurrentBlogHandler
   implements ICommandHandler<UpdateBanUserForCurrentBlogCommand> {
-  constructor(private readonly usersQueryRepositories: UsersSqlQueryRepositories,
-              private readonly blogsRepositories: BlogsSqlRepositories) {
+  constructor(@Inject(IUserQueryRepositoryKey)
+              private readonly usersQueryRepositories: IUserQueryRepository,
+              @Inject(IBlogRepositoryKey)
+              private readonly blogsRepositories: IBlogRepository) {
   }
 
   async execute(command: UpdateBanUserForCurrentBlogCommand): Promise<boolean> {

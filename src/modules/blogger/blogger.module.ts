@@ -30,13 +30,13 @@ import {
   UpdateBanUserForCurrentBlogHandler
 } from "./application/use-cases/handlers/update-ban-user-for-current-blog-handler";
 import { UsersRepositories } from "../users/infrastructure/users-repositories";
-import { BlogsSqlRepositories } from "../blogs/infrastructure/blogs-sql.repositories";
-import { BlogsSqlQueryRepositories } from "../blogs/infrastructure/query-repository/blogs-sql-query.repositories";
-import { UsersSqlRepositories } from "../users/infrastructure/users-sql-repositories";
-import { PostsSqlRepositories } from "../posts/infrastructure/posts-sql-repositories";
-import { PostsSqlQueryRepositories } from "../posts/infrastructure/query-repositories/posts-sql-query.reposit";
-import { UsersSqlQueryRepositories } from "../users/infrastructure/query-reposirory/users-sql-query.reposit";
 import { BlogUuidIdValidator } from "../../validators/is-uuid-id-validator.service";
+import { BlogQueryRepository } from "../blogs/interfaces/IBlogQueryRepository";
+import { BlogRepository } from "../blogs/interfaces/IBlogRepository";
+import { PostQueryRepository } from "../posts/interfaces/IPostQueryRepository";
+import { UserRepository } from "../users/interfaces/IUserRepository";
+import { UserQueryRepository } from "../users/interfaces/IUserQueryRepository";
+import { PostRepository } from "../posts/interfaces/IPostRepository";
 
 const handlers = [
   CreateBlogHandler,
@@ -48,18 +48,24 @@ const handlers = [
   UpdateBanUserForCurrentBlogHandler
 ];
 const adapters = [
-  BlogsSqlRepositories,
-  BlogsSqlQueryRepositories,
-  PostsSqlRepositories,
-  PostsSqlQueryRepositories,
-  UsersSqlRepositories,
-  UsersSqlQueryRepositories,
-  BlogsRepositories, //
-  BlogsQueryRepositories, //
-  PostsRepositories, //
-  PostsQueryRepositories, //
-  UsersRepositories, //
-  UsersQueryRepositories, //
+  BlogRepository(),
+  BlogQueryRepository(),
+  PostRepository(),
+  PostQueryRepository(),
+  UserRepository(),
+  UserQueryRepository(),
+  // BlogsSqlRepositories, // Sql
+  // BlogsSqlQueryRepositories,// Sql
+  // PostsSqlRepositories,// Sql
+  // PostsSqlQueryRepositories,// Sql
+  // UsersSqlRepositories,// Sql
+  // UsersSqlQueryRepositories,// Sql
+  BlogsRepositories, // Mongo
+  BlogsQueryRepositories, // Mongo
+  PostsRepositories, // Mongo
+  PostsQueryRepositories, // Mongo
+  UsersRepositories, // Mongo
+  UsersQueryRepositories, // Mongo
   JwtService
 ];
 const guards = [JwtAuthGuard];
@@ -73,7 +79,6 @@ const guards = [JwtAuthGuard];
       { name: LikesStatus.name, schema: LikesStatusSchema },
       { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema },
       { name: User.name, schema: UserSchema },
-      //{ name: UserBanInfo.name, schema: UserBanInfoSchema },
       { name: BlogBanInfo.name, schema: BlogBanInfoSchema }
     ]),
     CqrsModule

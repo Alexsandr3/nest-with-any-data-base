@@ -5,17 +5,20 @@ import { UsersViewType } from "../../../infrastructure/query-reposirory/types-vi
 import { PreparationUserForDB } from "../../../domain/types/user-preparation-for-DB";
 import { randomUUID } from "crypto";
 import { add } from "date-fns";
-import { CreateUserDto } from "../../../api/input-Dto/create-User-Dto-Model";
-import { BadRequestExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
-import { UsersSqlRepositories } from "../../../infrastructure/users-sql-repositories";
-import { UsersSqlQueryRepositories } from "../../../infrastructure/query-reposirory/users-sql-query.reposit";
+import { Inject } from "@nestjs/common";
+import { IUserQueryRepository, IUserQueryRepositoryKey } from "../../../interfaces/IUserQueryRepository";
+import { IUserRepository, IUserRepositoryKey } from "../../../interfaces/IUserRepository";
 
 
 @CommandHandler(CreateUserSaCommand)
 export class CreateUserSaHandler implements ICommandHandler<CreateUserSaCommand> {
   constructor(
-    private readonly usersSqlRepositories: UsersSqlRepositories,
-    private readonly usersSqlQueryRepositories: UsersSqlQueryRepositories,
+
+
+    @Inject(IUserRepositoryKey)
+    private readonly usersRepositories: IUserRepository,
+    @Inject(IUserQueryRepositoryKey)
+    private readonly usersQueryRepositories: IUserQueryRepository,
     private readonly usersService: UsersService
   ) {
   }
@@ -23,7 +26,7 @@ export class CreateUserSaHandler implements ICommandHandler<CreateUserSaCommand>
   async execute(command: CreateUserSaCommand): Promise<UsersViewType> {
     const { email, login, password } = command.userInputModel;
     //email verification and login for uniqueness
-    await this.validateUser(command.userInputModel);
+    // await this.validateUser(command.userInputModel);
     //generation Hash
     const passwordHash = await this.usersService.generateHash(password);
     // preparation data User for DB
@@ -50,28 +53,28 @@ export class CreateUserSaHandler implements ICommandHandler<CreateUserSaCommand>
         banReason: null
       }
     );
-    const userId = await this.usersSqlRepositories.createUser(user);
+    const userId = await this.usersRepositories.createUser(user);
     //finding user for View
-    return await this.usersSqlQueryRepositories.findUser(userId);
+    return await this.usersQueryRepositories.findUser(userId);
   }
-  private async validateUser(userInputModel: CreateUserDto): Promise<boolean> {
-    //finding user
-    const checkLogin = await this.usersSqlRepositories.findByLoginOrEmail(
-      userInputModel.login
-    );
-    if (checkLogin)
-      throw new BadRequestExceptionMY({
-        message: `Login or Email already in use, do you need choose new data`,
-        field: `login`
-      });
-    const checkEmail = await this.usersSqlRepositories.findByLoginOrEmail(
-      userInputModel.email
-    );
-    if (checkEmail)
-      throw new BadRequestExceptionMY({
-        message: `Login or Email already in use, do you need choose new data`,
-        field: `email`
-      });
-    return true;
-  }
+  // private async validateUser(userInputModel: CreateUserDto): Promise<boolean> {
+  //   //finding user
+  //   const checkLogin = await this.usersSqlRepositories.findByLoginOrEmail(
+  //     userInputModel.login
+  //   );
+  //   if (checkLogin)
+  //     throw new BadRequestExceptionMY({
+  //       message: `Login or Email already in use, do you need choose new data`,
+  //       field: `login`
+  //     });
+  //   const checkEmail = await this.usersSqlRepositories.findByLoginOrEmail(
+  //     userInputModel.email
+  //   );
+  //   if (checkEmail)
+  //     throw new BadRequestExceptionMY({
+  //       message: `Login or Email already in use, do you need choose new data`,
+  //       field: `email`
+  //     });
+  //   return true;
+  // }
 }

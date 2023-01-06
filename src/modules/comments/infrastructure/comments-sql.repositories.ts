@@ -4,9 +4,10 @@ import { PreparationCommentForDB } from "../domain/types/comment-preparation-for
 import { CommentsViewType, LikesInfoViewModel } from "./query-repository/types-view/comments-View-Model";
 import { DataSource } from "typeorm";
 import { CommentDBSQLType } from "../domain/types/comment-DB-SQL-Type";
+import { ICommentRepository } from "../interfaces/ICommentRepository";
 
 @Injectable()
-export class CommentsSqlRepositories {
+export class CommentsSqlRepositories implements ICommentRepository {
   constructor(
     private readonly dataSource: DataSource
   ) {

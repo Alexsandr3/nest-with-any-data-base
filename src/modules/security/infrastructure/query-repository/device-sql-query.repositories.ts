@@ -1,9 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { DeviceViewModel } from "./types-view/device-View-Model";
 import { DataSource } from "typeorm";
+import { IDeviceQueryRepository } from "../../interfaces/IDeviceQueryRepository";
 
 @Injectable()
-export class DeviceSqlQueryRepositories {
+export class DeviceSqlQueryRepositories implements IDeviceQueryRepository {
   constructor(
     private readonly dataSource: DataSource
   ) {

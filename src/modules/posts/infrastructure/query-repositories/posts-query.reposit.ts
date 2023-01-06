@@ -31,7 +31,10 @@ import {
   CommentsViewType,
   LikesInfoViewModel, PostInfoModel
 } from "../../../comments/infrastructure/query-repository/types-view/comments-View-Model";
-import { BlogBanInfo, BlogBanInfoDocument } from "../../../blogger/domain/mongo-schemas/ban-user-for-current-blog-schema-Model";
+import {
+  BlogBanInfo,
+  BlogBanInfoDocument
+} from "../../../blogger/domain/mongo-schemas/ban-user-for-current-blog-schema-Model";
 
 @Injectable()
 export class PostsQueryRepositories {

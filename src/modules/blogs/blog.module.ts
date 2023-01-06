@@ -23,11 +23,19 @@ import {
   LikesStatusSchema
 } from "../comments/domain/mongo-schemas/likesStatus-schema-Model";
 import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/mongo-schemas/ban-user-for-current-blog-schema-Model";
-import { BlogsSqlQueryRepositories } from "./infrastructure/query-repository/blogs-sql-query.repositories";
-import { PostsSqlQueryRepositories } from "../posts/infrastructure/query-repositories/posts-sql-query.reposit";
+import { PostQueryRepository } from "../posts/interfaces/IPostQueryRepository";
+import { BlogQueryRepository } from "./interfaces/IBlogQueryRepository";
 
 const handlers = [];
-const adapters = [BlogsQueryRepositories, BlogsSqlQueryRepositories, PostsQueryRepositories, PostsSqlQueryRepositories, JwtService];
+const adapters = [
+  BlogQueryRepository(),
+  PostQueryRepository(),
+  BlogsQueryRepositories, // mongo
+  PostsQueryRepositories, // mongo
+  // BlogsSqlQueryRepositories, // sql
+  // PostsSqlQueryRepositories, // sql
+  JwtService
+];
 
 @Module({
   imports: [

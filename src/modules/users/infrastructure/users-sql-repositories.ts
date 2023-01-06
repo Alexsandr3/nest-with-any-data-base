@@ -2,9 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { PreparationUserForDB } from "../domain/types/user-preparation-for-DB";
 import { DataSource } from "typeorm";
 import { EmailConfirmationSQLType, EmailRecoverySQLType, UserDBSQLType } from "../domain/types/user-DB-SQL-Type";
+import { IUserRepository } from "../interfaces/IUserRepository";
 
 @Injectable()
-export class UsersSqlRepositories {
+export class UsersSqlRepositories implements IUserRepository {
   constructor(
     private readonly dataSource: DataSource
   ) {

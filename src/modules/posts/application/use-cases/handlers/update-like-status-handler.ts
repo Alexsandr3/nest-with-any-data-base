@@ -1,15 +1,18 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { NotFoundExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
 import { UpdateLikeStatusCommand } from "../update-like-status-command";
-import { PostsSqlRepositories } from "../../../infrastructure/posts-sql-repositories";
-import { UsersSqlQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-sql-query.reposit";
+import { Inject } from "@nestjs/common";
+import { IPostRepository, IPostRepositoryKey } from "../../../interfaces/IPostRepository";
+import { IUserQueryRepository, IUserQueryRepositoryKey } from "../../../../users/interfaces/IUserQueryRepository";
 
 @CommandHandler(UpdateLikeStatusCommand)
 export class UpdateLikeStatusHandler
   implements ICommandHandler<UpdateLikeStatusCommand> {
   constructor(
-    private readonly postsRepositories: PostsSqlRepositories,
-    private readonly usersQueryRepositories: UsersSqlQueryRepositories
+    @Inject(IPostRepositoryKey)
+    private readonly postsRepositories: IPostRepository,
+    @Inject(IUserQueryRepositoryKey)
+    private readonly usersQueryRepositories: IUserQueryRepository
   ) {
   }
 

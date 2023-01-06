@@ -4,11 +4,13 @@ import {
   NotFoundExceptionMY
 } from "../../../../../helpers/My-HttpExceptionFilter";
 import { UpdateBlogCommand } from "../update-blog-command";
-import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
+import { Inject } from "@nestjs/common";
+import { IBlogRepository, IBlogRepositoryKey } from "../../../../blogs/interfaces/IBlogRepository";
 
 @CommandHandler(UpdateBlogCommand)
 export class UpdateBlogHandler implements ICommandHandler<UpdateBlogCommand> {
-  constructor(private readonly blogsRepositories: BlogsSqlRepositories) {
+  constructor(@Inject(IBlogRepositoryKey)
+              private readonly blogsRepositories: IBlogRepository) {
   }
 
   async execute(command: UpdateBlogCommand): Promise<boolean> {

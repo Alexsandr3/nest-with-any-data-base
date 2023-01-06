@@ -7,7 +7,7 @@ import {
   HttpCode,
   UseGuards,
   Res,
-  Ip
+  Ip, Inject
 } from "@nestjs/common";
 import { CreateUserDto } from "../../users/api/input-Dto/create-User-Dto-Model";
 import { ConfirmationCodeDto } from "../../users/api/input-Dto/confirmation-code-Dto-Model";
@@ -32,12 +32,14 @@ import { NewPasswordCommand } from "../application/use-cases/new-password-comman
 import { RecoveryCommand } from "../application/use-cases/recovery-command";
 import { LoginCommand } from "../application/use-cases/login-command";
 import { RefreshCommand } from "../application/use-cases/refresh-command";
-import { UsersSqlQueryRepositories } from "../../users/infrastructure/query-reposirory/users-sql-query.reposit";
+import { IUserQueryRepository, IUserQueryRepositoryKey } from "../../users/interfaces/IUserQueryRepository";
 
 @Controller(`auth`)
 export class AuthController {
-  constructor(private readonly usersQueryRepositories: UsersSqlQueryRepositories,
-              private commandBus: CommandBus) {
+  constructor(
+    @Inject(IUserQueryRepositoryKey)
+    private readonly usersQueryRepositories: IUserQueryRepository,
+    private commandBus: CommandBus) {
   }
 
 

@@ -6,19 +6,24 @@ import {
   NotFoundExceptionMY,
 } from "../../../../../helpers/My-HttpExceptionFilter";
 import { PreparationCommentForDB } from "../../../../comments/domain/types/comment-preparation-for-DB";
-import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
-import { PostsSqlRepositories } from "../../../infrastructure/posts-sql-repositories";
-import { UsersSqlQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-sql-query.reposit";
-import { CommentsSqlRepositories } from "../../../../comments/infrastructure/comments-sql.repositories";
+import { Inject } from "@nestjs/common";
+import { IPostRepository, IPostRepositoryKey } from "../../../interfaces/IPostRepository";
+import { IBlogRepository, IBlogRepositoryKey } from "../../../../blogs/interfaces/IBlogRepository";
+import { ICommentRepository, ICommentRepositoryKey } from "../../../../comments/interfaces/ICommentRepository";
+import { IUserQueryRepository, IUserQueryRepositoryKey } from "../../../../users/interfaces/IUserQueryRepository";
 
 @CommandHandler(CreateCommentCommand)
 export class CreateCommentHandler
   implements ICommandHandler<CreateCommentCommand> {
   constructor(
-    private readonly postsRepositories: PostsSqlRepositories,
-    private readonly blogsRepositories: BlogsSqlRepositories,
-    private readonly commentsRepositories: CommentsSqlRepositories,
-    private readonly usersQueryRepositories: UsersSqlQueryRepositories
+    @Inject(IPostRepositoryKey)
+    private readonly postsRepositories: IPostRepository,
+    @Inject(IBlogRepositoryKey)
+    private readonly blogsRepositories: IBlogRepository,
+    @Inject(ICommentRepositoryKey)
+    private readonly commentsRepositories: ICommentRepository,
+    @Inject(IUserQueryRepositoryKey)
+    private readonly usersQueryRepositories: IUserQueryRepository
   ) {
   }
 

@@ -5,11 +5,12 @@ import { BanUserForBlogPreparationForDB } from "../../blogger/domain/types/ban-u
 import { DataSource } from "typeorm";
 import { BlogDBSQLType } from "../../blogger/domain/types/blog-DB-SQL-Type";
 import { BannedBlogUsersDBSQL } from "../../blogger/domain/types/banned_blog_users-DB-SQL";
+import { IBlogRepository } from "../interfaces/IBlogRepository";
 
 @Injectable()
-export class BlogsSqlRepositories {
+export class BlogsSqlRepositories implements IBlogRepository {
   constructor(
-    private readonly dataSource: DataSource,
+    private readonly dataSource: DataSource
   ) {
   }
 
@@ -112,12 +113,13 @@ export class BlogsSqlRepositories {
   }
 
   async findStatusBan(userId: string, blogId: string): Promise<BannedBlogUsersDBSQL> {
-    const query =`
+    const query = `
         SELECT *
         FROM banned_blog_users
-        WHERE "blogId" = '${blogId}' AND "userId" = '${userId}'
-    `
-    const statusBan = await this.dataSource.query(query)
+        WHERE "blogId" = '${blogId}'
+          AND "userId" = '${userId}'
+    `;
+    const statusBan = await this.dataSource.query(query);
     // const statusBan = await this.blogBanInfoModel.findOne({ blogId, userId });
     if (!statusBan[0]) return null;
     return statusBan[0];

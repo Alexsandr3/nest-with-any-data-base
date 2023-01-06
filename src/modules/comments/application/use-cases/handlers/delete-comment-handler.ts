@@ -1,13 +1,15 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { DeleteCommentCommand } from "../delete-comment-command";
 import { CommentsService } from "../../../domain/comments.service";
-import { CommentsSqlRepositories } from "../../../infrastructure/comments-sql.repositories";
+import { ICommentRepository, ICommentRepositoryKey } from "../../../interfaces/ICommentRepository";
+import { Inject } from "@nestjs/common";
 
 @CommandHandler(DeleteCommentCommand)
 export class DeleteCommentHandler
   implements ICommandHandler<DeleteCommentCommand> {
   constructor(
-    private readonly commentsRepositories: CommentsSqlRepositories,
+    @Inject(ICommentRepositoryKey)
+    private readonly commentsRepositories: ICommentRepository,
     private readonly commentsService: CommentsService
   ) {
   }

@@ -9,10 +9,11 @@ import {
 import { MeViewModel } from "../../../auth/infrastructure/types-view/me-View-Model";
 import { DataSource } from "typeorm";
 import { UserDBSQLType } from "../../domain/types/user-DB-SQL-Type";
+import { IUserQueryRepository } from "../../interfaces/IUserQueryRepository";
 
 
 @Injectable()
-export class UsersSqlQueryRepositories {
+export class UsersSqlQueryRepositories implements IUserQueryRepository{
   constructor(
     private readonly dataSource: DataSource) {
   }
@@ -125,7 +126,7 @@ export class UsersSqlQueryRepositories {
 
   async getUserById(id: string): Promise<MeViewModel> {
     const query = `
-        SELECT email, login, user_id AS "userId"
+        SELECT email, login, "userId" AS "userId"
         FROM users
         WHERE "userId" = '${id}'
     `;
