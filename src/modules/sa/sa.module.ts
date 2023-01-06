@@ -13,12 +13,22 @@ import { UpdateBanInfoForBlogHandler } from "./application/use-cases/handlers/up
 import { Post, PostSchema } from "../posts/domain/mongo-schemas/post-schema-Model";
 import { LikesPostsStatus, LikesPostsStatusSchema } from "../posts/domain/mongo-schemas/likesPost-schema-Model";
 import { PostsRepositories } from "../posts/infrastructure/posts-repositories";
-import { BlogsSqlQueryRepositories } from "../blogs/infrastructure/query-repository/blogs-sql-query.repositories";
-import { BlogsSqlRepositories } from "../blogs/infrastructure/blogs-sql.repositories";
-import { PostsSqlRepositories } from "../posts/infrastructure/posts-sql-repositories";
+import { BlogRepository } from "../blogs/interfaces/IBlogRepository";
+import { BlogQueryRepository } from "../blogs/interfaces/IBlogQueryRepository";
+import { PostRepository } from "../posts/interfaces/IPostRepository";
 
 const handlers = [BindBlogHandler, UpdateBanInfoForBlogHandler];
-const adapters = [BlogsQueryRepositories, BlogsSqlQueryRepositories, BlogsRepositories, BlogsSqlRepositories, PostsRepositories, PostsSqlRepositories];
+const adapters = [
+  BlogRepository(),
+  BlogQueryRepository(),
+  PostRepository(),
+  BlogsRepositories, // mongo
+  BlogsQueryRepositories, // mongo
+  PostsRepositories, // mongo
+  // BlogsSqlRepositories, // sql
+  // BlogsSqlQueryRepositories, // sql
+  // PostsSqlRepositories // sql
+];
 const guards = [BasicAuthGuard];
 
 @Module({
@@ -27,8 +37,6 @@ const guards = [BasicAuthGuard];
       { name: Blog.name, schema: BlogSchema },
       { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
       { name: Post.name, schema: PostSchema },
-      //{ name: Comment.name, schema: CommentSchema },
-      //{ name: LikesStatus.name, schema: LikesStatusSchema },
       { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema }
     ]),
     CqrsModule

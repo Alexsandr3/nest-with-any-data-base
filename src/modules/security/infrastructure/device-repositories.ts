@@ -4,9 +4,10 @@ import { Model } from "mongoose";
 import { Device, DeviceDocument } from "../domain/mongo-schemas/device-schema-Model";
 import { PreparationDeviceForDB } from "../domain/types/device-preparation-for-DB";
 import { DeviceDBType } from "../domain/types/device-DB-Type";
+import { IDeviceRepository } from "../interfaces/IDeviceRepository";
 
 @Injectable()
-export class DeviceRepositories {
+export class DeviceRepositories implements IDeviceRepository {
   constructor(
     @InjectModel(Device.name)
     private readonly deviceModel: Model<DeviceDocument>

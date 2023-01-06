@@ -1,32 +1,37 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UpdateBanInfoCommand } from '../updateBanInfoCommand';
-import { UsersSqlQueryRepositories } from "../../../infrastructure/query-reposirory/users-sql-query.reposit";
-import { UsersSqlRepositories } from "../../../infrastructure/users-sql-repositories";
-import { BadRequestExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
-import { PostsSqlRepositories } from "../../../../posts/infrastructure/posts-sql-repositories";
-import { CommentsSqlRepositories } from "../../../../comments/infrastructure/comments-sql.repositories";
+import { BadRequestExceptionMY, NotFoundExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
+import { Inject } from "@nestjs/common";
+import { IUserRepository, IUserRepositoryKey } from "../../../interfaces/IUserRepository";
+import { IUserQueryRepository, IUserQueryRepositoryKey } from "../../../interfaces/IUserQueryRepository";
+import { IPostRepository, IPostRepositoryKey } from "../../../../posts/interfaces/IPostRepository";
+import { ICommentRepository, ICommentRepositoryKey } from "../../../../comments/interfaces/ICommentRepository";
 
 @CommandHandler(UpdateBanInfoCommand)
 export class UpdateBanInfoHandler
   implements ICommandHandler<UpdateBanInfoCommand>
 {
   constructor(
-    private readonly usersSqlQueryRepositories: UsersSqlQueryRepositories,
-    private readonly usersSqlRepositories: UsersSqlRepositories,
-    private readonly postsRepositories: PostsSqlRepositories,
-    private readonly commentsRepositories: CommentsSqlRepositories,
+    @Inject(IUserQueryRepositoryKey)
+    private readonly usersQueryRepositories: IUserQueryRepository,
+    @Inject(IUserRepositoryKey)
+    private readonly usersRepositories: IUserRepository,
+    @Inject(IPostRepositoryKey)
+    private readonly postsRepositories: IPostRepository,
+    @Inject(ICommentRepositoryKey)
+    private readonly commentsRepositories: ICommentRepository,
   ) {}
 
   async execute(command: UpdateBanInfoCommand): Promise<boolean> {
     const { userId } = command;
     const { isBanned, banReason } = command.updateBanInfoModel;
-    // const user = await this.usersSqlQueryRepositories.findUser(userId);
-    // if (!user) throw new NotFoundExceptionMY(`Not found `);
+    const user = await this.usersQueryRepositories.findUser(userId);
+    if (!user) throw new NotFoundExceptionMY(`Not found `);
     if (isBanned === false) {
       const banDate = null;
       const banReason = null;
       //update status ban user
-      const banInfo = await this.usersSqlRepositories.updateBanInfoUser(
+      const banInfo = await this.usersRepositories.updateBanInfoUser(
         userId,
         isBanned,
         banDate,
@@ -48,7 +53,7 @@ export class UpdateBanInfoHandler
     } else {
       const banDate = new Date().toISOString();
       //update status ban posts
-      const banInfo = await this.usersSqlRepositories.updateBanInfoUser(
+      const banInfo = await this.usersRepositories.updateBanInfoUser(
         userId,
         isBanned,
         banDate,

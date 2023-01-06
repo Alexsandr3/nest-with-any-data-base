@@ -4,11 +4,13 @@ import {
   ForbiddenExceptionMY,
   NotFoundExceptionMY,
 } from '../../../../../helpers/My-HttpExceptionFilter';
-import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
+import { Inject } from "@nestjs/common";
+import { IBlogRepository, IBlogRepositoryKey } from "../../../../blogs/interfaces/IBlogRepository";
 
 @CommandHandler(DeleteBlogCommand)
 export class DeleteBlogHandler implements ICommandHandler<DeleteBlogCommand> {
-  constructor(private readonly blogsRepositories: BlogsSqlRepositories) {}
+  constructor(@Inject(IBlogRepositoryKey)
+              private readonly blogsRepositories: IBlogRepository) {}
 
   async execute(command: DeleteBlogCommand): Promise<boolean> {
     const { blogId, userId } = command;

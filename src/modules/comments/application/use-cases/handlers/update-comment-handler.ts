@@ -1,13 +1,15 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CommentsService } from "../../../domain/comments.service";
 import { UpdateCommentCommand } from "../update-comment-command";
-import { CommentsSqlRepositories } from "../../../infrastructure/comments-sql.repositories";
+import { Inject } from "@nestjs/common";
+import { ICommentRepository, ICommentRepositoryKey } from "../../../interfaces/ICommentRepository";
 
 @CommandHandler(UpdateCommentCommand)
 export class UpdateCommentHandler
   implements ICommandHandler<UpdateCommentCommand> {
   constructor(
-    private readonly commentsRepositories: CommentsSqlRepositories,
+    @Inject(ICommentRepositoryKey)
+    private readonly commentsRepositories: ICommentRepository,
     private readonly commentsService: CommentsService
   ) {
   }

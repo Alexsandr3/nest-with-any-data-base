@@ -9,7 +9,7 @@ import { UsersDBType } from "../domain/types/user-DB-Type";
 @Injectable()
 export class UsersRepositories {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>
   ) {
   }
 

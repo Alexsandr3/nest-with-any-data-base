@@ -1136,7 +1136,7 @@ describe(`Homework 19`, () => {
     let accessToken1: string;
     let accessToken2: string;
     let accessToken3: string;
-    it(`01 - GET -> "/comments/:id": Shouldn't return banned user like for comment. Should return unbanned user like for comment; status 200; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban, POST => /auth/login, POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments;`, async () => {
+    it.skip(`01 - GET -> "/comments/:id": Shouldn't return banned user like for comment. Should return unbanned user like for comment; status 200; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban, POST => /auth/login, POST => /blogger/blogs, POST => /blogger/blogs/:blogId/posts, POST => /posts/:postId/comments;`, async () => {
       const res = await createUserByLoginEmail(4, app);
       user = res[0].user;
       user1 = res[1].user;
@@ -1351,7 +1351,7 @@ describe(`Homework 19`, () => {
 */
     });
 
-    it.skip(`creat 10 user and blog `, async () => {
+    it(`creat 10 user and blog `, async () => {
       const res = await createUserByLoginEmail(2, app);
       await createBlogsAndPostForTest(13, res[0].accessToken, app)
     });

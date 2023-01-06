@@ -15,10 +15,10 @@ import {
   LikesInfoViewModel, PostInfoModel
 } from "../../../comments/infrastructure/query-repository/types-view/comments-View-Model";
 import { DataSource } from "typeorm";
-import { CommentDBSQLType } from "../../../comments/domain/types/comment-DB-SQL-Type";
+import { IPostQueryRepository } from "../../interfaces/IPostQueryRepository";
 
 @Injectable()
-export class PostsSqlQueryRepositories {
+export class PostsSqlQueryRepositories implements IPostQueryRepository {
   constructor(private readonly dataSource: DataSource) {
   }
 
@@ -372,7 +372,7 @@ export class PostsSqlQueryRepositories {
 
   /////------- not used
 
-  async createPostFor_View(id: string): Promise<PostViewModel> {
+ /* async createPostFor_View(id: string): Promise<PostViewModel> {
     const query = `
         SELECT *
         FROM posts
@@ -587,5 +587,5 @@ export class PostsSqlQueryRepositories {
       commentatorInfo,
       postInfo
     );
-  }
+  }*/
 }

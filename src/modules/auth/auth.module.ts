@@ -6,7 +6,6 @@ import { AuthService } from "./domain/auth.service";
 import { JwtService } from "./application/jwt.service";
 import { UsersService } from "../users/domain/users.service";
 import { DeviceRepositories } from "../security/infrastructure/device-repositories";
-import { UsersQueryRepositories } from "../users/infrastructure/query-reposirory/users-query.reposit";
 import { MongooseModule } from "@nestjs/mongoose";
 import { User, UserSchema } from "../users/domain/mongo-schemas/users-schema-Model";
 import { Device, DeviceSchema } from "../security/domain/mongo-schemas/device-schema-Model";
@@ -24,8 +23,10 @@ import { LoginHandler } from "./application/use-cases/handlers/login-handler";
 import { RefreshHandler } from "./application/use-cases/handlers/refresh-handler";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { UsersSqlRepositories } from "../users/infrastructure/users-sql-repositories";
-import { UsersSqlQueryRepositories } from "../users/infrastructure/query-reposirory/users-sql-query.reposit";
 import { DeviceSqlRepositories } from "../security/infrastructure/device-sql-repositories";
+import { DeviceRepository } from "../security/interfaces/IDeviceRepository";
+import { UserRepository } from "../users/interfaces/IUserRepository";
+import { UserQueryRepository } from "../users/interfaces/IUserQueryRepository";
 
 const handlers = [
   CreateUserHandler,
@@ -39,12 +40,15 @@ const handlers = [
 ];
 const adapters = [
   JwtService,
-  DeviceSqlRepositories,
-  UsersSqlRepositories,
-  UsersSqlQueryRepositories,
-  DeviceRepositories, //
-  UsersRepositories, //
-  UsersQueryRepositories //
+  DeviceRepository(),
+  UserRepository(),
+  UserQueryRepository(),
+  DeviceSqlRepositories, // sql
+  UsersSqlRepositories, // sql
+  // UsersSqlQueryRepositories, // sql
+  DeviceRepositories, // mongo
+  UsersRepositories, // mongo
+  // UsersQueryRepositories // mongo
 ];
 const guards = [RefreshGuard, JwtAuthGuard];
 

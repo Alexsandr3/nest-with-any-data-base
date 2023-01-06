@@ -6,16 +6,20 @@ import {
   ForbiddenExceptionMY,
   NotFoundExceptionMY
 } from "../../../../../helpers/My-HttpExceptionFilter";
-import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
-import { PostsSqlRepositories } from "../../../../posts/infrastructure/posts-sql-repositories";
-import { PostsSqlQueryRepositories } from "../../../../posts/infrastructure/query-repositories/posts-sql-query.reposit";
+import { Inject } from "@nestjs/common";
+import { IBlogRepository, IBlogRepositoryKey } from "../../../../blogs/interfaces/IBlogRepository";
+import { IPostRepository, IPostRepositoryKey } from "../../../../posts/interfaces/IPostRepository";
+import { IPostQueryRepository, IPostQueryRepositoryKey } from "../../../../posts/interfaces/IPostQueryRepository";
 
 @CommandHandler(CreatePostCommand)
 export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
   constructor(
-    private readonly blogsRepositories: BlogsSqlRepositories,
-    private readonly postsRepositories: PostsSqlRepositories,
-    private readonly postsQueryRepositories: PostsSqlQueryRepositories
+    @Inject(IBlogRepositoryKey)
+    private readonly blogsRepositories: IBlogRepository,
+    @Inject(IPostRepositoryKey)
+    private readonly postsRepositories: IPostRepository,
+    @Inject(IPostQueryRepositoryKey)
+    private readonly postsQueryRepositories: IPostQueryRepository
   ) {
   }
 

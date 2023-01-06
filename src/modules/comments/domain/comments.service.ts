@@ -1,13 +1,14 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import {
   ForbiddenExceptionMY,
   NotFoundExceptionMY
 } from "../../../helpers/My-HttpExceptionFilter";
-import { CommentsSqlRepositories } from "../infrastructure/comments-sql.repositories";
+import { ICommentRepository, ICommentRepositoryKey } from "../interfaces/ICommentRepository";
 
 @Injectable()
 export class CommentsService {
-  constructor(private readonly commentsRepositories: CommentsSqlRepositories) {
+  constructor(@Inject(ICommentRepositoryKey)
+              private readonly commentsRepositories: ICommentRepository) {
   }
 
   public async findComment(id: string, userId: string): Promise<boolean> {

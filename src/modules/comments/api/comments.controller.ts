@@ -3,7 +3,7 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
+  HttpCode, Inject,
   Param,
   Put,
   UseGuards
@@ -21,14 +21,15 @@ import { UpdateCommentCommand } from "../application/use-cases/update-comment-co
 import { UpdateLikeStatusCommentCommand } from "../application/use-cases/update-like-status-comment-command";
 import { SkipThrottle } from "@nestjs/throttler";
 import { ValidateUuidPipe } from "../../../validators/validate-uuid-pipe";
-import { CommentsSqlQueryRepositories } from "../infrastructure/query-repository/comments-sql-query.repositories";
+import { ICommentQueryRepository, ICommentQueryRepositoryKey } from "../interfaces/ICommentQueryRepository";
 
 @SkipThrottle()
 @Controller(`comments`)
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService,
               private commandBus: CommandBus,
-              private readonly commentsQueryRepositories: CommentsSqlQueryRepositories) {
+              @Inject(ICommentQueryRepositoryKey)
+              private readonly commentsQueryRepositories: ICommentQueryRepository) {
   }
 
   @UseGuards(JwtAuthGuard)

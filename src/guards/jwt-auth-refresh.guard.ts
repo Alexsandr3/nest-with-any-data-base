@@ -1,13 +1,14 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Inject, Injectable } from "@nestjs/common";
 import { JwtService } from '../modules/auth/application/jwt.service';
 import { UnauthorizedExceptionMY } from '../helpers/My-HttpExceptionFilter';
-import { DeviceSqlRepositories } from "../modules/security/infrastructure/device-sql-repositories";
+import { IDeviceRepository, IDeviceRepositoryKey } from "../modules/security/interfaces/IDeviceRepository";
 
 @Injectable()
 export class RefreshGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly deviceSqlRepositories: DeviceSqlRepositories,
+    @Inject(IDeviceRepositoryKey)
+    private readonly deviceRepositories: IDeviceRepository,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -21,7 +22,7 @@ export class RefreshGuard implements CanActivate {
     const dateExp = new Date(payload.exp * 1000);
     if (dateExp < new Date()) throw new UnauthorizedExceptionMY(`Expired date`);
     //check validate device
-    const deviceUser = await this.deviceSqlRepositories.findDeviceForValid(
+    const deviceUser = await this.deviceRepositories.findDeviceForValid(
       payload.userId,
       payload.deviceId,
       payload.iat,

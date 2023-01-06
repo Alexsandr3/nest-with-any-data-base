@@ -11,10 +11,11 @@ import {
   UnauthorizedExceptionMY
 } from "../../../../helpers/My-HttpExceptionFilter";
 import { MeViewModel } from "../../../auth/infrastructure/types-view/me-View-Model";
+import { IUserQueryRepository } from "../../interfaces/IUserQueryRepository";
 
 
 @Injectable()
-export class UsersQueryRepositories {
+export class UsersQueryRepositories implements IUserQueryRepository{
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>) {
   }

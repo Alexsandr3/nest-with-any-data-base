@@ -3,7 +3,7 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
+  HttpCode, Inject,
   Param,
   Post,
   Put,
@@ -20,16 +20,17 @@ import { DeleteUserCommand } from "../application/use-cases/delete-user-command"
 import { UpdateBanInfoDto } from "./input-Dto/update-ban-info-Dto-Model";
 import { UpdateBanInfoCommand } from "../application/use-cases/updateBanInfoCommand";
 import { CreateUserSaCommand } from "../application/use-cases/create-user-sa-command";
-import { UsersSqlQueryRepositories } from "../infrastructure/query-reposirory/users-sql-query.reposit";
 import { ValidateUuidPipe } from "../../../validators/validate-uuid-pipe";
 import { PaginationViewModel } from "../../blogs/infrastructure/query-repository/pagination-View-Model";
 import { SkipThrottle } from "@nestjs/throttler";
+import { IUserQueryRepository, IUserQueryRepositoryKey } from "../interfaces/IUserQueryRepository";
 
 @SkipThrottle()
 @Controller(`sa/users`)
 export class UsersController {
   constructor(private readonly usersService: UsersService,
-              private readonly usersSqlQueryRepositories: UsersSqlQueryRepositories,
+              @Inject(IUserQueryRepositoryKey)
+              private readonly usersSqlQueryRepositories: IUserQueryRepository,
               private commandBus: CommandBus
   ) {
   }

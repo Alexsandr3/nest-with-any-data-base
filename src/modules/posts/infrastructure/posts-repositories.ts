@@ -1,31 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Post, PostDocument } from '../domain/mongo-schemas/post-schema-Model';
-import { PreparationPostForDB } from '../domain/types/post-preparation-for-DB';
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { Post, PostDocument } from "../domain/mongo-schemas/post-schema-Model";
+import { PreparationPostForDB } from "../domain/types/post-preparation-for-DB";
 import {
   LikesPostsStatus,
-  LikesPostsStatusDocument,
-} from '../domain/mongo-schemas/likesPost-schema-Model';
-import { ObjectId } from 'mongodb';
-import { PostDBType } from '../domain/types/post-DB-Type';
-import { CreatePostDto } from '../api/input-Dtos/create-Post-Dto-Model';
+  LikesPostsStatusDocument
+} from "../domain/mongo-schemas/likesPost-schema-Model";
+import { ObjectId } from "mongodb";
+import { PostDBType } from "../domain/types/post-DB-Type";
+import { CreatePostDto } from "../api/input-Dtos/create-Post-Dto-Model";
 
 @Injectable()
 export class PostsRepositories {
   constructor(
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
     @InjectModel(LikesPostsStatus.name)
-    private readonly likesPostsStatusModel: Model<LikesPostsStatusDocument>,
-  ) {}
+    private readonly likesPostsStatusModel: Model<LikesPostsStatusDocument>
+  ) {
+  }
 
   async createPost(newPost: PreparationPostForDB): Promise<PostDBType> {
     const post = await this.postModel.create(newPost);
-    if (!post) throw new Error('not today server all (');
+    if (!post) throw new Error("not today server all (");
     return post;
   }
 
-  async updatePost(id: string, data: CreatePostDto, blogId: string, userId: string,): Promise<boolean> {
+  async updatePost(id: string, data: CreatePostDto, blogId: string, userId: string): Promise<boolean> {
     const result = await this.postModel.updateOne(
       { _id: new ObjectId(id), userId: userId },
       {
@@ -33,9 +34,9 @@ export class PostsRepositories {
           title: data.title,
           shortDescription: data.shortDescription,
           content: data.content,
-          blogId: blogId,
-        },
-      },
+          blogId: blogId
+        }
+      }
     );
     return result.matchedCount === 1;
   }
@@ -56,7 +57,7 @@ export class PostsRepositories {
   async updateStatusBanPostForUser(userId: string, isBanned: boolean): Promise<boolean> {
     const result = await this.postModel.updateMany(
       { userId: userId },
-      { $set: { isBanned: isBanned } },
+      { $set: { isBanned: isBanned } }
     );
     return result.matchedCount === 1;
   }
@@ -64,12 +65,12 @@ export class PostsRepositories {
   async updateStatusBanPostForBlogger(blogId: string, isBanned: boolean): Promise<boolean> {
     const result = await this.postModel.updateMany(
       { blogId },
-      { $set: { isBanned: isBanned } },
+      { $set: { isBanned: isBanned } }
     );
     return result.matchedCount === 1;
   }
 
-  async updateLikeStatusPost(id: string, userId: string, likeStatus: string, login: string,): Promise<boolean> {
+  async updateLikeStatusPost(id: string, userId: string, likeStatus: string, login: string): Promise<boolean> {
     const like = await this.likesPostsStatusModel.updateOne(
       { userId: userId, parentId: id },
       {
@@ -77,19 +78,19 @@ export class PostsRepositories {
           likeStatus: likeStatus,
           addedAt: new Date().toISOString(),
           login: login,
-          isBanned: false,
-        },
+          isBanned: false
+        }
       },
-      { upsert: true },
+      { upsert: true }
     );
     if (!like) return null;
     return true;
   }
 
-  async updateStatusBanLikePost(userId: string, isBanned: boolean,): Promise<boolean> {
+  async updateStatusBanLikePost(userId: string, isBanned: boolean): Promise<boolean> {
     const result = await this.likesPostsStatusModel.updateMany(
       { userId: userId },
-      { $set: { isBanned: isBanned } },
+      { $set: { isBanned: isBanned } }
     );
     return result.matchedCount === 1;
   }

@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
+  HttpCode, Inject,
   Param,
   Post,
   Put,
@@ -23,12 +23,13 @@ import { CreateCommentCommand } from "../application/use-cases/create-comment-co
 import { UpdateLikeStatusCommand } from "../application/use-cases/update-like-status-command";
 import { SkipThrottle } from "@nestjs/throttler";
 import { ValidateUuidPipe } from "../../../validators/validate-uuid-pipe";
-import { PostsSqlQueryRepositories } from "../infrastructure/query-repositories/posts-sql-query.reposit";
+import { IPostQueryRepository, IPostQueryRepositoryKey } from "../interfaces/IPostQueryRepository";
 
 @SkipThrottle()
 @Controller(`posts`)
 export class PostsController {
-  constructor(private readonly postsQueryRepositories: PostsSqlQueryRepositories,
+  constructor(@Inject(IPostQueryRepositoryKey)
+    private readonly postsQueryRepositories: IPostQueryRepository,
               private commandBus: CommandBus) {
   }
 

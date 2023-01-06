@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
+  HttpCode, Inject,
   Param,
   Put,
   Query,
@@ -17,14 +17,16 @@ import { BindBlogCommand } from "../application/use-cases/bindBlogCommand";
 import { UpdateBanInfoForBlogDto } from "./input-dtos/update-ban-info-for-blog-Dto-Model";
 import { UpdateBanInfoForBlogCommand } from "../application/use-cases/updateBanInfoForBlogCommand";
 import { SkipThrottle } from "@nestjs/throttler";
-import { BlogsSqlQueryRepositories } from "../../blogs/infrastructure/query-repository/blogs-sql-query.repositories";
 import { ValidateUuidPipe } from "../../../validators/validate-uuid-pipe";
+import { IBlogQueryRepository, IBlogQueryRepositoryKey } from "../../blogs/interfaces/IBlogQueryRepository";
 
 @SkipThrottle()
 @UseGuards(BasicAuthGuard)
 @Controller(`sa/blogs`)
 export class SaController {
-  constructor(private readonly blogsQueryRepositories: BlogsSqlQueryRepositories,
+  constructor(
+    @Inject(IBlogQueryRepositoryKey)
+    private readonly blogsQueryRepositories: IBlogQueryRepository,
               private commandBus: CommandBus) {
   }
 

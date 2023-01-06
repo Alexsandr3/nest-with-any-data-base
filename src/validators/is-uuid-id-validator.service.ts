@@ -1,17 +1,16 @@
 import {
   ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface
 } from "class-validator";
-import { Injectable } from "@nestjs/common";
-import {
-  BlogsSqlQueryRepositories
-} from "../modules/blogs/infrastructure/query-repository/blogs-sql-query.repositories";
+import { Inject, Injectable } from "@nestjs/common";
+import { IBlogQueryRepository, IBlogQueryRepositoryKey } from "../modules/blogs/interfaces/IBlogQueryRepository";
 
 
 @ValidatorConstraint({ name: "IsUuidCustom", async: true })
 @Injectable()
 export class BlogUuidIdValidator implements ValidatorConstraintInterface {
   constructor(
-    private readonly blogsQueryRepositories: BlogsSqlQueryRepositories
+    @Inject(IBlogQueryRepositoryKey)
+    private readonly blogsQueryRepositories: IBlogQueryRepository
   ) {
   }
 

@@ -1,3 +1,5 @@
+
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -8,7 +10,6 @@ import { CommentModule } from "./modules/comments/comment.module";
 import { UsersModule } from "./modules/users/usersModule";
 import { MailModule } from "./modules/mail/mail.module";
 import { AuthModule } from "./modules/auth/auth.module";
-import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TestingModule } from "./modules/testing/testing.module";
 import { DeviceModule } from "./modules/security/device.module";
 import { BloggerModule } from "./modules/blogger/blogger.module";

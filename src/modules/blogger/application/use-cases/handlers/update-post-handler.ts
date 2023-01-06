@@ -4,14 +4,17 @@ import {
   NotFoundExceptionMY
 } from "../../../../../helpers/My-HttpExceptionFilter";
 import { UpdatePostCommand } from "../update-post-command";
-import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
-import { PostsSqlRepositories } from "../../../../posts/infrastructure/posts-sql-repositories";
+import { Inject } from "@nestjs/common";
+import { IPostRepository, IPostRepositoryKey } from "../../../../posts/interfaces/IPostRepository";
+import { IBlogRepository, IBlogRepositoryKey } from "../../../../blogs/interfaces/IBlogRepository";
 
 @CommandHandler(UpdatePostCommand)
 export class UpdatePostHandler implements ICommandHandler<UpdatePostCommand> {
   constructor(
-    private readonly postsRepositories: PostsSqlRepositories,
-    private readonly blogsRepositories: BlogsSqlRepositories
+    @Inject(IPostRepositoryKey)
+    private readonly postsRepositories: IPostRepository,
+    @Inject(IBlogRepositoryKey)
+    private readonly blogsRepositories: IBlogRepository
   ) {
   }
 

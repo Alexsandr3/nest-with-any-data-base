@@ -2,14 +2,17 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { PreparationBlogForDB } from "../../../domain/types/blog-preparation-for-DB";
 import { CreateBlogCommand } from "../create-blog-command";
 import { UnauthorizedExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
-import { UsersSqlRepositories } from "../../../../users/infrastructure/users-sql-repositories";
-import { BlogsSqlRepositories } from "../../../../blogs/infrastructure/blogs-sql.repositories";
+import { Inject } from "@nestjs/common";
+import { IBlogRepository, IBlogRepositoryKey } from "../../../../blogs/interfaces/IBlogRepository";
+import { IUserRepository, IUserRepositoryKey } from "../../../../users/interfaces/IUserRepository";
 
 @CommandHandler(CreateBlogCommand)
 export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
   constructor(
-    private readonly blogsRepositories: BlogsSqlRepositories,
-    private readonly usersRepositories: UsersSqlRepositories
+    @Inject(IBlogRepositoryKey)
+    private readonly blogsRepositories: IBlogRepository,
+    @Inject(IUserRepositoryKey)
+    private readonly usersRepositories: IUserRepository
   ) {
   }
 

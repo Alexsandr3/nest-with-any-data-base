@@ -1,4 +1,4 @@
-import { HttpException } from "@nestjs/common";
+import { HttpException, Inject } from "@nestjs/common";
 import { CreateUserDto } from "../../../api/input-Dto/create-User-Dto-Model";
 import { UsersViewType } from "../../../infrastructure/query-reposirory/types-view/user-View-Model";
 import { MailService } from "../../../../mail/mail.service";
@@ -9,15 +9,17 @@ import { PreparationUserForDB } from "../../../domain/types/user-preparation-for
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateUserCommand } from "../create-user-command";
 import { UsersService } from "../../../domain/users.service";
-import { UsersSqlRepositories } from "../../../infrastructure/users-sql-repositories";
-import { UsersSqlQueryRepositories } from "../../../infrastructure/query-reposirory/users-sql-query.reposit";
+import { IUserRepository, IUserRepositoryKey } from "../../../interfaces/IUserRepository";
+import { IUserQueryRepository, IUserQueryRepositoryKey } from "../../../interfaces/IUserQueryRepository";
 
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   constructor(
-    private readonly usersSqlRepositories: UsersSqlRepositories,
-    private readonly usersSqlQueryRepositories: UsersSqlQueryRepositories,
+    @Inject(IUserRepositoryKey)
+    private readonly usersRepositories: IUserRepository,
+    @Inject(IUserQueryRepositoryKey)
+    private readonly usersQueryRepositories: IUserQueryRepository,
     private readonly usersService: UsersService,
     private readonly mailService: MailService
   ) {
@@ -53,9 +55,9 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         banReason: null
       }
     );
-    const userId = await this.usersSqlRepositories.createUser(user);
+    const userId = await this.usersRepositories.createUser(user);
     //finding user for View
-    const foundUser = await this.usersSqlQueryRepositories.findUser(userId);
+    const foundUser = await this.usersQueryRepositories.findUser(userId);
     try {
       //send mail for confirmation
       await this.mailService.sendUserConfirmation(
@@ -76,7 +78,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
 
   private async validateUser(userInputModel: CreateUserDto): Promise<boolean> {
     //finding user
-    const checkLogin = await this.usersSqlRepositories.findByLoginOrEmail(
+    const checkLogin = await this.usersRepositories.findByLoginOrEmail(
       userInputModel.login
     );
     if (checkLogin)
@@ -84,7 +86,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         message: `Login or Email already in use, do you need choose new data`,
         field: `login`
       });
-    const checkEmail = await this.usersSqlRepositories.findByLoginOrEmail(
+    const checkEmail = await this.usersRepositories.findByLoginOrEmail(
       userInputModel.email
     );
     if (checkEmail)

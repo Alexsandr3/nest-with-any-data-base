@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards, UsePipes } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Inject,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+  UsePipes
+} from "@nestjs/common";
 import { CreatePostDto } from "../../posts/api/input-Dtos/create-Post-Dto-Model";
 import { PostViewModel } from "../../posts/infrastructure/query-repositories/types-view/post-View-Model";
 import { CommandBus } from "@nestjs/cqrs";
@@ -19,18 +32,21 @@ import { UpdateBanInfoForUserDto } from "./input-dtos/update-ban-info-for-User-D
 import { UpdateBanUserForCurrentBlogCommand } from "../application/use-cases/update-ban-User-For-Current-Blog-command";
 import { ForbiddenExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
 import { SkipThrottle } from "@nestjs/throttler";
-import { BlogsSqlQueryRepositories } from "../../blogs/infrastructure/query-repository/blogs-sql-query.repositories";
 import { ValidateUuidPipe } from "../../../validators/validate-uuid-pipe";
-import { PostsSqlQueryRepositories } from "../../posts/infrastructure/query-repositories/posts-sql-query.reposit";
 import { UsersForBanBlogViewType } from "../../users/infrastructure/query-reposirory/types-view/user-View-Model";
+import { IBlogQueryRepositoryKey, IBlogQueryRepository } from "../../blogs/interfaces/IBlogQueryRepository";
+import { IPostQueryRepository, IPostQueryRepositoryKey } from "../../posts/interfaces/IPostQueryRepository";
 
 @SkipThrottle()
 @UseGuards(JwtAuthGuard)
 @Controller(`blogger`)
 export class BloggersController {
-  constructor(private readonly blogsQueryRepositories: BlogsSqlQueryRepositories,
-              private readonly postsQueryRepositories: PostsSqlQueryRepositories,
-              private commandBus: CommandBus) {
+  constructor(
+    @Inject(IBlogQueryRepositoryKey)
+    private readonly blogsQueryRepositories: IBlogQueryRepository,
+    @Inject(IPostQueryRepositoryKey)
+    private readonly postsQueryRepositories: IPostQueryRepository,
+    private commandBus: CommandBus) {
   }
 
   @Get(`blogs/comments`)

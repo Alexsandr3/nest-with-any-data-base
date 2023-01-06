@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Param, UseGuards } from "@nestjs/common";
+import { Controller, Get, Query, Param, UseGuards, Inject } from "@nestjs/common";
 import { BlogViewModel } from "../infrastructure/query-repository/types-view/blog-View-Model";
 import { PaginationDto } from "./input-Dtos/pagination-Dto-Model";
 import { PaginationViewModel } from "../infrastructure/query-repository/pagination-View-Model";
@@ -7,15 +7,17 @@ import { CurrentUserId } from "../../../decorators/current-user-id.param.decorat
 import { JwtForGetGuard } from "../../../guards/jwt-auth-bearer-for-get.guard";
 import { SkipThrottle } from "@nestjs/throttler";
 import { ValidateUuidPipe } from "../../../validators/validate-uuid-pipe";
-import { BlogsSqlQueryRepositories } from "../infrastructure/query-repository/blogs-sql-query.repositories";
-import { PostsSqlQueryRepositories } from "../../posts/infrastructure/query-repositories/posts-sql-query.reposit";
+import { IBlogQueryRepository, IBlogQueryRepositoryKey } from "../interfaces/IBlogQueryRepository";
+import { IPostQueryRepository, IPostQueryRepositoryKey } from "../../posts/interfaces/IPostQueryRepository";
 
 @SkipThrottle()
 @Controller(`blogs`)
 export class BlogsController {
   constructor(
-    private readonly blogsQueryRepositories: BlogsSqlQueryRepositories,
-    private readonly postsQueryRepositories: PostsSqlQueryRepositories,
+    @Inject(IBlogQueryRepositoryKey)
+    private readonly blogsQueryRepositories: IBlogQueryRepository,
+    @Inject(IPostQueryRepositoryKey)
+    private readonly postsQueryRepositories: IPostQueryRepository,
   ) {
   }
 
