@@ -21,12 +21,7 @@ export class DeviceSqlRepositories implements IDeviceRepository {
     return await this.dataSource.query(query);
   }
 
-  async updateDateDevice(
-    userId: string,
-    deviceId: string,
-    dateCreateToken: string,
-    dateExpiredToken: string,
-    dateCreatedOldToken: string
+  async updateDateDevice(userId: string, deviceId: string, dateCreateToken: string, dateExpiredToken: string, dateCreatedOldToken: string
   ): Promise<boolean> {
 
     const query = `
@@ -42,11 +37,8 @@ export class DeviceSqlRepositories implements IDeviceRepository {
     return;
   }
 
-  async findDeviceForDelete(
-    userId: string,
-    deviceId: string,
-    dateCreatedToken: string
-  ): Promise<DeviceDBType> {
+  async findDeviceForDelete(userId: string, deviceId: string, dateCreatedToken: string
+  )/*: Promise<DeviceDBType>*/ {
     const query = `
         SELECT *
         FROM devices

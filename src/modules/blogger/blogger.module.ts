@@ -37,6 +37,13 @@ import { PostQueryRepository } from "../posts/interfaces/IPostQueryRepository";
 import { UserRepository } from "../users/interfaces/IUserRepository";
 import { UserQueryRepository } from "../users/interfaces/IUserQueryRepository";
 import { PostRepository } from "../posts/interfaces/IPostRepository";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Usser } from "../../entities/user.entity";
+import { EmailConfirmation } from "../../entities/emailConfirmation.entity";
+import { EmailRecovery } from "../../entities/emailRecovery.entity";
+import { PostT } from "../../entities/post.entity";
+import { CommentT } from "../../entities/comment.entity";
+import { LikePost } from "../../entities/likePost.entity";
 
 const handlers = [
   CreateBlogHandler,
@@ -81,6 +88,7 @@ const guards = [JwtAuthGuard];
       { name: User.name, schema: UserSchema },
       { name: BlogBanInfo.name, schema: BlogBanInfoSchema }
     ]),
+    TypeOrmModule.forFeature([Usser, EmailConfirmation, EmailRecovery, PostT, CommentT, LikePost]),
     CqrsModule
   ],
   controllers: [BloggersController],

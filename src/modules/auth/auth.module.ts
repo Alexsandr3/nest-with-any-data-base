@@ -24,6 +24,11 @@ import { ThrottlerModule } from "@nestjs/throttler";
 import { DeviceRepository } from "../security/interfaces/IDeviceRepository";
 import { UserRepository } from "../users/interfaces/IUserRepository";
 import { UserQueryRepository } from "../users/interfaces/IUserQueryRepository";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Usser } from "../../entities/user.entity";
+import { EmailConfirmation } from "../../entities/emailConfirmation.entity";
+import { EmailRecovery } from "../../entities/emailRecovery.entity";
+import { DeviceT } from "../../entities/device.entity";
 
 const handlers = [
   CreateUserHandler,
@@ -44,7 +49,7 @@ const adapters = [
   // UsersSqlRepositories, // sql
   // UsersSqlQueryRepositories, // sql
   // DeviceRepositories, // mongo
-  UsersRepositories, // mongo
+  UsersRepositories // mongo
   // UsersQueryRepositories // mongo
 ];
 const guards = [RefreshGuard, JwtAuthGuard];
@@ -59,6 +64,8 @@ const guards = [RefreshGuard, JwtAuthGuard];
       { name: User.name, schema: UserSchema },
       { name: Device.name, schema: DeviceSchema }
     ]),
+
+    TypeOrmModule.forFeature([Usser, EmailConfirmation, EmailRecovery, DeviceT]),
     /*    JwtModule.register({
           secret: settings.ACCESS_TOKEN_SECRET,
           signOptions: { expiresIn: '15m' },

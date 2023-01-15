@@ -12,7 +12,9 @@ export const getConfiguration = () => ({
   database: {
     DB_TYPE: process.env.DB_TYPE,
     MONGO_URL: process.env.MONGO_URL,
-    PGSQL_URI: process.env.PGSQL_URI
+    PGSQL_URI: process.env.PGSQL_URI,
+    PGSQL_NEON_URI: process.env.PGSQL_NEON_URI,
+    PGSQL_ELEPHANT_URI: process.env.PGSQL_ELEPHANT_URI,
   },
   email: {
     CLIENT_URL: process.env.CLIENT_URL,
