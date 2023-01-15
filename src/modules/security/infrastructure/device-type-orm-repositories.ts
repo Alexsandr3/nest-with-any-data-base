@@ -23,21 +23,13 @@ export class DeviceTypeOrmRepositories implements IDeviceRepository {
     session.lastActiveDate = lastActiveDate;
     session.expiredDate = expiredDate;
     return await this.deviceTRepository.save(session);
-
-
-    // const query = `
-    //     INSERT
-    //     INTO devices ("deviceId", "userId", "ip", "title", "lastActiveDate", "expiredDate")
-    //     VALUES ('${deviceId}', '${userId}', '${ip}', '${title}', '${lastActiveDate}', '${expiredDate}');
-    // `;
-    // return await this.deviceTRepository.query(query);
   }
 
   async updateDateDevice(userId: string, deviceId: string, dateCreateToken: string, dateExpiredToken: string, dateCreatedOldToken: string
   ): Promise<boolean> {
     await this.deviceTRepository.manager.connection.transaction(async manager => {
       await manager.update(DeviceT,
-        { userId: userId, deviceId: deviceId, lastActiveDate: dateCreateToken },
+        { userId: userId, deviceId: deviceId, lastActiveDate: dateCreatedOldToken },
         { lastActiveDate: dateCreateToken, expiredDate: dateExpiredToken }
       );
     })
@@ -122,7 +114,7 @@ export class DeviceTypeOrmRepositories implements IDeviceRepository {
     deviceId: string,
     iat: number
   )/*: Promise<DeviceDBType>*/ {
-    const dateCreateToken = new Date(iat * 1000).toISOString();
+    let dateCreateToken = new Date(iat * 1000).toISOString();
     const devices = await this.deviceTRepository
       .findOneBy({
         userId: userId,
@@ -137,13 +129,16 @@ export class DeviceTypeOrmRepositories implements IDeviceRepository {
   }
 
   async findDeviceByDeviceId(deviceId: string)/*: Promise<DeviceDBType>*/ {
-    const devices = await this.deviceTRepository
-      .findOneBy({ deviceId: deviceId });
-
-    if (!devices) {
+    const device = await this.deviceTRepository
+      .findOneBy({ deviceId: deviceId })
+      .catch((e) => {
+        console.log(e);
+        return null;
+      });
+    if (!device) {
       return null;
     } else {
-      return devices;
+      return device;
     }
   }
 }
