@@ -95,6 +95,8 @@ const entities = [
         return {
           type: 'postgres',
           url: database.PGSQL_URI,
+          autoLoadEntities: false,
+          synchronize: false,
         };
       },
     }),
