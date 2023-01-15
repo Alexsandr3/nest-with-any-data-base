@@ -5,6 +5,7 @@ import { UsersSqlQueryRepositories } from "../infrastructure/query-reposirory/us
 import { UsersViewType } from "../infrastructure/query-reposirory/types-view/user-View-Model";
 import { UsersQueryRepositories } from "../infrastructure/query-reposirory/users-query.reposit";
 import { getConfiguration } from "../../../config/configuration";
+import { UsersTypeOrmQueryRepository } from "../infrastructure/query-reposirory/users-type-orm-query.reposit";
 
 export interface IUserQueryRepository {
   findUser(id: string): Promise<UsersViewType>;
@@ -30,6 +31,11 @@ export const UserQueryRepository = () => {
       return {
         provide: IUserQueryRepositoryKey,
         useClass: UsersSqlQueryRepositories
+      };
+      case "TypeOrm":
+      return {
+        provide: IUserQueryRepositoryKey,
+        useClass: UsersTypeOrmQueryRepository
       };
     default:
       return {

@@ -1,8 +1,8 @@
 import { getConfiguration } from "../../../config/configuration";
 import { PreparationDeviceForDB } from "../domain/types/device-preparation-for-DB";
-import { DeviceDBType } from "../domain/types/device-DB-Type";
 import { DeviceSqlRepositories } from "../infrastructure/device-sql-repositories";
 import { DeviceRepositories } from "../infrastructure/device-repositories";
+import { DeviceTypeOrmRepositories } from "../infrastructure/device-type-orm-repositories";
 
 export interface IDeviceRepository {
   createDevice(device: PreparationDeviceForDB);
@@ -19,7 +19,7 @@ export interface IDeviceRepository {
     userId: string,
     deviceId: string,
     dateCreatedToken: string
-  ): Promise<DeviceDBType>;
+  )/*: Promise<DeviceDBType>*/;
 
   deleteDevice(userId: string, deviceId: string): Promise<boolean>;
 
@@ -27,13 +27,13 @@ export interface IDeviceRepository {
 
   deleteDevicesForBannedUser(userId: string): Promise<boolean>;
 
-  findByDeviceIdAndUserId(userId: string, deviceId: string): Promise<DeviceDBType>;
+  findByDeviceIdAndUserId(userId: string, deviceId: string)/*: Promise<DeviceDBType>*/;
 
   deleteDeviceByDeviceId(deviceId: string): Promise<boolean>;
 
-  findDeviceForValid(userId: string, deviceId: string, iat: number): Promise<DeviceDBType>;
+  findDeviceForValid(userId: string, deviceId: string, iat: number)/*: Promise<DeviceDBType>*/;
 
-  findDeviceByDeviceId(deviceId: string): Promise<DeviceDBType>;
+  findDeviceByDeviceId(deviceId: string)/*: Promise<DeviceDBType>*/;
 
 }
 
@@ -52,6 +52,11 @@ export const DeviceRepository = () => {
       return {
         provide: IDeviceRepositoryKey,
         useClass: DeviceSqlRepositories
+      };
+      case "TypeOrm":
+      return {
+        provide: IDeviceRepositoryKey,
+        useClass: DeviceTypeOrmRepositories
       };
     default:
       return {

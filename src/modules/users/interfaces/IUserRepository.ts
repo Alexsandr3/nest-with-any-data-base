@@ -1,10 +1,10 @@
-import { UsersRepositories } from "../infrastructure/users-repositories";
-import { UsersSqlRepositories } from "../infrastructure/users-sql-repositories";
-import { PreparationUserForDB } from "../domain/types/user-preparation-for-DB";
-import { EmailConfirmationSQLType, EmailRecoverySQLType, UserDBSQLType } from "../domain/types/user-DB-SQL-Type";
+import { UsersRepositories } from '../infrastructure/users-repositories';
+import { UsersSqlRepositories } from '../infrastructure/users-sql-repositories';
+import { PreparationUserForDB } from '../domain/types/user-preparation-for-DB';
+import { EmailConfirmationSQLType, EmailRecoverySQLType, UserDBSQLType } from '../domain/types/user-DB-SQL-Type';
+import { UserTypeOrmRepositories } from '../infrastructure/user-type-orm-repositories';
 
 export interface IUserRepository {
-
   createUser(newUser: PreparationUserForDB): Promise<string>;
 
   deleteUser(id: string): Promise<boolean>;
@@ -28,29 +28,32 @@ export interface IUserRepository {
   updateBanInfoUser(userId: string, isBanned: boolean, banDate: string, banReason: string): Promise<boolean>;
 
   findUserByIdWithMapped(userId: string): Promise<UserDBSQLType>;
-
 }
 
-export const IUserRepositoryKey = "IUserRepository";
-
+export const IUserRepositoryKey = 'IUserRepository';
 
 export const UserRepository = () => {
   const dbType = process.env.DB_TYPE;
   switch (dbType) {
-    case "MongoDB":
+    case 'MongoDB':
       return {
         provide: IUserRepositoryKey,
-        useClass: UsersRepositories
+        useClass: UsersRepositories,
       };
-    case "RawSQL":
+    case 'RawSQL':
       return {
         provide: IUserRepositoryKey,
-        useClass: UsersSqlRepositories
+        useClass: UsersSqlRepositories,
+      };
+    case 'TypeOrm':
+      return {
+        provide: IUserRepositoryKey,
+        useClass: UserTypeOrmRepositories,
       };
     default:
       return {
         provide: IUserRepositoryKey,
-        useClass: UsersSqlRepositories
+        useClass: UsersSqlRepositories,
       };
   }
 };

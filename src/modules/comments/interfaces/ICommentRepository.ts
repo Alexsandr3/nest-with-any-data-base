@@ -5,6 +5,7 @@ import { CommentDBSQLType } from "../domain/types/comment-DB-SQL-Type";
 import { LikeStatusType } from "../../posts/domain/mongo-schemas/likesPost-schema-Model";
 import { CommentsSqlRepositories } from "../infrastructure/comments-sql.repositories";
 import { CommentsRepositories } from "../infrastructure/comments.repositories";
+import { CommentsTypeOrmRepositories } from "../infrastructure/comments-type-orm.repositories";
 
 export interface ICommentRepository {
   createCommentByIdPost(newComment: PreparationCommentForDB): Promise<CommentsViewType>;
@@ -40,6 +41,11 @@ export const CommentRepository = () => {
         provide: ICommentRepositoryKey,
         useClass: CommentsSqlRepositories
       };
+    case  "TypeOrm":
+      return {
+        provide: ICommentRepositoryKey,
+        useClass: CommentsTypeOrmRepositories
+      }
     default:
       return {
         provide: ICommentRepositoryKey,

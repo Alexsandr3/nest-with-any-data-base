@@ -19,6 +19,10 @@ import {
   LikesPostsStatusSchema,
 } from '../posts/domain/mongo-schemas/likesPost-schema-Model';
 import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/mongo-schemas/ban-user-for-current-blog-schema-Model";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Usser } from "../../entities/user.entity";
+import { EmailConfirmation } from "../../entities/emailConfirmation.entity";
+import { EmailRecovery } from "../../entities/emailRecovery.entity";
 
 @Module({
   imports: [
@@ -32,6 +36,7 @@ import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/mongo-schemas/
       { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema },
       { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
     ]),
+    TypeOrmModule.forFeature([Usser, EmailConfirmation, EmailRecovery, Device]),
   ],
 
   controllers: [TestingController],

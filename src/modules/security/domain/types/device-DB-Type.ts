@@ -11,3 +11,4 @@ export class DeviceDBType {
     public deviceId: string,
   ) {}
 }
+

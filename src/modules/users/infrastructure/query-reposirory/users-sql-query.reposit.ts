@@ -13,9 +13,8 @@ import { IUserQueryRepository } from "../../interfaces/IUserQueryRepository";
 
 
 @Injectable()
-export class UsersSqlQueryRepositories implements IUserQueryRepository{
-  constructor(
-    private readonly dataSource: DataSource) {
+export class UsersSqlQueryRepositories implements IUserQueryRepository {
+  constructor(private readonly dataSource: DataSource) {
   }
 
   private async mappedForUser(user: UserDBSQLType): Promise<UsersViewType> {

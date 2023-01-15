@@ -62,4 +62,5 @@ export class UsersController {
   async deleteUser(@Param(`userId`) userId: string): Promise<boolean> {
     return await this.commandBus.execute(new DeleteUserCommand(userId));
   }
+  
 }

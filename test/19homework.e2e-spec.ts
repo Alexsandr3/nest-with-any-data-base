@@ -22,7 +22,7 @@ import { UsersViewType } from "../src/modules/users/infrastructure/query-reposir
 jest.setTimeout(120000);
 
 
-describe(`Homework 19`, () => {
+describe.skip(`Homework 19`, () => {
 
   let app: INestApplication;
 

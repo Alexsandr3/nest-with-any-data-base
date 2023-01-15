@@ -4,6 +4,7 @@ import { CreatePostDto } from "../api/input-Dtos/create-Post-Dto-Model";
 import { PostDBSQLType } from "../domain/types/post-DB-SQL-Type";
 import { PostsSqlRepositories } from "../infrastructure/posts-sql-repositories";
 import { PostsRepositories } from "../infrastructure/posts-repositories";
+import { PostsTypeOrmRepositories } from "../infrastructure/posts-type-orm-repositories";
 
 export interface IPostRepository {
   createPost(newPost: PreparationPostForDB): Promise<string>;
@@ -40,6 +41,11 @@ export const PostRepository = () => {
       return {
         provide: IPostRepositoryKey,
         useClass: PostsSqlRepositories
+      };
+    case "TypeOrm":
+      return {
+        provide: IPostRepositoryKey,
+        useClass: PostsTypeOrmRepositories
       };
     default:
       return {

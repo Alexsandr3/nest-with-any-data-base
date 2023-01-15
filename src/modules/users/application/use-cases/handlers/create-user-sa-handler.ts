@@ -8,6 +8,8 @@ import { add } from "date-fns";
 import { Inject } from "@nestjs/common";
 import { IUserQueryRepository, IUserQueryRepositoryKey } from "../../../interfaces/IUserQueryRepository";
 import { IUserRepository, IUserRepositoryKey } from "../../../interfaces/IUserRepository";
+import { CreateUserDto } from "../../../api/input-Dto/create-User-Dto-Model";
+import { BadRequestExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
 
 
 @CommandHandler(CreateUserSaCommand)
@@ -19,14 +21,14 @@ export class CreateUserSaHandler implements ICommandHandler<CreateUserSaCommand>
     private readonly usersRepositories: IUserRepository,
     @Inject(IUserQueryRepositoryKey)
     private readonly usersQueryRepositories: IUserQueryRepository,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
   ) {
   }
 
   async execute(command: CreateUserSaCommand): Promise<UsersViewType> {
     const { email, login, password } = command.userInputModel;
     //email verification and login for uniqueness
-    // await this.validateUser(command.userInputModel);
+    await this.validateUser(command.userInputModel);
     //generation Hash
     const passwordHash = await this.usersService.generateHash(password);
     // preparation data User for DB
@@ -57,24 +59,24 @@ export class CreateUserSaHandler implements ICommandHandler<CreateUserSaCommand>
     //finding user for View
     return await this.usersQueryRepositories.findUser(userId);
   }
-  // private async validateUser(userInputModel: CreateUserDto): Promise<boolean> {
-  //   //finding user
-  //   const checkLogin = await this.usersSqlRepositories.findByLoginOrEmail(
-  //     userInputModel.login
-  //   );
-  //   if (checkLogin)
-  //     throw new BadRequestExceptionMY({
-  //       message: `Login or Email already in use, do you need choose new data`,
-  //       field: `login`
-  //     });
-  //   const checkEmail = await this.usersSqlRepositories.findByLoginOrEmail(
-  //     userInputModel.email
-  //   );
-  //   if (checkEmail)
-  //     throw new BadRequestExceptionMY({
-  //       message: `Login or Email already in use, do you need choose new data`,
-  //       field: `email`
-  //     });
-  //   return true;
-  // }
+  private async validateUser(userInputModel: CreateUserDto): Promise<boolean> {
+    //finding user
+    const checkLogin = await this.usersRepositories.findByLoginOrEmail(
+      userInputModel.login
+    );
+    if (checkLogin)
+      throw new BadRequestExceptionMY({
+        message: `Login or Email already in use, do you need choose new data`,
+        field: `login`
+      });
+    const checkEmail = await this.usersRepositories.findByLoginOrEmail(
+      userInputModel.email
+    );
+    if (checkEmail)
+      throw new BadRequestExceptionMY({
+        message: `Login or Email already in use, do you need choose new data`,
+        field: `email`
+      });
+    return true;
+  }
 }

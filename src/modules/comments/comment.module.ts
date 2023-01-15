@@ -18,6 +18,9 @@ import { UpdateCommentHandler } from "./application/use-cases/handlers/update-co
 import { UpdateLikeStatusCommentHandler } from "./application/use-cases/handlers/update-like-status-comment-handler";
 import { CommentQueryRepository } from "./interfaces/ICommentQueryRepository";
 import { CommentRepository } from "./interfaces/ICommentRepository";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { CommentT } from "../../entities/comment.entity";
+import { LikeComment } from "../../entities/likeComment.entity";
 
 const handlers = [
   DeleteCommentHandler,
@@ -41,6 +44,7 @@ const guards = [JwtAuthGuard, JwtForGetGuard];
       { name: Comment.name, schema: CommentSchema },
       { name: LikesStatus.name, schema: LikesStatusSchema }
     ]),
+    TypeOrmModule.forFeature([CommentT, LikeComment]),
     CqrsModule
   ],
   controllers: [CommentsController],

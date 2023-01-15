@@ -10,6 +10,8 @@ import { DeleteDevicesHandler } from "./application/use-cases/handlers/delete-de
 import { DeleteDeviceByIdHandler } from "./application/use-cases/handlers/delete-device-by-id-handler";
 import { DeviceRepository } from "./interfaces/IDeviceRepository";
 import { DeviceQueryRepository } from "./interfaces/IDeviceQueryRepository";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { DeviceT } from "../../entities/device.entity";
 
 const handlers = [DeleteDevicesHandler, DeleteDeviceByIdHandler];
 const adapters = [
@@ -25,7 +27,8 @@ const adapters = [
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
-    CqrsModule
+    CqrsModule,
+    TypeOrmModule.forFeature([DeviceT])
   ],
   controllers: [DevicesController],
   providers: [DevicesService, RefreshGuard, ...adapters, ...handlers]
