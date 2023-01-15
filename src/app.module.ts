@@ -87,6 +87,7 @@ const entities = [
         };
       },
     }),
+    ...modules,
     TypeOrmModule.forRootAsync({
       // imports: [ConfigModule],
       inject: [ConfigService],
@@ -100,7 +101,6 @@ const entities = [
         };
       },
     }),
-    ...modules,
   ],
   controllers: [AppController],
   providers: [AppService],
