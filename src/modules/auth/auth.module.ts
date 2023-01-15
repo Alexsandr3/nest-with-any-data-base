@@ -20,7 +20,7 @@ import { NewPasswordHandler } from "./application/use-cases/handlers/new-passwor
 import { RecoveryHandler } from "./application/use-cases/handlers/recovery-handler";
 import { LoginHandler } from "./application/use-cases/handlers/login-handler";
 import { RefreshHandler } from "./application/use-cases/handlers/refresh-handler";
-import { ThrottlerModule } from "@nestjs/throttler";
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { DeviceRepository } from "../security/interfaces/IDeviceRepository";
 import { UserRepository } from "../users/interfaces/IUserRepository";
 import { UserQueryRepository } from "../users/interfaces/IUserQueryRepository";
@@ -29,6 +29,7 @@ import { Usser } from "../../entities/user.entity";
 import { EmailConfirmation } from "../../entities/emailConfirmation.entity";
 import { EmailRecovery } from "../../entities/emailRecovery.entity";
 import { DeviceT } from "../../entities/device.entity";
+import { APP_GUARD } from "@nestjs/core";
 
 const handlers = [
   CreateUserHandler,
@@ -76,11 +77,11 @@ const guards = [RefreshGuard, JwtAuthGuard];
 
   ],
   controllers: [AuthController],
-  providers: [UsersService, AuthService, ...adapters, ...guards, ...handlers
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerGuard
-    // }
+  providers: [UsersService, AuthService, ...adapters, ...guards, ...handlers,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
   ],
   exports: [JwtService]
 })
