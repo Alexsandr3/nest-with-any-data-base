@@ -19,7 +19,7 @@ export class JwtService {
     const secret = this.configService.get("tokens", { infer: true });
 
 
-    const accessToken = jwt.sign({ userId: userId }, secret.ACCESS_TOKEN_SECRET, { expiresIn: "10s" });
+    const accessToken = jwt.sign({ userId: userId }, secret.ACCESS_TOKEN_SECRET, { expiresIn: "5s" });
     const refreshToken = jwt.sign({
       userId: userId,
       deviceId: deviceId

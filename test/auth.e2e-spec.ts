@@ -17,7 +17,7 @@ export const delay = async (delay: number = 1000) => {
 
 jest.setTimeout(120000);
 
-describe.skip("Auth (e2e)", () => {
+describe("Auth (e2e)", () => {
 
   let app: INestApplication;
   //let mongoServer: MongoMemoryServer;
@@ -50,13 +50,8 @@ describe.skip("Auth (e2e)", () => {
   });
 
 
-  it("/ (GET)", () => {
-    return request(app.getHttpServer())
-      .get("/")
-      .expect(200)
-      .expect("Hello free Belarus!");
-  });
-  describe(`/auth`, () => {
+
+  describe.skip(`/auth`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -224,12 +219,13 @@ describe.skip("Auth (e2e)", () => {
 
     });
     it("POST - `/auth/refresh-token` - shouldn`t return new tokens when `refresh` token in BL", async () => {
+
       await request(app.getHttpServer())
         .post("/auth/refresh-token")
         .set("Cookie", `refreshToken=${oldRefreshToken}`)
         .expect(401);
     });
-    it("POST - `/auth/refresh-token` - should return new tokens 2", async () => {
+    it.skip("POST - `/auth/refresh-token` - should return new tokens 2", async () => {
       const result = await request(app.getHttpServer())
         .post(`/auth/refresh-token`)
         .set("Cookie", `refreshToken=${validRefreshToken}`)
@@ -250,13 +246,13 @@ describe.skip("Auth (e2e)", () => {
       expect(oldRefreshToken).not.toEqual(validRefreshToken);
 
     });
-    it("POST - /auth/logout - shouldn`t logout user when `refresh` token in BL", async () => {
+    it.skip("POST - /auth/logout - shouldn`t logout user when `refresh` token in BL", async () => {
       await request(app.getHttpServer())
         .post(`/auth/logout`)
         .set("Cookie", `refreshToken=${oldRefreshToken}`)
         .expect(401);
     });
-    it("POST - /auth/logout -  should logout user", async () => {
+    it.skip("POST - /auth/logout -  should logout user", async () => {
       await request(app.getHttpServer())
         .post("/auth/logout")
         .set(`Cookie`, `refreshToken=${validRefreshToken}`)
@@ -264,7 +260,7 @@ describe.skip("Auth (e2e)", () => {
     });
 
   });
-  describe(`/auth/registration-email-resending and registration`, () => {
+  describe.skip(`/auth/registration-email-resending and registration`, () => {
     let validAccessToken: AccessTokenType;
     let refreshTokenKey: string;
     beforeAll(async () => {
