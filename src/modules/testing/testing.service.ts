@@ -63,28 +63,28 @@ export class TestingService {
     await this.likesStatusModel.deleteMany();
     await this.likesPostsStatusModel.deleteMany();
     await this.blogBanInfoModel.deleteMany();
-    await this.dataSource.query(`
-        DELETE
-        FROM user_email_confirmation;
-        DELETE
-        FROM user_email_recovery;
-        DELETE
-        FROM devices;
-        DELETE
-        FROM "likesPost";
-        DELETE
-        FROM "likesComment";
-        DELETE
-        FROM comments;
-        DELETE
-        FROM banned_blog_users;
-        DELETE
-        FROM posts;
-        DELETE
-        FROM blogs;
-        DELETE
-        FROM users;
-    `);
+    // await this.dataSource.query(`
+    //     DELETE
+    //     FROM user_email_confirmation;
+    //     DELETE
+    //     FROM user_email_recovery;
+    //     DELETE
+    //     FROM devices;
+    //     DELETE
+    //     FROM "likesPost";
+    //     DELETE
+    //     FROM "likesComment";
+    //     DELETE
+    //     FROM comments;
+    //     DELETE
+    //     FROM banned_blog_users;
+    //     DELETE
+    //     FROM posts;
+    //     DELETE
+    //     FROM blogs;
+    //     DELETE
+    //     FROM users;
+    // `);
     await this.userRepo.manager.connection.transaction(async manager => {
         await manager.delete(LikeComment, {});
         await manager.delete(LikePost, {});

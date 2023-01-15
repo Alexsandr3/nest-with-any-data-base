@@ -106,7 +106,9 @@ export class UsersSqlQueryRepositories implements IUserQueryRepository {
        OR login ILIKE '%${searchLoginTerm}%'
       `;
     }
+    console.log('here');
     const users = await this.dataSource.query(filter);
+    console.log('here--', users);
     //mapped user for View
     const mappedUsers = users.map((user) => this.mappedForUser(user));
     const items = await Promise.all(mappedUsers);
