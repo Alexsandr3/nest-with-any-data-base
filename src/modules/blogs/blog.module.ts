@@ -25,6 +25,13 @@ import {
 import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/mongo-schemas/ban-user-for-current-blog-schema-Model";
 import { PostQueryRepository } from "../posts/interfaces/IPostQueryRepository";
 import { BlogQueryRepository } from "./interfaces/IBlogQueryRepository";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { BlogT } from "../../entities/blog.entity";
+import { PostT } from "../../entities/post.entity";
+import { CommentT } from "../../entities/comment.entity";
+import { LikePost } from "../../entities/likePost.entity";
+import { LikeComment } from "../../entities/likeComment.entity";
+import { BannedBlogUser } from "../../entities/bannedBlogUser.entity";
 
 const handlers = [];
 const adapters = [
@@ -47,6 +54,7 @@ const adapters = [
       { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema },
       { name: BlogBanInfo.name, schema: BlogBanInfoSchema }
     ]),
+    TypeOrmModule.forFeature([BlogT, PostT, CommentT, LikePost, LikeComment, BannedBlogUser]),
     CqrsModule
   ],
   controllers: [BlogsController],

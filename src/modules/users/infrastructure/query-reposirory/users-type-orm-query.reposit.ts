@@ -52,17 +52,9 @@ export class UsersTypeOrmQueryRepository implements IUserQueryRepository {
         order: { [sortBy]: order },
         skip: (pageNumber - 1) * pageSize,
         take: pageSize
-      })
-      // .then((u) => {
-      //   return u.map((u) => this.mappedForUser(u));
-      // })
-      // .catch(() => {
-      //   return false;
-      // })
-      ,
+      }),
       this.userRepo.count({ where: filter })
     ]);
-    // if (users === false) throw new Error("Incorrect query data");
     //mapped user for View
     const mappedUsers = users.map((user) => this.mappedForUser(user));
     const items = await Promise.all(mappedUsers);

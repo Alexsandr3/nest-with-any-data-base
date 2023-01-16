@@ -8,15 +8,15 @@ export class LikePost {
   id: string;
   @Column("boolean", { default: true })
   isBanned: boolean;
-  @Column()
+  @Column({ type: "uuid" })
   parentId: string;
-  @Column()
+  @Column({ type: "character varying" })
   addedAt: string;
-  @Column({default: 'None'})
+  @Column({ default: "None" })
   likeStatus: string;
-  @Column()
+  @Column({ type: "character varying" })
   userLogin: string;
-  @Column()
+  @Column({ type: "uuid" })
   userId: string;
   @ManyToOne(() => Usser, u => u.likePosts)
   user: Usser;

@@ -1,4 +1,3 @@
-import { BlogDBSQLType } from "../../blogger/domain/types/blog-DB-SQL-Type";
 import { getConfiguration } from "../../../config/configuration";
 import { BlogsSqlRepositories } from "../infrastructure/blogs-sql.repositories";
 import { PreparationBlogForDB } from "../../blogger/domain/types/blog-preparation-for-DB";
@@ -6,6 +5,7 @@ import { UpdateBlogDto } from "../../blogger/api/input-dtos/update-Blog-Dto-Mode
 import { BanUserForBlogPreparationForDB } from "../../blogger/domain/types/ban-user-for-blog-preparation-for-DB";
 import { BannedBlogUsersDBSQL } from "../../blogger/domain/types/banned_blog_users-DB-SQL";
 import { BlogsRepositories } from "../infrastructure/blogs.repositories";
+import { BlogsTypeOrmRepositories } from "../infrastructure/blogs-type-orm.repositories";
 
 export interface IBlogRepository {
 
@@ -15,7 +15,7 @@ export interface IBlogRepository {
 
   updateBlog(id: string, userId: string, data: UpdateBlogDto): Promise<boolean>;
 
-  findBlog(id: string): Promise<BlogDBSQLType>;
+  findBlog(id: string)/*: Promise<BlogDBSQLType>*/;
 
   updateOwnerBlog(id: string, userId: string): Promise<boolean>;
 
@@ -45,6 +45,11 @@ export const BlogRepository = () => {
         provide: IBlogRepositoryKey,
         useClass: BlogsSqlRepositories
       };
+    case "TypeOrm":
+      return {
+        provide: IBlogRepositoryKey,
+        useClass: BlogsTypeOrmRepositories
+      }
     default:
       return {
         provide: IBlogRepositoryKey,

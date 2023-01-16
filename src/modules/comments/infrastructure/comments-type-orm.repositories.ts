@@ -21,19 +21,19 @@ export class CommentsTypeOrmRepositories implements ICommentRepository {
 
   async createCommentByIdPost(newComment: PreparationCommentForDB): Promise<CommentsViewType> {
     const { createdAt, userId, userLogin, postId, content, ownerId } = newComment;
-    const query =
-      `
-          INSERT INTO comments ("postId", "ownerId", "userId", "content",
-                                "createdAt", "userLogin")
-          VALUES ('${postId}', '${ownerId}', '${userId}', '${content}',
-                  '${createdAt}', '${userLogin}') RETURNING "commentId","content", "userId", "userLogin", "createdAt"
-      `;
-    const comment = await this.commentTRepository.query(query);
+    const comment = new CommentT();
+    comment.postId = postId;
+    comment.ownerId = ownerId;
+    comment.userId = userId;
+    comment.content = content;
+    comment.createdAt = createdAt;
+    comment.userLogin = userLogin;
+    const createdComment = await this.commentTRepository.save(comment);
     //default items
     const likesInfo = new LikesInfoViewModel(0, 0, LikeStatusType.None);
     //returning comment for View
     return new CommentsViewType(
-      comment[0].commentId,
+      createdComment.commentId,
       newComment.content,
       newComment.userId,
       newComment.userLogin,
@@ -43,33 +43,33 @@ export class CommentsTypeOrmRepositories implements ICommentRepository {
   }
 
   async findCommentsById(id: string): Promise<CommentDBSQLType> {
-    const query = `
-        SELECT *
-        FROM comments
-        WHERE "commentId" = '${id}'
-    `;
-    const comment = await this.commentTRepository.query(query);
-    return comment[0];
-    // return this.commentsModel.findOne({ _id: new ObjectId(id) });
+    return this.commentTRepository
+      .findOneBy({ commentId: id });
+
   }
 
   async deleteCommentsById(id: string): Promise<boolean> {
-    const query = `
-        DELETE
-        FROM "comments"
-        WHERE "commentId" = '${id}'
-    `;
-    await this.commentTRepository.query(query);
+    await this.commentTRepository.manager.connection.transaction(async manager => {
+      await manager.delete(CommentT, { commentId: id });
+    })
+      .catch((e) => {
+        console.log(e);
+        return false;
+      });
     return true;
   }
 
   async updateCommentsById(id: string, content: string): Promise<boolean> {
-    const query = `
-        UPDATE "comments"
-        SET "content" = '${content}'
-        WHERE "commentId" = '${id}'
-    `;
-    await this.commentTRepository.query(query);
+    await this.commentTRepository.manager.connection.transaction(async manager => {
+      await manager.update(CommentT,
+        { commentId: id },
+        { content: content }
+      );
+    })
+      .catch((e) => {
+        console.log(e);
+        return null;
+      });
     return true;
   }
 
@@ -87,39 +87,35 @@ export class CommentsTypeOrmRepositories implements ICommentRepository {
   }
 
   async updateLikeStatusForComment(id: string, userId: string, likeStatus: LikeStatusType): Promise<boolean> {
-    const queryFind = `
-        SELECT *
-        FROM "likesComment"
-        WHERE "userId" = '${userId}'
-          AND "parentId" = '${id}'
-    `;
-    const result = await this.commentTRepository.query(queryFind);
-    if (!result[0]) {
-      const query = `
-          INSERT INTO "likesComment" ("parentId", "likeStatus", "userId")
-          VALUES ('${id}', '${likeStatus}', '${userId}');
-      `;
-      await this.commentTRepository.query(query);
-      const queryUpdate = `
-          UPDATE "likesComment"
-          SET "likeStatus" = '${likeStatus}',
-              "isBanned"   = false
-          WHERE "userId" = '${userId}'
-            AND "parentId" = '${id}'
-      `;
-      const res = await this.commentTRepository.query(queryUpdate);
-      if (!res[1]) return null;
+    const result = await this.likeCommentRepository.findOneBy({ userId: userId, parentId: id });
+    if (!result) {
+      const likeComment = new LikeComment();
+      likeComment.parentId = id;
+      likeComment.likeStatus = likeStatus;
+      likeComment.userId = userId;
+      await this.likeCommentRepository.save(likeComment);
+      await this.likeCommentRepository.manager.connection.transaction(async manager => {
+        await manager.update(LikeComment,
+          { parentId: id, userId: userId },
+          { likeStatus: likeStatus, isBanned: false }
+        );
+      })
+        .catch((e) => {
+          console.log(e);
+          return null;
+        });
       return true;
     } else {
-      const queryUpdate = `
-          UPDATE "likesComment"
-          SET "likeStatus" = '${likeStatus}',
-              "isBanned"   = false
-          WHERE "userId" = '${userId}'
-            AND "parentId" = '${id}'
-      `;
-      const res = await this.commentTRepository.query(queryUpdate);
-      if (!res[1]) return null;
+      await this.likeCommentRepository.manager.connection.transaction(async manager => {
+        await manager.update(LikeComment,
+          { parentId: id, userId: userId },
+          { likeStatus: likeStatus, isBanned: false }
+        );
+      })
+        .catch((e) => {
+          console.log(e);
+          return null;
+        });
       return true;
     }
   }

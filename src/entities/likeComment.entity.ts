@@ -8,14 +8,14 @@ export class LikeComment {
   id: string;
   @Column("boolean", { default: true })
   isBanned: boolean;
-  @Column()
+  @Column({ type: "uuid" })
   parentId: string;
-  @Column({default: 'None'})
+  @Column({ default: "None" })
   likeStatus: string;
-  @Column()
+  @Column({ type: "uuid" })
   userId: string;
   @ManyToOne(() => Usser, u => u.likeComments)
   user: Usser;
-  @ManyToOne(() => CommentT, u => u.likeComment)
-  comment: CommentT;
+  @ManyToOne(() => CommentT, u => u.likesComment)
+  comment: Promise<CommentT>;
 }

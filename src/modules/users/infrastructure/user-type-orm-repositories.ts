@@ -153,17 +153,6 @@ export class UserTypeOrmRepositories implements IUserRepository {
   }
 
   async updateBanInfoUser(userId: string, isBanned: boolean, banDate: string, banReason: string): Promise<boolean> {
-    // const query = `
-    //     UPDATE "users"
-    //     SET "isBanned"  = ${isBanned},
-    //         "banDate"   = ${banDate ? `'${banDate}'` : null},
-    //         "banReason" = ${banReason ? `'${banReason}'` : null}
-    //     WHERE "userId" = '${userId}'
-    // `;
-    //
-    // const res = await this.userRepo.query(query);
-    // if (res[1] === 0) throw new Error("not today");
-    // return true;
     await this.userRepo.manager.connection.transaction(async manager => {
       await manager.update(Usser,
         { userId: userId },

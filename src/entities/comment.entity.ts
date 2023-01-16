@@ -7,24 +7,24 @@ import { LikeComment } from "./likeComment.entity";
 export class CommentT {
   @PrimaryGeneratedColumn("uuid")
   commentId: string;
-  @Column("boolean", { default: true })
+  @Column("boolean", { default: false })
   isBanned: boolean;
-  @Column()
+  @Column({ type: "uuid" })
   postId: string;
-  @Column()
+  @Column({ type: "uuid" })
   ownerId: string;
-  @Column()
+  @Column({ type: "uuid" })
   userId: string;
-  @Column()
+  @Column({type: "character varying", length: 300})
   content: string;
-  @Column()
+  @Column({type: "character varying"})
   createdAt: string;
-  @Column()
+  @Column({type: "character varying"})
   userLogin: string;
   @ManyToOne(() => Usser, u => u.comments)
   user: Usser;
   @ManyToOne(() => PostT, u => u.comments)
   post: PostT;
   @OneToMany(() => LikeComment, u => u.comment)
-  likeComment: LikeComment[];
+  likesComment: LikeComment[];
 }

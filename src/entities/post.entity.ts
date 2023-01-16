@@ -8,21 +8,21 @@ import { LikePost } from "./likePost.entity";
 export class PostT {
   @PrimaryGeneratedColumn("uuid")
   postId: string;
-  @Column("boolean", { default: true })
+  @Column("boolean", { default: false })
   isBanned: boolean;
-  @Column()
+  @Column({ type: "uuid" })
   userId: string;
-  @Column()
+  @Column({ type: "character varying", length: 30 })
   title: string;
-  @Column()
+  @Column({ type: "character varying", length: 100 })
   shortDescription: string;
-  @Column()
+  @Column({ type: "character varying", length: 1000 })
   content: string;
-  @Column()
+  @Column({ type: "character varying" })
   createdAt: string;
-  @Column()
+  @Column({ type: "character varying" })
   blogName: string;
-  @Column()
+  @Column({ type: "uuid" })
   blogId: string;
   @ManyToOne(() => Usser, u => u.posts)
   user: Usser;

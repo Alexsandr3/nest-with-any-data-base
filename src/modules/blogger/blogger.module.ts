@@ -44,6 +44,9 @@ import { EmailRecovery } from "../../entities/emailRecovery.entity";
 import { PostT } from "../../entities/post.entity";
 import { CommentT } from "../../entities/comment.entity";
 import { LikePost } from "../../entities/likePost.entity";
+import { BlogT } from "../../entities/blog.entity";
+import { BannedBlogUser } from "../../entities/bannedBlogUser.entity";
+import { LikeComment } from "../../entities/likeComment.entity";
 
 const handlers = [
   CreateBlogHandler,
@@ -88,7 +91,7 @@ const guards = [JwtAuthGuard];
       { name: User.name, schema: UserSchema },
       { name: BlogBanInfo.name, schema: BlogBanInfoSchema }
     ]),
-    TypeOrmModule.forFeature([Usser, EmailConfirmation, EmailRecovery, PostT, CommentT, LikePost]),
+    TypeOrmModule.forFeature([Usser, EmailConfirmation, EmailRecovery, BlogT, PostT, CommentT, LikePost, LikeComment, BannedBlogUser]),
     CqrsModule
   ],
   controllers: [BloggersController],
