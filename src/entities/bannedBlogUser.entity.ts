@@ -5,23 +5,23 @@ import { BlogT } from "./blog.entity";
 export class BannedBlogUser {
   @PrimaryGeneratedColumn("uuid")
   id: string;
-  @Column()
+  @Column({ type: "uuid" })
   ownerId: string;
-  @Column()
+  @Column({ type: "uuid" })
   userId: string;
-  @Column()
+  @Column({ type: "character varying" })
   login: string;
-  @Column()
+  @Column({ type: "character varying" })
   email: string;
-  @Column()
+  @Column({ type: "character varying" })
   createdAt: string;
-  @Column("boolean", { default: true })
+  @Column("boolean", { default: false })
   isBanned: boolean;
-  @Column({default: null})
+  @Column({ default: null })
   banDate: string;
-  @Column({default: null})
+  @Column({ default: null })
   banReason: string;
-  @Column()
+  @Column({ type: "uuid" })
   blogId: string;
   @ManyToOne(() => BlogT, u => u.bannedUsers)
   blog: BlogT;

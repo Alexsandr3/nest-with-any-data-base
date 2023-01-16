@@ -20,6 +20,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { BlogT } from "../../entities/blog.entity";
 import { PostT } from "../../entities/post.entity";
 import { LikePost } from "../../entities/likePost.entity";
+import { BannedBlogUser } from "../../entities/bannedBlogUser.entity";
 
 const handlers = [BindBlogHandler, UpdateBanInfoForBlogHandler];
 const adapters = [
@@ -43,7 +44,7 @@ const guards = [BasicAuthGuard];
       { name: Post.name, schema: PostSchema },
       { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema }
     ]),
-    TypeOrmModule.forFeature([BlogT, PostT, LikePost]),
+    TypeOrmModule.forFeature([BlogT, PostT, LikePost, BannedBlogUser]),
     CqrsModule
   ],
   controllers: [SaController],

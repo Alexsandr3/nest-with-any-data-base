@@ -7,21 +7,21 @@ import { Usser } from "./user.entity";
 export class BlogT {
   @PrimaryGeneratedColumn("uuid")
   blogId: string;
-  @Column("boolean", { default: true })
+  @Column("boolean", { default: false })
   isBanned: boolean;
-  @Column()
+  @Column({ type: "character varying", length: 15, collation: "C" })
   name: string;
-  @Column()
+  @Column({ type: "character varying" })
   userLogin: string;
-  @Column()
+  @Column({ type: "character varying", length: 500, collation: "C" })
   description: string;
-  @Column()
+  @Column({ type: "character varying", length: 100, collation: "C" })
   websiteUrl: string;
-  @Column()
+  @Column({ type: "character varying" })
   createdAt: string;
-  @Column()
+  @Column({ type: "character varying", default: null })
   banDate: string;
-  @Column()
+  @Column({ type: "uuid" })
   userId: string;
   @ManyToOne(() => Usser, u => u.blogs)
   user: Usser;

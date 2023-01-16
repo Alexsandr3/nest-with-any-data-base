@@ -10,6 +10,7 @@ import { BlogDBSQLType } from "../../blogger/domain/types/blog-DB-SQL-Type";
 import { BlogsSqlQueryRepositories } from "../infrastructure/query-repository/blogs-sql-query.repositories";
 import { BlogsQueryRepositories } from "../infrastructure/query-repository/blogs-query.repositories";
 import { getConfiguration } from "../../../config/configuration";
+import { BlogsTypeOrmQueryRepositories } from "../infrastructure/query-repository/blogs-type-orm-query.repositories";
 
 export interface IBlogQueryRepository {
 
@@ -43,6 +44,11 @@ export const BlogQueryRepository = () => {
         provide: IBlogQueryRepositoryKey,
         useClass: BlogsSqlQueryRepositories
       };
+    case "TypeOrm":
+      return {
+        provide: IBlogQueryRepositoryKey,
+        useClass: BlogsTypeOrmQueryRepositories
+      }
     default:
       return {
         provide: IBlogQueryRepositoryKey,

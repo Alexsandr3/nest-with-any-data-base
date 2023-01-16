@@ -43,6 +43,8 @@ import { PostT } from "../../entities/post.entity";
 import { CommentT } from "../../entities/comment.entity";
 import { LikePost } from "../../entities/likePost.entity";
 import { LikeComment } from "../../entities/likeComment.entity";
+import { BlogT } from "../../entities/blog.entity";
+import { BannedBlogUser } from "../../entities/bannedBlogUser.entity";
 
 const handlers = [CreateCommentHandler, UpdateLikeStatusHandler];
 const adapters = [
@@ -77,7 +79,10 @@ const guards = [JwtAuthGuard, BasicAuthGuard, JwtForGetGuard];
       { name: BlogBanInfo.name, schema: BlogBanInfoSchema }
     ]),
     CqrsModule,
-    TypeOrmModule.forFeature([Usser, EmailConfirmation, EmailRecovery, PostT, CommentT, LikePost, LikeComment])
+    TypeOrmModule.forFeature([
+      Usser, EmailConfirmation, EmailRecovery,
+      BlogT, PostT, CommentT, LikePost, LikeComment,
+      BannedBlogUser])
 
   ],
   controllers: [PostsController],
