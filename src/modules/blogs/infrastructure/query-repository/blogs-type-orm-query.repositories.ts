@@ -16,6 +16,7 @@ import { IBlogQueryRepository } from "../../interfaces/IBlogQueryRepository";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BlogT } from "../../../../entities/blog.entity";
 import { BannedBlogUser } from "../../../../entities/bannedBlogUser.entity";
+import { PaginationUsersDto } from "../../../users/api/input-Dto/pagination-Users-Dto-Model";
 
 @Injectable()
 export class BlogsTypeOrmQueryRepositories implements IBlogQueryRepository {
@@ -188,8 +189,8 @@ export class BlogsTypeOrmQueryRepositories implements IBlogQueryRepository {
     return blog;
   }
 
-  async getBannedUsersForBlog(blogId: string, paginationInputModel: PaginationDto): Promise<PaginationViewModel<UsersForBanBlogViewType[]>> {
-    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
+  async getBannedUsersForBlog(blogId: string, paginationInputModel: PaginationUsersDto): Promise<PaginationViewModel<UsersForBanBlogViewType[]>> {
+    const { searchLoginTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
     let order;
     if (sortDirection === "asc") {
       order = "ASC";
@@ -197,10 +198,12 @@ export class BlogsTypeOrmQueryRepositories implements IBlogQueryRepository {
       order = "DESC";
     }
     let filter = { blogId: blogId, isBanned: true };
-    if (searchNameTerm.trim().length > 0) {
+    if (searchLoginTerm.trim().length > 0) {
+
       // @ts-ignore
-      filter = { blogId: blogId, isBanned: true, login: ILike(`%${searchNameTerm}%`) };
+      filter = { blogId: blogId, isBanned: true, login: ILike(`%${searchLoginTerm}%`) };
     }
+    console.log(filter);
     //search all blogs for current user
     const [blogs, count] = await Promise.all([this.bannedBlogUserRepository
       .find({
@@ -212,7 +215,6 @@ export class BlogsTypeOrmQueryRepositories implements IBlogQueryRepository {
       }),
       this.bannedBlogUserRepository.count({ where: filter })
     ]);
-    console.log(blogs);
     //mapped for View
     const mappedBlogs = blogs.map((blog) => this.mapperBanInfo(blog));
     const pagesCountRes = Math.ceil(count / pageSize);
