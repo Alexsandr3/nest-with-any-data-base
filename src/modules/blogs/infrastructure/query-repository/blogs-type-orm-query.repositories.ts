@@ -9,7 +9,7 @@ import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter"
 import {
   BanInfoType, UsersForBanBlogViewType
 } from "../../../users/infrastructure/query-reposirory/types-view/user-View-Model";
-import {  ILike, Repository } from "typeorm";
+import { ILike, Repository } from "typeorm";
 import { BlogDBSQLType } from "../../../blogger/domain/types/blog-DB-SQL-Type";
 import { BannedBlogUsersDBSQL } from "../../../blogger/domain/types/banned_blog_users-DB-SQL";
 import { IBlogQueryRepository } from "../../interfaces/IBlogQueryRepository";
@@ -70,9 +70,8 @@ export class BlogsTypeOrmQueryRepositories implements IBlogQueryRepository {
     } else {
       order = "DESC";
     }
-    let filter = { isBanned: false };
+    let filter: any = { isBanned: false };
     if (searchNameTerm.trim().length > 0) {
-      // @ts-ignore
       filter = { isBanned: false, name: ILike(`%${searchNameTerm}%`) };
     }
     //search all blogs for current user
@@ -141,9 +140,8 @@ export class BlogsTypeOrmQueryRepositories implements IBlogQueryRepository {
     } else {
       order = "DESC";
     }
-    let filter = { userId: userId, isBanned: false };
+    let filter: any = { userId: userId, isBanned: false };
     if (searchNameTerm.trim().length > 0) {
-      // @ts-ignore
       filter = { userId: userId, isBanned: false, name: ILike(`%${searchNameTerm}%`) };
     }
     //search all blogs and counting for current user
@@ -171,7 +169,7 @@ export class BlogsTypeOrmQueryRepositories implements IBlogQueryRepository {
 
   async findBlog(id: string): Promise<BlogViewModel> {
     const blog = await this.blogTRepository
-      .findOneBy({ blogId: id, isBanned: false});
+      .findOneBy({ blogId: id, isBanned: false });
     if (!blog) throw new NotFoundExceptionMY(`Not found current blog with id: ${id}`);
     return new BlogViewModel(
       blog.blogId,
@@ -197,17 +195,14 @@ export class BlogsTypeOrmQueryRepositories implements IBlogQueryRepository {
     } else {
       order = "DESC";
     }
-    let filter = { blogId: blogId, isBanned: true };
+    let filter: any = { blogId: blogId, isBanned: true };
     if (searchLoginTerm.trim().length > 0) {
-
-      // @ts-ignore
       filter = { blogId: blogId, isBanned: true, login: ILike(`%${searchLoginTerm}%`) };
     }
-    console.log(filter);
     //search all blogs for current user
     const [blogs, count] = await Promise.all([this.bannedBlogUserRepository
       .find({
-        select: [],
+        select: ["isBanned", "banReason", "banDate", "userId", "login"],
         where: filter,
         order: { [sortBy]: order },
         skip: (pageNumber - 1) * pageSize,
