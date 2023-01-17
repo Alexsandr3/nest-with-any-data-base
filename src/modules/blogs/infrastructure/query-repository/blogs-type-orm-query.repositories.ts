@@ -170,7 +170,7 @@ export class BlogsTypeOrmQueryRepositories implements IBlogQueryRepository {
 
   async findBlog(id: string): Promise<BlogViewModel> {
     const blog = await this.blogTRepository
-      .findOneBy({ blogId: id });
+      .findOneBy({ blogId: id, isBanned: false});
     if (!blog) throw new NotFoundExceptionMY(`Not found current blog with id: ${id}`);
     return new BlogViewModel(
       blog.blogId,

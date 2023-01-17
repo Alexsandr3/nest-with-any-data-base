@@ -8,12 +8,15 @@ import { ICommentRepository } from "../interfaces/ICommentRepository";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CommentT } from "../../../entities/comment.entity";
 import { LikeComment } from "../../../entities/likeComment.entity";
+import { PostT } from "../../../entities/post.entity";
 
 @Injectable()
 export class CommentsTypeOrmRepositories implements ICommentRepository {
   constructor(
     @InjectRepository(CommentT)
     private readonly commentTRepository: Repository<CommentT>,
+    @InjectRepository(PostT)
+    private readonly postTRepository: Repository<PostT>,
     @InjectRepository(LikeComment)
     private readonly likeCommentRepository: Repository<LikeComment>
   ) {
@@ -21,6 +24,7 @@ export class CommentsTypeOrmRepositories implements ICommentRepository {
 
   async createCommentByIdPost(newComment: PreparationCommentForDB): Promise<CommentsViewType> {
     const { createdAt, userId, userLogin, postId, content, ownerId } = newComment;
+    const post = await this.postTRepository.findOneBy({ postId: postId });
     const comment = new CommentT();
     comment.postId = postId;
     comment.ownerId = ownerId;
@@ -28,6 +32,7 @@ export class CommentsTypeOrmRepositories implements ICommentRepository {
     comment.content = content;
     comment.createdAt = createdAt;
     comment.userLogin = userLogin;
+    comment.post = post
     const createdComment = await this.commentTRepository.save(comment);
     //default items
     const likesInfo = new LikesInfoViewModel(0, 0, LikeStatusType.None);
@@ -45,7 +50,6 @@ export class CommentsTypeOrmRepositories implements ICommentRepository {
   async findCommentsById(id: string): Promise<CommentDBSQLType> {
     return this.commentTRepository
       .findOneBy({ commentId: id });
-
   }
 
   async deleteCommentsById(id: string): Promise<boolean> {
@@ -88,11 +92,13 @@ export class CommentsTypeOrmRepositories implements ICommentRepository {
 
   async updateLikeStatusForComment(id: string, userId: string, likeStatus: LikeStatusType): Promise<boolean> {
     const result = await this.likeCommentRepository.findOneBy({ userId: userId, parentId: id });
+    const comment: any = await this.findCommentsById(id);
     if (!result) {
       const likeComment = new LikeComment();
       likeComment.parentId = id;
       likeComment.likeStatus = likeStatus;
       likeComment.userId = userId;
+      likeComment.comment = comment;
       await this.likeCommentRepository.save(likeComment);
       await this.likeCommentRepository.manager.connection.transaction(async manager => {
         await manager.update(LikeComment,

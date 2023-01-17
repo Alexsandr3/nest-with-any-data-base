@@ -32,6 +32,7 @@ import { PostT } from "../../entities/post.entity";
 import { CommentT } from "../../entities/comment.entity";
 import { LikePost } from "../../entities/likePost.entity";
 import { LikeComment } from "../../entities/likeComment.entity";
+import { BlogT } from "../../entities/blog.entity";
 
 const handlers = [CreateUserHandler, CreateUserSaHandler, DeleteUserHandler, UpdateBanInfoHandler];
 
@@ -65,7 +66,7 @@ const guards = [BasicAuthGuard];
       { name: LikesStatus.name, schema: LikesStatusSchema },
       { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema }
     ]),
-    TypeOrmModule.forFeature([Usser, EmailConfirmation, EmailRecovery, Device, PostT, CommentT, LikePost, LikeComment]),
+    TypeOrmModule.forFeature([Usser, EmailConfirmation, EmailRecovery, Device, BlogT, PostT, CommentT, LikePost, LikeComment]),
     MailModule,
     CqrsModule
   ],

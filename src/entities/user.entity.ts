@@ -30,7 +30,7 @@ export class Usser extends BaseEntity {
   emailConfirm: EmailConfirmation;
   @OneToOne(() => EmailRecovery, ec => ec.user)
   emailRecovery: EmailRecovery;
-  @OneToMany(() => DeviceT, d => d.user, { cascade: true })
+  @OneToMany(() => DeviceT, d => d.user)
   device: DeviceT[];
   @OneToMany(() => BlogT, d => d.user)
   blogs: BlogT[];

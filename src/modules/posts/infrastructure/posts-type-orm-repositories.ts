@@ -7,12 +7,15 @@ import { IPostRepository } from "../interfaces/IPostRepository";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PostT } from "../../../entities/post.entity";
 import { LikePost } from "../../../entities/likePost.entity";
+import { BlogT } from "../../../entities/blog.entity";
 
 @Injectable()
 export class PostsTypeOrmRepositories implements IPostRepository {
   constructor(
     @InjectRepository(PostT)
     private readonly postTRepository: Repository<PostT>,
+    @InjectRepository(BlogT)
+    private readonly blogTRepository: Repository<BlogT>,
     @InjectRepository(LikePost)
     private readonly likePostRepository: Repository<LikePost>
   ) {
@@ -20,6 +23,7 @@ export class PostsTypeOrmRepositories implements IPostRepository {
 
   async createPost(newPost: PreparationPostForDB): Promise<string> {
     const { userId, content, blogId, createdAt, shortDescription, blogName, title } = newPost;
+    const blog = await this.blogTRepository.findOneBy({ blogId: blogId });
     const post = new PostT();
     post.userId = userId;
     post.title = title;
@@ -28,6 +32,7 @@ export class PostsTypeOrmRepositories implements IPostRepository {
     post.createdAt = createdAt;
     post.blogName = blogName;
     post.blogId = blogId;
+    post.blog = blog;
     const createdPost = await this.postTRepository.save(post);
     return createdPost.postId;
   }
@@ -97,12 +102,14 @@ export class PostsTypeOrmRepositories implements IPostRepository {
     const result = await this.likePostRepository
       .findOneBy({ userId: userId, parentId: id });
     if (!result) {
+      const post = await this.postTRepository.findOneBy({ postId: id });
       const likePost = new LikePost();
       likePost.parentId = id;
       likePost.addedAt = new Date().toISOString();
       likePost.likeStatus = likeStatus;
       likePost.userLogin = login;
       likePost.userId = userId;
+      likePost.post = post;
       await this.likePostRepository.save(likePost);
       await this.likePostRepository.manager.connection.transaction(async manager => {
         await manager.update(LikePost,

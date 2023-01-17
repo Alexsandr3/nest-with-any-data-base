@@ -21,6 +21,8 @@ import { CommentRepository } from "./interfaces/ICommentRepository";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { CommentT } from "../../entities/comment.entity";
 import { LikeComment } from "../../entities/likeComment.entity";
+import { BlogT } from "../../entities/blog.entity";
+import { PostT } from "../../entities/post.entity";
 
 const handlers = [
   DeleteCommentHandler,
@@ -44,7 +46,7 @@ const guards = [JwtAuthGuard, JwtForGetGuard];
       { name: Comment.name, schema: CommentSchema },
       { name: LikesStatus.name, schema: LikesStatusSchema }
     ]),
-    TypeOrmModule.forFeature([CommentT, LikeComment]),
+    TypeOrmModule.forFeature([BlogT, PostT, CommentT, LikeComment]),
     CqrsModule
   ],
   controllers: [CommentsController],

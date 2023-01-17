@@ -6,7 +6,7 @@ import { Usser } from "./user.entity";
 export class LikePost {
   @PrimaryGeneratedColumn("uuid")
   id: string;
-  @Column("boolean", { default: true })
+  @Column("boolean", { default: false })
   isBanned: boolean;
   @Column({ type: "uuid" })
   parentId: string;

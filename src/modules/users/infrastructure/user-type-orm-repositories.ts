@@ -77,12 +77,6 @@ export class UserTypeOrmRepositories implements IUserRepository {
 
   async findUserByConfirmationCode(confirmationCode: string): Promise<EmailConfirmationSQLType> {
     return this.confirmationRepo.findOneBy({ confirmationCode: confirmationCode });
-    // const query = `
-    //     SELECT *
-    //     FROM user_email_confirmation
-    //     WHERE "confirmationCode" = '${confirmationCode}'
-    // `;
-    // const res = await this.userRepo.query(query);
   }
 
   async findUserByUserId(userId: string): Promise<EmailConfirmationSQLType> {

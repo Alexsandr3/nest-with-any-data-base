@@ -15,11 +15,11 @@ export class CommentT {
   ownerId: string;
   @Column({ type: "uuid" })
   userId: string;
-  @Column({type: "character varying", length: 300})
+  @Column({ type: "character varying", length: 300 })
   content: string;
-  @Column({type: "character varying"})
+  @Column({ type: "character varying" })
   createdAt: string;
-  @Column({type: "character varying"})
+  @Column({ type: "character varying" })
   userLogin: string;
   @ManyToOne(() => Usser, u => u.comments)
   user: Usser;
