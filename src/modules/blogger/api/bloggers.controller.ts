@@ -120,10 +120,10 @@ export class BloggersController {
 
   @Get(`users/blog/:id`)
   async getBanedUser(@CurrentUserIdBlogger() userId: string,
-                     @Param(`id`, ValidateUuidPipe) id: string,
-                     @Query() paginationInputModel: PaginationUsersDto): Promise<PaginationViewModel<UsersForBanBlogViewType[]>> {
+    @Param(`id`, ValidateUuidPipe) id: string,
+    @Query() paginationInputModel: PaginationUsersDto): Promise<PaginationViewModel<UsersForBanBlogViewType[]>> {
     const blog = await this.blogsQueryRepositories.findBlogWithMap(id);
-   if (blog.userId !== userId) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
+    if (blog.userId !== userId) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
     return await this.blogsQueryRepositories.getBannedUsersForBlog(id, paginationInputModel);
   }
 }
