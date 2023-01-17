@@ -5,11 +5,12 @@ import { PaginationViewModel } from "../../blogs/infrastructure/query-repository
 import { PostsSqlQueryRepositories } from "../infrastructure/query-repositories/posts-sql-query.reposit";
 import { PostsQueryRepositories } from "../infrastructure/query-repositories/posts-query.reposit";
 import { PostsTypeOrmQueryReposit } from "../infrastructure/query-repositories/posts-type-orm-query.reposit";
+import { CommentsViewType } from "../../comments/infrastructure/query-repository/types-view/comments-View-Model";
 
 export interface IPostQueryRepository {
   findPost(id: string, userId: string | null): Promise<PostViewModel>
   findPosts(data: PaginationDto, userId: string | null, blogId?: string): Promise<PaginationViewModel<PostViewModel[]>>
-  getCommentsByIdPost(postId: string, data: PaginationDto, userId: string | null)/*: Promise<PaginationViewModel<CommentsViewType[]>>*/
+  getCommentsByIdPost(postId: string, data: PaginationDto, userId: string | null): Promise<PaginationViewModel<CommentsViewType[]>>
   createPostForView(id: string): Promise<PostViewModel>
   getCommentsBloggerForPosts(userId: string, paginationInputModel: PaginationDto)
 

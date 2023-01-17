@@ -2,12 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { PreparationBlogForDB } from "../../blogger/domain/types/blog-preparation-for-DB";
 import { UpdateBlogDto } from "../../blogger/api/input-dtos/update-Blog-Dto-Model";
 import { BanUserForBlogPreparationForDB } from "../../blogger/domain/types/ban-user-for-blog-preparation-for-DB";
-import {  Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { BannedBlogUsersDBSQL } from "../../blogger/domain/types/banned_blog_users-DB-SQL";
 import { IBlogRepository } from "../interfaces/IBlogRepository";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BlogT } from "../../../entities/blog.entity";
 import { BannedBlogUser } from "../../../entities/bannedBlogUser.entity";
+import { Usser } from "../../../entities/user.entity";
 
 @Injectable()
 export class BlogsTypeOrmRepositories implements IBlogRepository {
@@ -15,12 +16,15 @@ export class BlogsTypeOrmRepositories implements IBlogRepository {
     @InjectRepository(BlogT)
     private readonly blogTRepository: Repository<BlogT>,
     @InjectRepository(BannedBlogUser)
-    private readonly bannedBlogUserRepository: Repository<BannedBlogUser>
+    private readonly bannedBlogUserRepository: Repository<BannedBlogUser>,
+    @InjectRepository(Usser)
+    private readonly userRepo: Repository<Usser>
   ) {
   }
 
   async createBlog(newBlog: PreparationBlogForDB): Promise<string> {
     const { createdAt, userId, userLogin, websiteUrl, name, description } = newBlog;
+    const user = await this.userRepo.findOneBy({ userId: userId });
     const blog = new BlogT();
     blog.userId = userId;
     blog.userLogin = userLogin;
@@ -28,6 +32,7 @@ export class BlogsTypeOrmRepositories implements IBlogRepository {
     blog.description = description;
     blog.websiteUrl = websiteUrl;
     blog.createdAt = createdAt;
+    blog.user = user;
     const createdBlog = await this.blogTRepository.save(blog);
     return createdBlog.blogId;
 
@@ -83,11 +88,13 @@ export class BlogsTypeOrmRepositories implements IBlogRepository {
   }
 
   async updateBanStatusForBlog(blogId: string, isBanned: boolean): Promise<boolean> {
+    const banDate = new Date().toISOString();
     await this.blogTRepository.manager.connection.transaction(async manager => {
-      await manager.update(BlogT,
-        { blogId: blogId },
-        { isBanned: isBanned, banDate: new Date().toISOString }
-      );
+      await manager
+        .update(BlogT,
+          { blogId: blogId },
+          { isBanned: isBanned, banDate: banDate }
+        );
     })
       .catch((e) => {
         console.log(e);
@@ -110,7 +117,7 @@ export class BlogsTypeOrmRepositories implements IBlogRepository {
   }
 
   async updateBanStatus(banStatus: BanUserForBlogPreparationForDB): Promise<boolean> {
-    const { blogId, isBanned, banReason, banDate, userId, login, ownerId, email, createdAt } = banStatus;
+    const { blogId, isBanned, banReason, banDate, userId } = banStatus;
     await this.bannedBlogUserRepository.manager.connection.transaction(async manager => {
       await manager.update(BannedBlogUser,
         { blogId: blogId, userId: userId },

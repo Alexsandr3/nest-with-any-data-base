@@ -6,7 +6,6 @@ import { CommentsQueryRepositories } from "../infrastructure/query-repository/co
 export interface ICommentQueryRepository {
   getComment(commentId: string, userId: string | null): Promise<CommentsViewType>;
 
-  findComment(commentId: string, userId: string | null): Promise<CommentsViewType>;
 }
 
 export const ICommentQueryRepositoryKey = "ICommentQueryRepository";

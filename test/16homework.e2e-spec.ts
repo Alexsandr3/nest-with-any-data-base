@@ -386,6 +386,7 @@ describe.skip(`Ban blog by super admin`, () => {
       user2 = res[2].user
       user3 = res[3].user
       accessToken = res[0].accessToken
+      console.log(accessToken);
       accessToken1 = res[1].accessToken
       accessToken2 = res[2].accessToken
       accessToken3 = res[3].accessToken

@@ -14,7 +14,7 @@ import {
   CommentsViewType,
   LikesInfoViewModel, PostInfoModel
 } from "../../../comments/infrastructure/query-repository/types-view/comments-View-Model";
-import {  Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { IPostQueryRepository } from "../../interfaces/IPostQueryRepository";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PostT } from "../../../../entities/post.entity";
@@ -122,13 +122,13 @@ export class PostsTypeOrmQueryReposit implements IPostQueryRepository {
       post.shortDescription,
       post.content,
       post.blogId,
-      post.name,
+      post.blogName,
       post.createdAt,
       extendedLikesInfo
     );
   }
 
-  async getCommentsByIdPost(postId: string, data: PaginationDto, userId: string | null)/*: Promise<PaginationViewModel<CommentsViewType[]>> */ {
+  async getCommentsByIdPost(postId: string, data: PaginationDto, userId: string | null): Promise<PaginationViewModel<CommentsViewType[]>> {
     const { sortDirection, sortBy, pageSize, pageNumber } = data;
     let order;
     if (sortDirection === "asc") {
@@ -139,69 +139,21 @@ export class PostsTypeOrmQueryReposit implements IPostQueryRepository {
     //find post by postId and userId
     const post = await this.postTRepository.findOneBy({ postId: postId });
     if (!post) throw new NotFoundExceptionMY(`No content found for current id: ${postId}`);
-    //finding comments by postId
-    // const queryFilter = `
-    //     SELECT c."commentId"                                                           AS "id",
-    //            c."content",
-    //            c."userId",
-    //            u."login"                                                               AS "userLogin",
-    //            c."createdAt",
-    //            (SELECT count(*) AS "countLike"
-    //             FROM "likesComment" l
-    //             WHERE l."parentId" = c."commentId"
-    //               AND l."likeStatus" = 'Like'
-    //               AND l."isBanned" = false)                                            AS "likeCount",
-    //            (SELECT count(*) AS "countDislike"
-    //             FROM "likesComment" l
-    //             WHERE l."parentId" = c."commentId"
-    //               AND l."likeStatus" = 'Dislike'
-    //               AND l."isBanned" = false)                                            AS "dislikeCount",
-    //            COALESCE((SELECT l."likeStatus"
-    //                      FROM "likesComment" l
-    //                      WHERE l."parentId" = c."commentId"
-    //                        AND l."userId" = ${userId ? `'${userId}'` : null}), 'None') AS "myStatus"
-    //     FROM comments c
-    //              LEFT JOIN users u on u."userId" = c."userId"
-    //     WHERE c."postId" = '${postId}'
-    //       AND c."isBanned" = false
-    //     ORDER BY "${sortBy}" ${sortDirection}
-    //     LIMIT ${pageSize}
-    //     OFFSET ${(pageNumber - 1) * pageSize}
-    // `;
-
     const [comments, count] = await Promise.all([this.commentTRepository
-      // .createQueryBuilder('c')
-      // .where('lk.parentId = c.commentId')
-      // .orderBy(`"${sortBy}"`, order)
-      // .skip((pageNumber - 1) * pageSize)
-      // .take(pageSize),
       .find({
-        // select: ["likesComment"],
         relations: { likesComment: true },
-        // relations: ['likeComment'],
-        // relationLoadStrategy: "query",
-        // loadRelationIds: true,
-        // loadEagerRelations: true,
-        // where: {},
+        where: { postId: postId, isBanned: false },
         order: { [sortBy]: order },
         skip: (pageNumber - 1) * pageSize,
         take: pageSize
-      }).catch((e) => {
-        console.log(e);
       }),
       this.commentTRepository.count({ where: { postId: postId, isBanned: false } })
     ]);
-
-    // const sql = builder.getSql();
-    // await writeSql(sql);
-    // const comments = await builder.getMany();
-
-    // const commentsWithAddFields = await this.postTRepository.query(queryFilter);
     //mapped comments for View
-    // const mappedComments = comments.map((object) =>
-    //   this.commentByIdPostForView(object)
-    // );
-    // const itemsComments = await Promise.all(mappedComments);
+    const mappedComments = comments.map((object) =>
+      this.commentByIdPostForView(object, userId)
+    );
+    const itemsComments = await Promise.all(mappedComments);
     const pagesCountRes = Math.ceil(count / data.pageSize);
     //returning comment with pagination
     return new PaginationViewModel(
@@ -209,18 +161,33 @@ export class PostsTypeOrmQueryReposit implements IPostQueryRepository {
       data.pageNumber,
       data.pageSize,
       count,
-      comments
+      itemsComments
     );
   }
 
-  private async commentByIdPostForView(object: any): Promise<CommentsViewType> {
+  private async commentByIdPostForView(object: any, userId: string | null): Promise<CommentsViewType> {
+    let myStatus: string = LikeStatusType.None;
+    if (userId) {
+      const result = await this.likeCommentRepository.findOneBy({
+        userId: userId,
+        parentId: object.commentId
+      });
+      if (result) {
+        myStatus = result.likeStatus;
+      }
+    }
+    const [countLike, countDislike] = await Promise.all([this.likeCommentRepository
+      .count({ where: { parentId: object.commentId, likeStatus: "Like", isBanned: false } }),
+      this.likeCommentRepository
+        .count({ where: { parentId: object.commentId, likeStatus: "Dislike", isBanned: false } })
+    ]);
     const likesInfo = new LikesInfoViewModel(
-      +object.likeCount,
-      +object.dislikeCount,
-      object.myStatus
+      countLike,
+      countDislike,
+      myStatus
     );
     return new CommentsViewType(
-      object.id,
+      object.commentId,
       object.content,
       object.userId,
       object.userLogin,
@@ -251,80 +218,70 @@ export class PostsTypeOrmQueryReposit implements IPostQueryRepository {
 
   async getCommentsBloggerForPosts(userId: string, paginationInputModel: PaginationDto) {
     const { sortDirection, sortBy, pageSize, pageNumber } = paginationInputModel;
-    const query = `
-        SELECT c."commentId"                                      AS "id",
-               c."content",
-               c."createdAt",
-               c."userId",
-               u."login"                                          AS "userLogin",
-               p."postId",
-               p."title",
-               b."blogId",
-               b."name"                                           AS "blogName",
-               (SELECT count(*) AS "countLike"
-                FROM "likesComment" l
-                WHERE l."parentId" = c."commentId"
-                  AND l."likeStatus" = 'Like'
-                  AND l."isBanned" = false)                       AS "likeCount",
-               (SELECT count(*) AS "countDislike"
-                FROM "likesComment" l
-                WHERE l."parentId" = c."commentId"
-                  AND l."likeStatus" = 'Dislike'
-                  AND l."isBanned" = false)                       AS "dislikeCount",
-               COALESCE((SELECT l."likeStatus"
-                         FROM "likesComment" l
-                         WHERE l."parentId" = c."commentId"
-                           AND l."userId" = '${userId}'), 'None') AS "myStatus"
-        FROM "comments" c
-                 LEFT JOIN posts p on c."postId" = p."postId"
-                 LEFT JOIN blogs b on p."blogId" = b."blogId"
-                 LEFT JOIN users u on c."userId" = u."userId"
-        WHERE c."ownerId" = '${userId}'
-        ORDER BY "${sortBy}" ${sortDirection}
-              LIMIT ${pageSize}
-        OFFSET ${(pageNumber - 1) * pageSize}
-    `;
-    const foundCommentsWithAddFields = await this.postTRepository.query(query);
-    const mappedPosts = foundCommentsWithAddFields.map((object) => this.commentBloggerForPostView(object));
+    let order;
+    if (sortDirection === "asc") {
+      order = "ASC";
+    } else {
+      order = "DESC";
+    }
+    const [comments, count] = await Promise.all([this.commentTRepository
+      .find({
+        select: ["commentId", "content", "createdAt", "userId", "userLogin"],
+        relations: { post: true, likesComment: true },
+        where: { ownerId: userId },
+        order: { [sortBy]: order },
+        skip: (pageNumber - 1) * pageSize,
+        take: pageSize
+      }),
+      this.commentTRepository.count({ where: { ownerId: userId } })
+    ]);
+    const mappedPosts = comments.map((object) => this.commentBloggerForPostView(object, userId));
     const items = await Promise.all(mappedPosts);
-
-    const requestCount = `
-        SELECT count(*)
-        FROM "comments"
-        WHERE "ownerId" = '${userId}'
-    `;
-    const commentsCount = await this.postTRepository.query(requestCount);
-    const totalCount = +commentsCount[0]["count"];
     // pages count
-    const pagesCountRes = Math.ceil(totalCount / pageSize);
+    const pagesCountRes = Math.ceil(count / pageSize);
     // Found posts with pagination
     return new PaginationViewModel(
       pagesCountRes,
       pageNumber,
       pageSize,
-      totalCount,
+      count,
       items
     );
   }
 
-  private async commentBloggerForPostView(object: any) {
+  private async commentBloggerForPostView(object: any, userId: string) {
+    let myStatus: string = LikeStatusType.None;
+    if (userId) {
+      const result = await this.likeCommentRepository.findOneBy({
+        userId: userId,
+        parentId: object.commentId
+      });
+      if (result) {
+        myStatus = result.likeStatus;
+      }
+    }
+    const [countLike, countDislike] = await Promise.all([this.likeCommentRepository
+      .count({ where: { parentId: object.commentId, likeStatus: "Like", isBanned: false } }),
+      this.likeCommentRepository
+        .count({ where: { parentId: object.commentId, likeStatus: "Dislike", isBanned: false } }),
+    ]);
     const likesInfo = new LikesInfoViewModel(
-      +object.likeCount,
-      +object.dislikeCount,
-      object.myStatus
+      countLike,
+      countDislike,
+      myStatus
     );
     const commentatorInfo = new CommentatorInfoModel(
       object.userId,
       object.userLogin
     );
     const postInfo = new PostInfoModel(
-      object.postId,
-      object.title,
-      object.blogId,
-      object.blogName
+      object.post.postId,
+      object.post.title,
+      object.post.blogId,
+      object.post.blogName
     );
     return new BloggerCommentsViewType(
-      object.id,
+      object.commentId,
       object.content,
       object.createdAt,
       likesInfo,

@@ -31,7 +31,7 @@ describe.skip("Blogger (e2e)", () => {
     await app.close();
   });
 
-  describe.skip(`/blogger`, () => {
+  describe(`/blogger`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -79,7 +79,7 @@ describe.skip("Blogger (e2e)", () => {
       expect(blog).toEqual({
         id: expect.any(String),
         name: "Mongoose",
-        description: "A mongoose is a small terrestrial carnivorous mammal belonging to the family Herpestidae. This family is currently split into two subfamilies, the Herpestinae and the Mungotinae. The Herpestinae comprises 23 living species that are native to southern Europe, Africa and Asia, whereas the Mungotinae comprises 11 species native to Africa.[2] The Herpestidae originated about 21.8 ± 3.6 million years ago in the Early Miocene and genetically diverged into two main",
+        description: "A mongoose is a small terrestrial carnivorous mammal belonging to the family Herpestidae. This family is currently split into two subfamilies, the Herpestinae and the Mungotinae. The Herpestinae comprises 23 living species that are native to southern Europe, Africa and Asia, whereas the Mungotinae comprises 11 species native to Africa.[2] The Herpestidae originated about 21.8 ± 3.6 million years ago in the Early Miocene and genetically diverged into two main ",
         websiteUrl: "https://www.mongoose.com",
         createdAt: expect.any(String)
       });

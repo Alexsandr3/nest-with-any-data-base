@@ -9,7 +9,6 @@ import {
 } from "./helpers/create-user-by-login-email";
 import { UsersViewType } from "../src/modules/users/infrastructure/query-reposirory/types-view/user-View-Model";
 import { BlogViewModel } from "../src/modules/blogs/infrastructure/query-repository/types-view/blog-View-Model";
-import { PostViewModel } from "../src/modules/posts/infrastructure/query-repositories/types-view/post-View-Model";
 import { createBlogsForTest } from "./helpers/create-blog-for-test";
 
 
@@ -34,7 +33,7 @@ describe.skip(`Ban blog by super admin`, () => {
     await app.close();
   });
 
-  describe.skip(`Super admin Api > Users`, () => {
+  describe(`Super admin Api > Users`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);

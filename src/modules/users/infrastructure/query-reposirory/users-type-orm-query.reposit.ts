@@ -73,16 +73,9 @@ export class UsersTypeOrmQueryRepository implements IUserQueryRepository {
 
     const { email, login, userId } = await this.userRepo
       .findOneBy({
-        // select: { email: true, login: true, userId: true },
-        // select: ["email", "login", "userId"],
         userId: id
       });
     return { email, login, userId };
-    // if (!{ email, login, userId }) {
-    //   throw new UnauthorizedExceptionMY(`incorrect userId`);
-    // } else {
-    //   return { email, login, userId };
-    // }
   }
 }
 

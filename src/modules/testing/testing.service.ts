@@ -32,6 +32,7 @@ import { PostT } from "../../entities/post.entity";
 import { CommentT } from "../../entities/comment.entity";
 import { LikePost } from "../../entities/likePost.entity";
 import { LikeComment } from "../../entities/likeComment.entity";
+import { BannedBlogUser } from "../../entities/bannedBlogUser.entity";
 
 @Injectable()
 export class TestingService {
@@ -86,6 +87,7 @@ export class TestingService {
     //     FROM users;
     // `);
     await this.userRepo.manager.connection.transaction(async manager => {
+        await manager.delete(BannedBlogUser, {});
         await manager.delete(LikeComment, {});
         await manager.delete(LikePost, {});
         await manager.delete(CommentT, {});

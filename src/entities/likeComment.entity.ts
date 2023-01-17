@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity,  ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { CommentT } from "./comment.entity";
 import { Usser } from "./user.entity";
 
@@ -6,7 +6,7 @@ import { Usser } from "./user.entity";
 export class LikeComment {
   @PrimaryGeneratedColumn("uuid")
   id: string;
-  @Column("boolean", { default: true })
+  @Column("boolean", { default: false })
   isBanned: boolean;
   @Column({ type: "uuid" })
   parentId: string;
@@ -17,5 +17,5 @@ export class LikeComment {
   @ManyToOne(() => Usser, u => u.likeComments)
   user: Usser;
   @ManyToOne(() => CommentT, u => u.likesComment)
-  comment: Promise<CommentT>;
+  comment: CommentT;
 }
