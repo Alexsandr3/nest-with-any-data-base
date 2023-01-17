@@ -38,7 +38,71 @@ describe.skip(`Ban blog by super admin`, () => {
     await app.close();
   });
 
-  describe(`Homework 22.1 > Super admin Api > Ban user by super admin`, () => {
+  describe(`Homework 22.2 > Blogger Api > Ban user by blogger`, () => {
+    beforeAll(async () => {
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`).expect(204);
+    });
+    let user: UsersViewType;
+    let user1: UsersViewType;
+    let blog: BlogViewModel;
+    let accessToken: string;
+    it(`01 - POST -> "/sa/users": should create new user; status 201; content: created user; used additional methods: GET => /sa/users;`, async () => {
+      const res = await createUserByLoginEmail(2, app);
+      user = res[0].user;
+      user1 = res[0].user;
+      accessToken = res[0].accessToken;
+      const resBlog = await createBlogsForTest(1, accessToken, app);
+      blog = resBlog[0].blog;
+    });
+    it(`02 - GET -> "GET => blogger/users/blog/:id": should return status 200; content: banned users array with pagination; used additional methods: POST -> /sa/users, PUT -> /blogger/users/:id/ban;`, async () => {
+      await request(app.getHttpServer())
+        .put(`/blogger/users/${user1.id}/ban`)
+        .auth(accessToken, { type: "bearer" })
+        .send({
+          isBanned: true,
+          banReason: "stringstringstringst",
+          blogId: blog.id
+        })
+        .expect(204);
+      await request(app.getHttpServer())
+        .get(`/blogger/users/blog/${blog.id}`)
+        .auth(accessToken, { type: "bearer" })
+        .query({ pageSize: 13, sorBy: "login", sortDirection: "desc" })
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.items[0]).toEqual({
+            id: expect.any(String),
+            login: "asirius-0",
+            banInfo: {
+              isBanned: true,
+              banDate: expect.any(String),
+              banReason: "stringstringstringst"
+            }
+          });
+          expect(body).toEqual({
+            pagesCount: 1,
+            page: 1,
+            pageSize: 13,
+            totalCount: 1,
+            items: [
+              {
+                id: expect.any(String),
+                login: "asirius-0",
+                banInfo: {
+                  isBanned: true,
+                  banDate: expect.any(String),
+                  banReason: "stringstringstringst"
+                }
+              }
+            ]
+          });
+        });
+
+
+    });
+  });
+  describe.skip(`Homework 22.1 > Super admin Api > Ban user by super admin`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -153,12 +217,12 @@ describe.skip(`Ban blog by super admin`, () => {
         .expect(204);
       await request(app.getHttpServer())
         .get(`/comments/${comment.id}`)
-        .expect(404)
+        .expect(404);
 
 
     });
   });
-  describe(`Homework 22.2 > Blogger Api > Blogger posts`, () => {
+  describe.skip(`Homework 22.2 > Blogger Api > Blogger posts`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);
@@ -216,82 +280,82 @@ describe.skip(`Ban blog by super admin`, () => {
         .then(({ body }) => {
           expect(body).toEqual({
             id: expect.any(String),
-            title: 'marakabanka karabaka',
-            shortDescription: 'marakabanka',
-            content: 'marakabanka',
+            title: "marakabanka karabaka",
+            shortDescription: "marakabanka",
+            content: "marakabanka",
             blogId: blog.id.toString(),
-            blogName: 'Mongoose00',
+            blogName: "Mongoose00",
             createdAt: expect.any(String),
             extendedLikesInfo: {
               likesCount: 0,
               dislikesCount: 0,
-              myStatus: 'None',
+              myStatus: "None",
               newestLikes: []
             }
-          })
+          });
         });
       await request(app.getHttpServer())
         .put(`/blogger/blogs/${blog.id}/posts/${post1.id}`)
-        .auth(accessToken, {type: "bearer"})
+        .auth(accessToken, { type: "bearer" })
         .send({
           title: "marakabanka 12345678",
           shortDescription: "marakabanka",
           content: "marakabanka"
         })
-        .expect(204)
+        .expect(204);
       await request(app.getHttpServer())
         .get(`/posts/${post1.id}`)
         .expect(200)
         .then(({ body }) => {
           expect(body).toEqual({
             id: expect.any(String),
-            title: 'marakabanka 12345678',
-            shortDescription: 'marakabanka',
-            content: 'marakabanka',
+            title: "marakabanka 12345678",
+            shortDescription: "marakabanka",
+            content: "marakabanka",
             blogId: blog.id.toString(),
-            blogName: 'Mongoose00',
+            blogName: "Mongoose00",
             createdAt: expect.any(String),
             extendedLikesInfo: {
               likesCount: 0,
               dislikesCount: 0,
-              myStatus: 'None',
+              myStatus: "None",
               newestLikes: []
             }
-          })
+          });
         });
     });
-    it(`03 - DELETE -> "/blogger/blogs/:blogId/posts/:postId": should delete post by blogger; status 204; used additional methods: POST -> /blogger/blogs, POST -> /blogger/blogs/:blogId/posts, GET -> /posts/:id`, async ()=>{
+    it(`03 - DELETE -> "/blogger/blogs/:blogId/posts/:postId": should delete post by blogger; status 204; used additional methods: POST -> /blogger/blogs, POST -> /blogger/blogs/:blogId/posts, GET -> /posts/:id`, async () => {
       await request(app.getHttpServer())
         .delete(`/blogger/blogs/${blog.id}/posts/${post.id}`)
-        .auth(accessToken, {type: "bearer"})
-        .expect(204)
+        .auth(accessToken, { type: "bearer" })
+        .expect(204);
 
       await request(app.getHttpServer())
         .get(`/posts/${post.id}`)
         .expect(404)
         .then(({ body }) => {
-          expect(body).toEqual({})
+          expect(body).toEqual({});
         });
 
 
-    })
-    it(`04 -DELETE, PUT "/blogger/blogs/:blogId/posts/:postId", POST -> "/blogger/blogs/:blogId/posts: should return error if :id from uri param not found; status 404; used additional methods: POST -> /blogger/blogs, POST -> /blogger/blogs/:blogId/posts;`, async ()=>{
+    });
+    it(`04 -DELETE, PUT "/blogger/blogs/:blogId/posts/:postId", POST -> "/blogger/blogs/:blogId/posts: should return error if :id from uri param not found; status 404; used additional methods: POST -> /blogger/blogs, POST -> /blogger/blogs/:blogId/posts;`, async () => {
       await request(app.getHttpServer())
         .put(`/blogger/blogs/${blog.id}/posts/${post.id}`)
-        .auth(accessToken, {type: "bearer"})
+        .auth(accessToken, { type: "bearer" })
         .send({
           title: "marakabanka 12345678",
           shortDescription: "marakabanka",
           content: "marakabanka"
         })
-        .expect(404)
+        .expect(404);
 
       await request(app.getHttpServer())
         .delete(`/blogger/blogs/${blog.id}/posts/${post.id}`)
-        .auth(accessToken, {type: "bearer"})
-        .expect(404)
+        .auth(accessToken, { type: "bearer" })
+        .expect(404);
 
-    })
+    });
   });
   describe.skip(`Super admin Api > Users`, () => {
     beforeAll(async () => {
@@ -362,7 +426,7 @@ describe.skip(`Ban blog by super admin`, () => {
     });
 
   });
-  describe(`Check error for testing`, () => {
+  describe.skip(`Check error for testing`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);

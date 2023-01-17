@@ -39,7 +39,10 @@ export class UpdateBanUserForCurrentBlogHandler
       null,
       null
     );
-    await this.blogsRepositories.createBanStatus(banStatus)
+    const foundBanStatus = await this.blogsRepositories.findStatusBan(userId, blogId);
+    if(!foundBanStatus){
+      await this.blogsRepositories.createBanStatus(banStatus)
+    }
     if (isBanned === false) {
       const banDate = null;
       const banReason = null;
