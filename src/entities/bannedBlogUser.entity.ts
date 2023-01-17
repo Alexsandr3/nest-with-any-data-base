@@ -9,7 +9,7 @@ export class BannedBlogUser {
   ownerId: string;
   @Column({ type: "uuid" })
   userId: string;
-  @Column({ type: "character varying" })
+  @Column({ type: "character varying", collation: "C" })
   login: string;
   @Column({ type: "character varying" })
   email: string;

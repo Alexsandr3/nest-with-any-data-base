@@ -36,6 +36,7 @@ import { ValidateUuidPipe } from "../../../validators/validate-uuid-pipe";
 import { UsersForBanBlogViewType } from "../../users/infrastructure/query-reposirory/types-view/user-View-Model";
 import { IBlogQueryRepositoryKey, IBlogQueryRepository } from "../../blogs/interfaces/IBlogQueryRepository";
 import { IPostQueryRepository, IPostQueryRepositoryKey } from "../../posts/interfaces/IPostQueryRepository";
+import { PaginationUsersDto } from "../../users/api/input-Dto/pagination-Users-Dto-Model";
 
 @SkipThrottle()
 @UseGuards(JwtAuthGuard)
@@ -120,9 +121,9 @@ export class BloggersController {
   @Get(`users/blog/:id`)
   async getBanedUser(@CurrentUserIdBlogger() userId: string,
                      @Param(`id`, ValidateUuidPipe) id: string,
-                     @Query() paginationInputModel: PaginationDto): Promise<PaginationViewModel<UsersForBanBlogViewType[]>> {
+                     @Query() paginationInputModel: PaginationUsersDto): Promise<PaginationViewModel<UsersForBanBlogViewType[]>> {
     const blog = await this.blogsQueryRepositories.findBlogWithMap(id);
-    if (blog.userId !== userId) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
+   if (blog.userId !== userId) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
     return await this.blogsQueryRepositories.getBannedUsersForBlog(id, paginationInputModel);
   }
 }

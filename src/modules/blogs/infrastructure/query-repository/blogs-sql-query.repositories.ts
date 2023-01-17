@@ -13,6 +13,7 @@ import { DataSource } from "typeorm";
 import { BlogDBSQLType } from "../../../blogger/domain/types/blog-DB-SQL-Type";
 import { BannedBlogUsersDBSQL } from "../../../blogger/domain/types/banned_blog_users-DB-SQL";
 import { IBlogQueryRepository } from "../../interfaces/IBlogQueryRepository";
+import { PaginationUsersDto } from "../../../users/api/input-Dto/pagination-Users-Dto-Model";
 
 @Injectable()
 export class BlogsSqlQueryRepositories implements IBlogQueryRepository {
@@ -245,8 +246,8 @@ export class BlogsSqlQueryRepositories implements IBlogQueryRepository {
     return blog[0];
   }
 
-  async getBannedUsersForBlog(blogId: string, paginationInputModel: PaginationDto): Promise<PaginationViewModel<UsersForBanBlogViewType[]>> {
-    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
+  async getBannedUsersForBlog(blogId: string, paginationInputModel: PaginationUsersDto): Promise<PaginationViewModel<UsersForBanBlogViewType[]>> {
+    const { searchLoginTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
     let queryFilter = `
         SELECT *
         FROM banned_blog_users
@@ -262,13 +263,13 @@ export class BlogsSqlQueryRepositories implements IBlogQueryRepository {
         WHERE "blogId" = '${blogId}'
           AND "isBanned" = true
     `;
-    if (searchNameTerm.trim().length > 0) {
+    if (searchLoginTerm.trim().length > 0) {
       queryFilter = `
           SELECT *
           FROM banned_blog_users
           WHERE "blogId" = '${blogId}'
             AND "isBanned" = true
-            AND "login" ILIKE '%${searchNameTerm}%'
+            AND "login" ILIKE '%${searchLoginTerm}%'
           ORDER BY "${sortBy}" ${sortDirection}
               LIMIT ${pageSize}
           OFFSET ${(pageNumber - 1) * pageSize}
@@ -278,7 +279,7 @@ export class BlogsSqlQueryRepositories implements IBlogQueryRepository {
           FROM banned_blog_users
           WHERE "blogId" = '${blogId}'
             AND "isBanned" = true
-            AND "login" ILIKE '%${searchNameTerm}%'
+            AND "login" ILIKE '%${searchLoginTerm}%'
       `;
     }
     //search all blogs for current user

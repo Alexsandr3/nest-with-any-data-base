@@ -18,6 +18,7 @@ import {
   UsersForBanBlogViewType
 } from "../../../users/infrastructure/query-reposirory/types-view/user-View-Model";
 import { BanStatusBlogDBType } from "../../../blogger/domain/types/ban-user-for-blog-preparation-for-DB";
+import { PaginationUsersDto } from "../../../users/api/input-Dto/pagination-Users-Dto-Model";
 
 @Injectable()
 export class BlogsQueryRepositories {
@@ -166,11 +167,11 @@ export class BlogsQueryRepositories {
     return blog;
   }
 
-  async getBannedUsersForBlog(blogId: string, paginationInputModel: PaginationDto) {
-    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
+  async getBannedUsersForBlog(blogId: string, paginationInputModel: PaginationUsersDto) {
+    const { searchLoginTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
     const filter: FilterQuery<BlogBanInfo> = { blogId, isBanned: true };
-    if (searchNameTerm) {
-      filter.name = { $regex: searchNameTerm, $options: "i" };
+    if (searchLoginTerm) {
+      filter.name = { $regex: searchLoginTerm, $options: "i" };
     }
     const foundBanStatusForBlog = await this.blogBanInfoModel
       .find(filter)

@@ -11,6 +11,7 @@ import { BlogsSqlQueryRepositories } from "../infrastructure/query-repository/bl
 import { BlogsQueryRepositories } from "../infrastructure/query-repository/blogs-query.repositories";
 import { getConfiguration } from "../../../config/configuration";
 import { BlogsTypeOrmQueryRepositories } from "../infrastructure/query-repository/blogs-type-orm-query.repositories";
+import { PaginationUsersDto } from "../../users/api/input-Dto/pagination-Users-Dto-Model";
 
 export interface IBlogQueryRepository {
 
@@ -24,7 +25,7 @@ export interface IBlogQueryRepository {
 
   findBlogWithMap(id: string): Promise<BlogDBSQLType>;
 
-  getBannedUsersForBlog(blogId: string, paginationInputModel: PaginationDto): Promise<PaginationViewModel<UsersForBanBlogViewType[]>>;
+  getBannedUsersForBlog(blogId: string, paginationInputModel: PaginationUsersDto): Promise<PaginationViewModel<UsersForBanBlogViewType[]>>;
 
 }
 
