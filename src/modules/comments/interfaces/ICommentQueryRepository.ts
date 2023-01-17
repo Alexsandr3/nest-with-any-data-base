@@ -2,6 +2,9 @@ import { getConfiguration } from "../../../config/configuration";
 import { CommentsViewType } from "../infrastructure/query-repository/types-view/comments-View-Model";
 import { CommentsSqlQueryRepositories } from "../infrastructure/query-repository/comments-sql-query.repositories";
 import { CommentsQueryRepositories } from "../infrastructure/query-repository/comments-query.repositories";
+import {
+  CommentsTypeOrmQueryRepositories
+} from "../infrastructure/query-repository/comments-type-orm-query.repositories";
 
 export interface ICommentQueryRepository {
   getComment(commentId: string, userId: string | null): Promise<CommentsViewType>;
@@ -23,6 +26,11 @@ export const CommentQueryRepository = () => {
       return {
         provide: ICommentQueryRepositoryKey,
         useClass: CommentsSqlQueryRepositories
+      };
+    case "TypeOrm":
+      return {
+        provide: ICommentQueryRepositoryKey,
+        useClass: CommentsTypeOrmQueryRepositories
       };
     default:
       return {

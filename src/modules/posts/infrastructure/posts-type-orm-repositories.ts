@@ -39,20 +39,24 @@ export class PostsTypeOrmRepositories implements IPostRepository {
 
   async updatePost(id: string, data: CreatePostDto, blogId: string, userId: string): Promise<boolean> {
     const { title, shortDescription, content } = data;
+    const post = await this.postTRepository.findOneBy({ postId: id, userId: userId });
+    if (!post) return null;
     await this.postTRepository.manager.connection.transaction(async manager => {
       await manager.update(PostT,
         { postId: id, userId: userId },
         { title: title, shortDescription: shortDescription, content: content }
       );
-    })
-      .catch((e) => {
-        console.log(e);
-        return null;
-      });
+
+    }).catch((e) => {
+      console.log(e);
+    });
+
     return true;
   }
 
   async deletePost(id: string, userId: string): Promise<boolean> {
+    const post = await this.postTRepository.findOneBy({ postId: id, userId: userId });
+    if (!post) return null;
     await this.postTRepository.manager.connection.transaction(async manager => {
       await manager.delete(PostT,
         { postId: id, userId: userId });
